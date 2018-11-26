@@ -1,0 +1,5 @@
+{
+"nanoreg1" : "https://solr.ideaconsult.net/solr/nanoreg_shard1_replica1/select",
+"enm" :  "https://sandbox.ideaconsult.net/solr/enanondm_shard1_replica1/select"
+}
+
