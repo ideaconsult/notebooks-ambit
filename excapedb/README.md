@@ -12,3 +12,10 @@ This folders contains a Jupyter notebook, fixing the SMILES as follows:
 - If not, retrieves the MOL files from the original source (PubChem or ChEMBL)
 - Runs standadization with `ambitcli`
 - Patches the Zenodo file with the new SMILES
+
+
+### The ExCAPEDB file with fixed SMILES errors is available at https://zenodo.org/record/2543724  `pubchem.chembl.dataset4publication_inchi_smiles_v2.tsv.xz`
+
+
+
+
