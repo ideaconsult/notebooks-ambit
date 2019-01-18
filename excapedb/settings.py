@@ -1,1 +1,1 @@
-local_path="G://ChemicalData/EXCAPE/excapedb_fix"
+local_path="./"
