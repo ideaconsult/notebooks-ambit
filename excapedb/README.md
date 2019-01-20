@@ -5,7 +5,7 @@ ExCAPEDB is described in
 
 The original release at Zenodo https://zenodo.org/record/173258 contains a number of broken SMILES. 
 
-This folders contains a Jupyter notebook, fixing the SMILES as follows:
+This folder contains a Jupyter notebook, fixing the SMILES as follows:
 
 - Downloads the file from Zenodo
 - Check if RDKit is happy with the SMILES
