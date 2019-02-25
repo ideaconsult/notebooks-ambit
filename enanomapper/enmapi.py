@@ -8,8 +8,10 @@ global logger
 logger = logging.getLogger()
 
 from os.path import isfile, join
+from requests.auth import AuthBase
 
 _default_ambit="https://apps.ideaconsult.net/nanoreg1" 
+
 class AMBITResource:
     root = None
     resource="/"
@@ -64,3 +66,18 @@ class AMBITQuery(AMBITResource):
     
     def __init__(self,root_uri=_default_ambit,resource="/query",key="/study"):
          super().__init__(root_uri,resource,key)
+
+class AMBITSolr(AMBITResource):
+    
+    def __init__(self,root_uri=_default_ambit,resource="/solr",key="/study"):
+         super().__init__(root_uri,resource,key)            
+            
+
+class AmbitAPIKEYAuth(AuthBase):
+    """Authorization: APIKEY XXXX"""
+    def __init__(self, apikey):
+        self.apikey = apikey
+
+    def __call__(self, r):
+        r.headers['Authorization'] = "APIKEY {}".format(self.apikey)
+        return r            

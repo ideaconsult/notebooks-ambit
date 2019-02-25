@@ -1,5 +1,11 @@
 {
-"nanoreg1" : "https://solr.ideaconsult.net/solr/nanoreg_shard1_replica1/select",
-"enm" :  "https://sandbox.ideaconsult.net/solr/enanondm_shard1_replica1/select"
+"NANoREG" : "https://solr.ideaconsult.net/solr/nanoreg_shard1_replica1/select",
+"eNanoMapper" :  "https://sandbox.ideaconsult.net/solr/enanondm_shard1_replica1/select",
+"NanoReg2": "https://apps.ideaconsult.net/marina/solr/nanoreg2/select",
+"caLIBRAte": "https://apps.ideaconsult.net/marina/solr/calibrate/select",
+"GRACIOUS": "https://apps.ideaconsult.net/marina/solr/gracious/select",
+"PATROLS": "https://apps.ideaconsult.net/marina/solr/patrols/select",    
+"NanoinformaTIX": "https://apps.ideaconsult.net/marina/solr/nanoinformatix/select",
+"test": "https://apps.ideaconsult.net/marina/solr/nanoinformatix/select"
 }
 
