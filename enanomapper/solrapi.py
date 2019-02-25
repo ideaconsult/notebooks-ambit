@@ -103,6 +103,7 @@ def parseSolrRequest(settings,docs,rows):
                 test_organism=None
                 guidance=''
                 effectendpoint = ''
+                effectendpoint_type = ''
                 studyResultType=''
                 reference_year=''
                 s_uuid=''
@@ -157,6 +158,11 @@ def parseSolrRequest(settings,docs,rows):
                     effectendpoint = childdoc['effectendpoint_s']
                 except :
                     pass  
+                try:
+                    effectendpoint_type = childdoc['effectendpoint_type_s']
+                except :
+                    pass  
+                
                 
                 try:
                     guidance = str(childdoc['guidance_s'])
@@ -226,6 +232,7 @@ def parseSolrRequest(settings,docs,rows):
                      'x.oht.section' : childdoc['endpointcategory_s'],
                      'x.guidance' : guidance,
                      'value.endpoint' : effectendpoint,
+                     'value.endpoint_type' : effectendpoint_type,
                      'value.qualifier.lo' : loQualifier,
                      'value.qualifier.up' : upQualifier,
                      'value.lo' : loValue,
