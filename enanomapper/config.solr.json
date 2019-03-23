@@ -1,11 +1,31 @@
 {
-"NANoREG" : "https://solr.ideaconsult.net/solr/nanoreg_shard1_replica1/select",
-"eNanoMapper" :  "https://sandbox.ideaconsult.net/solr/enanondm_shard1_replica1/select",
-"NanoReg2": "https://apps.ideaconsult.net/marina/solr/nanoreg2/select",
-"caLIBRAte": "https://apps.ideaconsult.net/marina/solr/calibrate/select",
-"GRACIOUS": "https://apps.ideaconsult.net/marina/solr/gracious/select",
-"PATROLS": "https://apps.ideaconsult.net/marina/solr/patrols/select",    
-"NanoinformaTIX": "https://apps.ideaconsult.net/marina/solr/nanoinformatix/select",
-"test": "https://apps.ideaconsult.net/marina/solr/nanoinformatix/select"
-}
+	"services": {
+		"NANoREG": "https://solr.ideaconsult.net/solr/nanoreg_shard1_replica1/select",
+		"eNanoMapper": "https://sandbox.ideaconsult.net/solr/enanondm_shard1_replica1/select",
+		"NanoReg2": "https://apps.ideaconsult.net/marina/solr/nanoreg2/select",
+		"caLIBRAte": "https://apps.ideaconsult.net/marina/solr/calibrate/select",
+		"GRACIOUS": "https://apps.ideaconsult.net/marina/solr/gracious/select",
+		"PATROLS": "https://apps.ideaconsult.net/marina/solr/patrols/select",
+		"NanoinformaTIX": "https://apps.ideaconsult.net/marina/solr/nanoinformatix/select",
+		"test": "https://apps.ideaconsult.net/marina/solr/nanoinformatix/select"
+	},
+	"query" : {
+        
+        "substancetype" : {"field" : "substanceType_s" , "synonym" : "publicname_s", "q" : "type_s:study"},
+        "nanomaterial" : {"field" : "publicname_s" , "synonym" : "name_s", "q" : "type_s:study"},
+        "protocol" : {"field" : "guidance_s" , "synonym" : "endpointcategory_s", "q" : "type_s:study"},
+        "endpointcategory" : {"field" : "endpointcategory_s" , "synonym" : "endpointcategory_s", "q" : "type_s:study"},
+                
+        "endpoint" : {"field" : "effectendpoint_s" , "synonym" : "effectendpoint_synonym_ss", "q" : "type_s:study"},
+        "method" : {"field" : "E.method_s" , "synonym" : "E.sop_reference_s", "q" : "type_s:params"},
+        "medium" : {"field" : "MEDIUM_s" , "synonym" : "MEDIUM_s", "q" : "type_s:params"},
+        "cell" : {"field" : "E.cell_type_s" , "synonym" : "E.cell_type_s", "q" : "type_s:params"},
+        "species" : {"field" : "E.animal_model_s" , "synonym" : "E.animal_model_s", "q" : "type_s:params"},
+        "dispersion protocol" : {"field" : "protocol_s" , "synonym" : "protocol_s", "q" : "type_s:params"},
+        "exposure time" : {"field" : "E.exposure_time_hour" , "synonym" : "E.exposure_time_hour", "q" : "type_s:conditions"},
+        "treatment" : {"field" : "material_s" , "synonym" : "material_s", "q" : "type_s:conditions"}
+        
+        
+	}
 
+}
