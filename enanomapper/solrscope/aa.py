@@ -22,12 +22,19 @@ class GraviteeAuth(AuthBase):
         return r       
     
     
-def parseOpenAPI3(url='https://search.data.enanomapper.net/api-docs/solr.yaml',auth="enmKeyAuth"):
-    config = yaml.load(requests.get(url).text)
+def parseOpenAPI3(url='https://search.data.enanomapper.net/api-docs/', config='solr.yaml',auth="enmKeyAuth"):
+    apikey=None
+    config = yaml.load(requests.get(url+config).text)
     config_servers = json_normalize(config['servers'], None, ['url'])
-    config_security = json_normalize(config['components']['securitySchemes'], None, [])
-
-    apikey=config_security['{}.name'.format(auth)][0]    
+    if 'securitySchemes' in config['components']:
+        config_security = json_normalize(config['components']['securitySchemes'], None, [])
+        try:
+            apikey=config_security['{}.name'.format(auth)][0]    
+        except:
+            apikey=None
+    else:
+        config_security = None
+        
     return config,config_servers, apikey
     
 def operationAuth(config,path='/select',method='get',auth="enmKeyAuth"):
