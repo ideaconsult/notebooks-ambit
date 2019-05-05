@@ -1,4 +1,5 @@
 import requests
+import yaml
 import pandas as pd
 import numpy as np
 import logging
@@ -18,16 +19,16 @@ class Facets:
         query={'q': query,'fq' : fq, "wt" : "json", "json.facet": json_facet, 'rows': rows}
         return query
 
-    def parse(self,facets,key="ALL",prefix="",process=None):
+    def parse(self,facets,key="ALL",prefix="",process=None,level=0):
         count = facets['count']
         if 'val' in facets:
             val = facets['val']            
         else:
             val='ALL'
         if process is None:    
-            print("{}'{}'\t{}".format(prefix,val,count)) 
+            print("{}\t{}'{}'\t{}\t{}".format(prefix,level,val,count,level)) 
         else:
-            process(prefix,val,count,key)
+            process(prefix,val,count,key,level)
         if facets== None:
             return
         for f in facets.keys():
@@ -39,7 +40,7 @@ class Facets:
             else:
                 key=f
                 for bucket in facets[f]['buckets']:
-                    self.parse(bucket,key,prefix+"\t")
+                    self.parse(bucket,key,prefix+"\t",process,level+1)
 
     def getFacet(self,field="endpointcategory_s",n=1,nested=None):
         fieldname="field{}".format(n)
