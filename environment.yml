@@ -1,0 +1,10 @@
+name: notebooks-ambit
+dependencies:
+  - python
+  - requests
+  - ipywidgets
+  - pandas
+  - numpy
+  - pyyaml
+  - pip:
+      - jproperties
