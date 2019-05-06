@@ -24,7 +24,7 @@ class Facets:
         if 'val' in facets:
             val = facets['val']            
         else:
-            val='ALL'
+            val='_'
         if process is None:    
             print("{}\t{}'{}'\t{}\t{}".format(prefix,_tuple,val,count,key)) 
         else:
@@ -41,6 +41,8 @@ class Facets:
                 key=f
                 for bucket in facets[f]['buckets']:
                     self.parse(bucket,key,prefix+"\t",process,(*_tuple,val))
+                if facets[f]['missing']['count'] >0:
+                    self.parse(facets[f]['missing'],key,prefix+"\t",process,(*_tuple,val))
 
     def getFacet(self,field="endpointcategory_s",n=1,nested=None):
         fieldname="field{}".format(n)
