@@ -19,16 +19,16 @@ class Facets:
         query={'q': query,'fq' : fq, "wt" : "json", "json.facet": json_facet, 'rows': rows}
         return query
 
-    def parse(self,facets,key="ALL",prefix="",process=None,level=0):
+    def parse(self,facets,key="ALL",prefix="",process=None,_tuple=()):
         count = facets['count']
         if 'val' in facets:
             val = facets['val']            
         else:
             val='ALL'
         if process is None:    
-            print("{}\t{}'{}'\t{}\t{}".format(prefix,level,val,count,level)) 
+            print("{}\t{}'{}'\t{}\t{}".format(prefix,_tuple,val,count,key)) 
         else:
-            process(prefix,val,count,key,level)
+            process(prefix,val,count,key,_tuple)
         if facets== None:
             return
         for f in facets.keys():
@@ -40,7 +40,7 @@ class Facets:
             else:
                 key=f
                 for bucket in facets[f]['buckets']:
-                    self.parse(bucket,key,prefix+"\t",process,level+1)
+                    self.parse(bucket,key,prefix+"\t",process,(*_tuple,val))
 
     def getFacet(self,field="endpointcategory_s",n=1,nested=None):
         fieldname="field{}".format(n)
