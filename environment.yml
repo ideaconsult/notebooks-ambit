@@ -1,6 +1,7 @@
 name: notebooks-ambit
 dependencies:
   - python
+  - pip
   - requests
   - ipywidgets
   - pandas
