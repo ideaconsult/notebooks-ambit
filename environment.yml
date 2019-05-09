@@ -7,5 +7,6 @@ dependencies:
   - pandas
   - numpy
   - pyyaml
+  - qgrid
   - pip:
       - jproperties
