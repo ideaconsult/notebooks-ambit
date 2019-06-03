@@ -22,13 +22,13 @@ class Dictionary:
     def annotate(self,x):
         if self.lookup is None:
             return None
-        x=x.replace(" ","_").upper().strip()
+        x_=x.replace(" ","_").replace("\t","").upper().strip()
 
         if x in self.lookup:
-            value, meta = self.lookup[x]
+            value, meta = self.lookup[x_]
             return value
         else:
-            return None       
+            return x       
         
     def getLink(self,ontouri):
         if ontouri.startswith("http"):
