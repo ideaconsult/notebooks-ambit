@@ -53,6 +53,10 @@ class DictionaryEndpointCategory(Dictionary):
     def __init__(self,folder = './annotation/', topic='endpointcategory'):
         super().__init__(folder = './annotation/', topic='endpointcategory')                       
 
+class DictionaryEndpointCategoryNames(Dictionary):    
+    def __init__(self,folder = './annotation/', topic='endpointcategory_names'):
+        super().__init__(folder = './annotation/', topic='endpointcategory_names')  
+        
 class DictionarySpecies(Dictionary):    
     def __init__(self,folder = './annotation/', topic='species'):
         super().__init__(folder = './annotation/', topic='species')       
