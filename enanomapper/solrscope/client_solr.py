@@ -486,4 +486,8 @@ class StudyDocuments:
                     rows.append(row)    
         return (rows)
     
-     
+class Materials:
+    def getQuery(self,query='*:*',facets=None,fq='', fl='*',rows=1000):
+        query={'q': query,'fq' : fq, "wt" : "json", 'fl' : fl, 'rows': rows}
+        return query
+         

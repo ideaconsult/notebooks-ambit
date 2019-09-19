@@ -29,10 +29,11 @@ class AMBITResource:
             url = url + self.key
         return url
     
-    def get(self,params=None, media="application/json",page=0,pagesize=10,auth=None):
+    def get(self,params=None, media="application/json",page=0,pagesize=10,auth=None,verbose=False):
         url = self.uricompose()
         params = self.getParams(params,page,pagesize,media)            
-        print("Sending request to {} params {}".format(url,params))
+        if verbose:
+            print("Sending request to {} params {}".format(url,params))
         r = requests.get(url,params=params, auth=auth)
         return r           
         
@@ -89,6 +90,7 @@ class AMBITCompound(AMBITResource):
     def uricompose(self):
         url = super().uricompose()
         return url.split("/conformer")[0]
+      
             
 class AMBITTask(AMBITResource):
     
@@ -109,6 +111,20 @@ class AMBITQuery(AMBITResource):
     
     def __init__(self,root_uri=_default_ambit,resource="/query",key="/study"):
          super().__init__(root_uri,resource,key)
+            
+class AMBITQueryCompound(AMBITResource):
+    
+    def __init__(self,root_uri=_default_ambit,resource="/query",key="/compound/search/all"):
+         super().__init__(root_uri,resource,key)
+            
+#  /query/compound/search/all?type=auto&search=2825-82-3&page=0&pagesize=1&media=application/json            
+    def search(self,search_value,search_type='auto',media='chemical/x-mdl-sdfile',page=0,pagesize=10,auth=None):
+        params={}
+        params['type'] = search_type
+        params['search'] = search
+        return self.get(params=params, media="application/json",page=page,pagesize=pagesize,auth=auth)   
+            
+          
 
 class AMBITFacets(AMBITResource):
     
