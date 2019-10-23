@@ -12,6 +12,11 @@ def post(service_uri,query,auth=None):
     r = requests.post(service_uri + "/select",data=query, auth=auth)
     return r
 
+def get(service_uri,query,auth=None):
+    r = requests.get(service_uri + "/select",params=query, auth=auth)
+    return r
+
+
 class Facets:
 
     def getQuery(self,query='*:*',facets=["endpointcategory_s","effectendpoint_s","unit_s"],fq='', rows=0):
@@ -116,7 +121,7 @@ class StudyDocuments:
             sep= combineas
         return self.settings['studyfilter']
 
-    def getQuery(self,textfilter=None,facets=None,fq='', rows=10, _params=True, _conditions=True, _composition=False):
+    def getQuery(self,textfilter=None,facets=None,fq='', rows=10, _params=True, _conditions=True, _composition=False ):
     
         studyfilter=''
         if self.settings['studyfilter'] != None:
