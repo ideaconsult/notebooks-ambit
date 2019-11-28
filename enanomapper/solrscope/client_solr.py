@@ -7,6 +7,7 @@ from pandas.io.json import json_normalize
 global logger
 logger = logging.getLogger()
 import json
+from solrscope import annotation
 
 def post(service_uri,query,auth=None):
     r = requests.post(service_uri + "/select",data=query, auth=auth)
@@ -96,6 +97,47 @@ class Facets:
             field_2.append(_field2.strip())    
 
         return pd.DataFrame({key1 : fields_name, "count" : fields_count, key2 : field_2})
+    
+    def summary(this,service_uri,auth_object,query="*:*",fq="type_s:study",statistics="Number of data points",fields=["topcategory_s","endpointcategory_s","E.method_s","substanceType_s","publicname_s","reference_owner_s"],log_query=None,log_result=None):
+        colnames=["Z"]
+        colnames.extend(fields)
+        colnames.append(statistics)
+        _stats=[]
+        def process(prefix,val,count,key,_tuple):
+            if len(_tuple)==len(fields):
+                _tuple = (*_tuple,val,count)
+                _stats.append(_tuple)
+        q=this.getQuery(query=query,facets=fields,fq=fq)
+        if log_query!=None:
+            log_query(q)
+
+        r = post(service_uri,query=q,auth=auth_object)
+        response_json=r.json()
+
+        if r.status_code==200:
+            if log_result!=None:
+                log_result(response_json)
+            this.parse(response_json['facets'],prefix=">",process=process)
+            df = pd.DataFrame(_stats,columns=colnames).drop("Z", axis=1)
+            if "substanceType_s" in df.columns:
+                a = annotation.DictionarySubstancetypes()
+                df[ 'substanceType_name']=df[ 'substanceType_s'].apply(a.annotate)
+            if "substanceType_hs" in df.columns:
+                a = annotation.DictionarySubstancetypes()
+                df[ 'substanceType_name']=df[ 'substanceType_hs'].apply(a.annotate)            
+            if "endpointcategory_s" in df.columns:    
+                a = annotation.DictionaryEndpointCategory()
+                df[ 'endpointcategory_term']=df[ 'endpointcategory_s'].apply(a.annotate)
+                a = annotation.DictionaryEndpointCategoryNames()
+                df[ 'endpointcategory_name']=df[ 'endpointcategory_s'].apply(a.annotate)
+
+            if "method_term" in df.columns:
+                a = annotation.DictionaryAssays()
+                df[ 'method_term']=df[method_field].apply(a.annotate)
+            return (df)
+        else:
+            print(r.status_code)
+            return (None)           
 
 class StudyDocuments:    
     
@@ -491,8 +533,11 @@ class StudyDocuments:
                     rows.append(row)    
         return (rows)
     
+
 class Materials:
     def getQuery(self,query='*:*',facets=None,fq='', fl='*',rows=1000):
         query={'q': query,'fq' : fq, "wt" : "json", 'fl' : fl, 'rows': rows}
         return query
          
+
+     

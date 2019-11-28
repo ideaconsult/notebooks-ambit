@@ -12,6 +12,19 @@ from measurement.utils import guess
 from os.path import isfile, join
 import json
 
+def convert_units(value,from_units, to_units="nm",measures=None,debug=False):
+    try:
+        to_units = to_units.replace("\u00b5","u")
+        from_units = from_units.replace("\u00b5","u")
+        m = guess(value, from_units)
+        xp='m.' + to_units
+        return (eval(xp))
+    except Exception as err:
+        if debug:
+            print(value,from_units,to_units)
+            print(err)
+        return None
+    
 Distance.ALIAS['\u00B5m'] = 'um'
 
 class Dose(BidimensionalMeasure):
@@ -28,7 +41,11 @@ class Percent(MeasureBase):
         'percent': 1.0
     }
     ALIAS = {
-        '\u0025' : 'percent'
+        '\u0025' : 'percent',
+        '%DNA IN TAIL'  : 'percent',
+        '% DNA in Tail' : 'percent',
+        '%DNA in Tail'  : 'percent',
+        '% DNA IN TAIL' : 'percent'
     }
     SI_UNITS = ['percent']
     
