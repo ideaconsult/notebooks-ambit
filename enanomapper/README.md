@@ -3,3 +3,5 @@
 [tutorial.ipynb](tutorial.ipynb)
 
 [summary.ipynb](summary.ipynb)
+
+[explore.ipynb](explore.ipynb)
