@@ -4,7 +4,7 @@
 
 ## [enanomapper.db.ipynb](enanomapper.db.ipynb)  
     
-- [markdown rendering](enanomapper.db.md)
+- [markdown](enanomapper.db.md) and [html](enanomapper.db.html) rendering
 
 ## [summary.ipynb](summary.ipynb)
 
