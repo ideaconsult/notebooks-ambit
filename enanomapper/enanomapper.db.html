@@ -1,8 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>enanomapper.db</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+
+<title>enanomapper.db</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
 
 <style type="text/css">
     /*!
@@ -199,7 +204,6 @@ th {
   *:before,
   *:after {
     background: transparent !important;
-    color: #000 !important;
     box-shadow: none !important;
     text-shadow: none !important;
   }
@@ -6744,15 +6748,15 @@ button.close {
 *
 */
 /*!
- *  Font Awesome 4.2.0 by @davegandy - http://fontawesome.io - @fontawesome
+ *  Font Awesome 4.7.0 by @davegandy - http://fontawesome.io - @fontawesome
  *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)
  */
 /* FONT PATH
  * -------------------------- */
 @font-face {
   font-family: 'FontAwesome';
-  src: url('../components/font-awesome/fonts/fontawesome-webfont.eot?v=4.2.0');
-  src: url('../components/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.2.0') format('embedded-opentype'), url('../components/font-awesome/fonts/fontawesome-webfont.woff?v=4.2.0') format('woff'), url('../components/font-awesome/fonts/fontawesome-webfont.ttf?v=4.2.0') format('truetype'), url('../components/font-awesome/fonts/fontawesome-webfont.svg?v=4.2.0#fontawesomeregular') format('svg');
+  src: url('../components/font-awesome/fonts/fontawesome-webfont.eot?v=4.7.0');
+  src: url('../components/font-awesome/fonts/fontawesome-webfont.eot?#iefix&v=4.7.0') format('embedded-opentype'), url('../components/font-awesome/fonts/fontawesome-webfont.woff2?v=4.7.0') format('woff2'), url('../components/font-awesome/fonts/fontawesome-webfont.woff?v=4.7.0') format('woff'), url('../components/font-awesome/fonts/fontawesome-webfont.ttf?v=4.7.0') format('truetype'), url('../components/font-awesome/fonts/fontawesome-webfont.svg?v=4.7.0#fontawesomeregular') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -6809,6 +6813,19 @@ button.close {
   border: solid 0.08em #eee;
   border-radius: .1em;
 }
+.fa-pull-left {
+  float: left;
+}
+.fa-pull-right {
+  float: right;
+}
+.fa.fa-pull-left {
+  margin-right: .3em;
+}
+.fa.fa-pull-right {
+  margin-left: .3em;
+}
+/* Deprecated as of 4.4.0 */
 .pull-right {
   float: right;
 }
@@ -6824,6 +6841,10 @@ button.close {
 .fa-spin {
   -webkit-animation: fa-spin 2s infinite linear;
   animation: fa-spin 2s infinite linear;
+}
+.fa-pulse {
+  -webkit-animation: fa-spin 1s infinite steps(8);
+  animation: fa-spin 1s infinite steps(8);
 }
 @-webkit-keyframes fa-spin {
   0% {
@@ -6846,31 +6867,31 @@ button.close {
   }
 }
 .fa-rotate-90 {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=1)";
   -webkit-transform: rotate(90deg);
   -ms-transform: rotate(90deg);
   transform: rotate(90deg);
 }
 .fa-rotate-180 {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2)";
   -webkit-transform: rotate(180deg);
   -ms-transform: rotate(180deg);
   transform: rotate(180deg);
 }
 .fa-rotate-270 {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=3)";
   -webkit-transform: rotate(270deg);
   -ms-transform: rotate(270deg);
   transform: rotate(270deg);
 }
 .fa-flip-horizontal {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1);
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)";
   -webkit-transform: scale(-1, 1);
   -ms-transform: scale(-1, 1);
   transform: scale(-1, 1);
 }
 .fa-flip-vertical {
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1);
+  -ms-filter: "progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)";
   -webkit-transform: scale(1, -1);
   -ms-transform: scale(1, -1);
   transform: scale(1, -1);
@@ -7355,6 +7376,7 @@ button.close {
 .fa-twitter:before {
   content: "\f099";
 }
+.fa-facebook-f:before,
 .fa-facebook:before {
   content: "\f09a";
 }
@@ -7367,6 +7389,7 @@ button.close {
 .fa-credit-card:before {
   content: "\f09d";
 }
+.fa-feed:before,
 .fa-rss:before {
   content: "\f09e";
 }
@@ -8004,7 +8027,8 @@ button.close {
 .fa-male:before {
   content: "\f183";
 }
-.fa-gittip:before {
+.fa-gittip:before,
+.fa-gratipay:before {
   content: "\f184";
 }
 .fa-sun-o:before {
@@ -8108,7 +8132,7 @@ button.close {
 .fa-digg:before {
   content: "\f1a6";
 }
-.fa-pied-piper:before {
+.fa-pied-piper-pp:before {
   content: "\f1a7";
 }
 .fa-pied-piper-alt:before {
@@ -8234,6 +8258,7 @@ button.close {
   content: "\f1ce";
 }
 .fa-ra:before,
+.fa-resistance:before,
 .fa-rebel:before {
   content: "\f1d0";
 }
@@ -8247,6 +8272,8 @@ button.close {
 .fa-git:before {
   content: "\f1d3";
 }
+.fa-y-combinator-square:before,
+.fa-yc-square:before,
 .fa-hacker-news:before {
   content: "\f1d4";
 }
@@ -8414,6 +8441,657 @@ button.close {
 }
 .fa-meanpath:before {
   content: "\f20c";
+}
+.fa-buysellads:before {
+  content: "\f20d";
+}
+.fa-connectdevelop:before {
+  content: "\f20e";
+}
+.fa-dashcube:before {
+  content: "\f210";
+}
+.fa-forumbee:before {
+  content: "\f211";
+}
+.fa-leanpub:before {
+  content: "\f212";
+}
+.fa-sellsy:before {
+  content: "\f213";
+}
+.fa-shirtsinbulk:before {
+  content: "\f214";
+}
+.fa-simplybuilt:before {
+  content: "\f215";
+}
+.fa-skyatlas:before {
+  content: "\f216";
+}
+.fa-cart-plus:before {
+  content: "\f217";
+}
+.fa-cart-arrow-down:before {
+  content: "\f218";
+}
+.fa-diamond:before {
+  content: "\f219";
+}
+.fa-ship:before {
+  content: "\f21a";
+}
+.fa-user-secret:before {
+  content: "\f21b";
+}
+.fa-motorcycle:before {
+  content: "\f21c";
+}
+.fa-street-view:before {
+  content: "\f21d";
+}
+.fa-heartbeat:before {
+  content: "\f21e";
+}
+.fa-venus:before {
+  content: "\f221";
+}
+.fa-mars:before {
+  content: "\f222";
+}
+.fa-mercury:before {
+  content: "\f223";
+}
+.fa-intersex:before,
+.fa-transgender:before {
+  content: "\f224";
+}
+.fa-transgender-alt:before {
+  content: "\f225";
+}
+.fa-venus-double:before {
+  content: "\f226";
+}
+.fa-mars-double:before {
+  content: "\f227";
+}
+.fa-venus-mars:before {
+  content: "\f228";
+}
+.fa-mars-stroke:before {
+  content: "\f229";
+}
+.fa-mars-stroke-v:before {
+  content: "\f22a";
+}
+.fa-mars-stroke-h:before {
+  content: "\f22b";
+}
+.fa-neuter:before {
+  content: "\f22c";
+}
+.fa-genderless:before {
+  content: "\f22d";
+}
+.fa-facebook-official:before {
+  content: "\f230";
+}
+.fa-pinterest-p:before {
+  content: "\f231";
+}
+.fa-whatsapp:before {
+  content: "\f232";
+}
+.fa-server:before {
+  content: "\f233";
+}
+.fa-user-plus:before {
+  content: "\f234";
+}
+.fa-user-times:before {
+  content: "\f235";
+}
+.fa-hotel:before,
+.fa-bed:before {
+  content: "\f236";
+}
+.fa-viacoin:before {
+  content: "\f237";
+}
+.fa-train:before {
+  content: "\f238";
+}
+.fa-subway:before {
+  content: "\f239";
+}
+.fa-medium:before {
+  content: "\f23a";
+}
+.fa-yc:before,
+.fa-y-combinator:before {
+  content: "\f23b";
+}
+.fa-optin-monster:before {
+  content: "\f23c";
+}
+.fa-opencart:before {
+  content: "\f23d";
+}
+.fa-expeditedssl:before {
+  content: "\f23e";
+}
+.fa-battery-4:before,
+.fa-battery:before,
+.fa-battery-full:before {
+  content: "\f240";
+}
+.fa-battery-3:before,
+.fa-battery-three-quarters:before {
+  content: "\f241";
+}
+.fa-battery-2:before,
+.fa-battery-half:before {
+  content: "\f242";
+}
+.fa-battery-1:before,
+.fa-battery-quarter:before {
+  content: "\f243";
+}
+.fa-battery-0:before,
+.fa-battery-empty:before {
+  content: "\f244";
+}
+.fa-mouse-pointer:before {
+  content: "\f245";
+}
+.fa-i-cursor:before {
+  content: "\f246";
+}
+.fa-object-group:before {
+  content: "\f247";
+}
+.fa-object-ungroup:before {
+  content: "\f248";
+}
+.fa-sticky-note:before {
+  content: "\f249";
+}
+.fa-sticky-note-o:before {
+  content: "\f24a";
+}
+.fa-cc-jcb:before {
+  content: "\f24b";
+}
+.fa-cc-diners-club:before {
+  content: "\f24c";
+}
+.fa-clone:before {
+  content: "\f24d";
+}
+.fa-balance-scale:before {
+  content: "\f24e";
+}
+.fa-hourglass-o:before {
+  content: "\f250";
+}
+.fa-hourglass-1:before,
+.fa-hourglass-start:before {
+  content: "\f251";
+}
+.fa-hourglass-2:before,
+.fa-hourglass-half:before {
+  content: "\f252";
+}
+.fa-hourglass-3:before,
+.fa-hourglass-end:before {
+  content: "\f253";
+}
+.fa-hourglass:before {
+  content: "\f254";
+}
+.fa-hand-grab-o:before,
+.fa-hand-rock-o:before {
+  content: "\f255";
+}
+.fa-hand-stop-o:before,
+.fa-hand-paper-o:before {
+  content: "\f256";
+}
+.fa-hand-scissors-o:before {
+  content: "\f257";
+}
+.fa-hand-lizard-o:before {
+  content: "\f258";
+}
+.fa-hand-spock-o:before {
+  content: "\f259";
+}
+.fa-hand-pointer-o:before {
+  content: "\f25a";
+}
+.fa-hand-peace-o:before {
+  content: "\f25b";
+}
+.fa-trademark:before {
+  content: "\f25c";
+}
+.fa-registered:before {
+  content: "\f25d";
+}
+.fa-creative-commons:before {
+  content: "\f25e";
+}
+.fa-gg:before {
+  content: "\f260";
+}
+.fa-gg-circle:before {
+  content: "\f261";
+}
+.fa-tripadvisor:before {
+  content: "\f262";
+}
+.fa-odnoklassniki:before {
+  content: "\f263";
+}
+.fa-odnoklassniki-square:before {
+  content: "\f264";
+}
+.fa-get-pocket:before {
+  content: "\f265";
+}
+.fa-wikipedia-w:before {
+  content: "\f266";
+}
+.fa-safari:before {
+  content: "\f267";
+}
+.fa-chrome:before {
+  content: "\f268";
+}
+.fa-firefox:before {
+  content: "\f269";
+}
+.fa-opera:before {
+  content: "\f26a";
+}
+.fa-internet-explorer:before {
+  content: "\f26b";
+}
+.fa-tv:before,
+.fa-television:before {
+  content: "\f26c";
+}
+.fa-contao:before {
+  content: "\f26d";
+}
+.fa-500px:before {
+  content: "\f26e";
+}
+.fa-amazon:before {
+  content: "\f270";
+}
+.fa-calendar-plus-o:before {
+  content: "\f271";
+}
+.fa-calendar-minus-o:before {
+  content: "\f272";
+}
+.fa-calendar-times-o:before {
+  content: "\f273";
+}
+.fa-calendar-check-o:before {
+  content: "\f274";
+}
+.fa-industry:before {
+  content: "\f275";
+}
+.fa-map-pin:before {
+  content: "\f276";
+}
+.fa-map-signs:before {
+  content: "\f277";
+}
+.fa-map-o:before {
+  content: "\f278";
+}
+.fa-map:before {
+  content: "\f279";
+}
+.fa-commenting:before {
+  content: "\f27a";
+}
+.fa-commenting-o:before {
+  content: "\f27b";
+}
+.fa-houzz:before {
+  content: "\f27c";
+}
+.fa-vimeo:before {
+  content: "\f27d";
+}
+.fa-black-tie:before {
+  content: "\f27e";
+}
+.fa-fonticons:before {
+  content: "\f280";
+}
+.fa-reddit-alien:before {
+  content: "\f281";
+}
+.fa-edge:before {
+  content: "\f282";
+}
+.fa-credit-card-alt:before {
+  content: "\f283";
+}
+.fa-codiepie:before {
+  content: "\f284";
+}
+.fa-modx:before {
+  content: "\f285";
+}
+.fa-fort-awesome:before {
+  content: "\f286";
+}
+.fa-usb:before {
+  content: "\f287";
+}
+.fa-product-hunt:before {
+  content: "\f288";
+}
+.fa-mixcloud:before {
+  content: "\f289";
+}
+.fa-scribd:before {
+  content: "\f28a";
+}
+.fa-pause-circle:before {
+  content: "\f28b";
+}
+.fa-pause-circle-o:before {
+  content: "\f28c";
+}
+.fa-stop-circle:before {
+  content: "\f28d";
+}
+.fa-stop-circle-o:before {
+  content: "\f28e";
+}
+.fa-shopping-bag:before {
+  content: "\f290";
+}
+.fa-shopping-basket:before {
+  content: "\f291";
+}
+.fa-hashtag:before {
+  content: "\f292";
+}
+.fa-bluetooth:before {
+  content: "\f293";
+}
+.fa-bluetooth-b:before {
+  content: "\f294";
+}
+.fa-percent:before {
+  content: "\f295";
+}
+.fa-gitlab:before {
+  content: "\f296";
+}
+.fa-wpbeginner:before {
+  content: "\f297";
+}
+.fa-wpforms:before {
+  content: "\f298";
+}
+.fa-envira:before {
+  content: "\f299";
+}
+.fa-universal-access:before {
+  content: "\f29a";
+}
+.fa-wheelchair-alt:before {
+  content: "\f29b";
+}
+.fa-question-circle-o:before {
+  content: "\f29c";
+}
+.fa-blind:before {
+  content: "\f29d";
+}
+.fa-audio-description:before {
+  content: "\f29e";
+}
+.fa-volume-control-phone:before {
+  content: "\f2a0";
+}
+.fa-braille:before {
+  content: "\f2a1";
+}
+.fa-assistive-listening-systems:before {
+  content: "\f2a2";
+}
+.fa-asl-interpreting:before,
+.fa-american-sign-language-interpreting:before {
+  content: "\f2a3";
+}
+.fa-deafness:before,
+.fa-hard-of-hearing:before,
+.fa-deaf:before {
+  content: "\f2a4";
+}
+.fa-glide:before {
+  content: "\f2a5";
+}
+.fa-glide-g:before {
+  content: "\f2a6";
+}
+.fa-signing:before,
+.fa-sign-language:before {
+  content: "\f2a7";
+}
+.fa-low-vision:before {
+  content: "\f2a8";
+}
+.fa-viadeo:before {
+  content: "\f2a9";
+}
+.fa-viadeo-square:before {
+  content: "\f2aa";
+}
+.fa-snapchat:before {
+  content: "\f2ab";
+}
+.fa-snapchat-ghost:before {
+  content: "\f2ac";
+}
+.fa-snapchat-square:before {
+  content: "\f2ad";
+}
+.fa-pied-piper:before {
+  content: "\f2ae";
+}
+.fa-first-order:before {
+  content: "\f2b0";
+}
+.fa-yoast:before {
+  content: "\f2b1";
+}
+.fa-themeisle:before {
+  content: "\f2b2";
+}
+.fa-google-plus-circle:before,
+.fa-google-plus-official:before {
+  content: "\f2b3";
+}
+.fa-fa:before,
+.fa-font-awesome:before {
+  content: "\f2b4";
+}
+.fa-handshake-o:before {
+  content: "\f2b5";
+}
+.fa-envelope-open:before {
+  content: "\f2b6";
+}
+.fa-envelope-open-o:before {
+  content: "\f2b7";
+}
+.fa-linode:before {
+  content: "\f2b8";
+}
+.fa-address-book:before {
+  content: "\f2b9";
+}
+.fa-address-book-o:before {
+  content: "\f2ba";
+}
+.fa-vcard:before,
+.fa-address-card:before {
+  content: "\f2bb";
+}
+.fa-vcard-o:before,
+.fa-address-card-o:before {
+  content: "\f2bc";
+}
+.fa-user-circle:before {
+  content: "\f2bd";
+}
+.fa-user-circle-o:before {
+  content: "\f2be";
+}
+.fa-user-o:before {
+  content: "\f2c0";
+}
+.fa-id-badge:before {
+  content: "\f2c1";
+}
+.fa-drivers-license:before,
+.fa-id-card:before {
+  content: "\f2c2";
+}
+.fa-drivers-license-o:before,
+.fa-id-card-o:before {
+  content: "\f2c3";
+}
+.fa-quora:before {
+  content: "\f2c4";
+}
+.fa-free-code-camp:before {
+  content: "\f2c5";
+}
+.fa-telegram:before {
+  content: "\f2c6";
+}
+.fa-thermometer-4:before,
+.fa-thermometer:before,
+.fa-thermometer-full:before {
+  content: "\f2c7";
+}
+.fa-thermometer-3:before,
+.fa-thermometer-three-quarters:before {
+  content: "\f2c8";
+}
+.fa-thermometer-2:before,
+.fa-thermometer-half:before {
+  content: "\f2c9";
+}
+.fa-thermometer-1:before,
+.fa-thermometer-quarter:before {
+  content: "\f2ca";
+}
+.fa-thermometer-0:before,
+.fa-thermometer-empty:before {
+  content: "\f2cb";
+}
+.fa-shower:before {
+  content: "\f2cc";
+}
+.fa-bathtub:before,
+.fa-s15:before,
+.fa-bath:before {
+  content: "\f2cd";
+}
+.fa-podcast:before {
+  content: "\f2ce";
+}
+.fa-window-maximize:before {
+  content: "\f2d0";
+}
+.fa-window-minimize:before {
+  content: "\f2d1";
+}
+.fa-window-restore:before {
+  content: "\f2d2";
+}
+.fa-times-rectangle:before,
+.fa-window-close:before {
+  content: "\f2d3";
+}
+.fa-times-rectangle-o:before,
+.fa-window-close-o:before {
+  content: "\f2d4";
+}
+.fa-bandcamp:before {
+  content: "\f2d5";
+}
+.fa-grav:before {
+  content: "\f2d6";
+}
+.fa-etsy:before {
+  content: "\f2d7";
+}
+.fa-imdb:before {
+  content: "\f2d8";
+}
+.fa-ravelry:before {
+  content: "\f2d9";
+}
+.fa-eercast:before {
+  content: "\f2da";
+}
+.fa-microchip:before {
+  content: "\f2db";
+}
+.fa-snowflake-o:before {
+  content: "\f2dc";
+}
+.fa-superpowers:before {
+  content: "\f2dd";
+}
+.fa-wpexplorer:before {
+  content: "\f2de";
+}
+.fa-meetup:before {
+  content: "\f2e0";
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+}
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
 }
 /*!
 *
@@ -8694,6 +9372,10 @@ div.traceback-wrapper {
   max-width: 800px;
   margin: auto;
 }
+div.traceback-wrapper pre.traceback {
+  max-height: 600px;
+  overflow: auto;
+}
 /**
  * Primary styles
  *
@@ -8719,6 +9401,10 @@ body > #header {
   z-index: 100;
 }
 body > #header #header-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 5px;
   padding-bottom: 5px;
   padding-top: 5px;
   box-sizing: border-box;
@@ -8750,13 +9436,16 @@ body > #header .header-bar {
   padding-top: 1px;
   padding-bottom: 1px;
 }
-@media (max-width: 991px) {
-  #ipython_notebook {
-    margin-left: 10px;
-  }
-}
 [dir="rtl"] #ipython_notebook {
+  margin-right: 10px;
+  margin-left: 0;
+}
+[dir="rtl"] #ipython_notebook.pull-left {
   float: right !important;
+  float: right;
+}
+.flex-spacer {
+  flex: 1;
 }
 #noscript {
   width: auto;
@@ -8791,8 +9480,14 @@ body > #header .header-bar {
 input.ui-button {
   padding: 0.3em 0.9em;
 }
+span#kernel_logo_widget {
+  margin: 0 10px;
+}
 span#login_widget {
   float: right;
+}
+[dir="rtl"] span#login_widget {
+  float: left;
 }
 span#login_widget > .button,
 #logout {
@@ -8908,6 +9603,9 @@ span#login_widget > .button .badge,
   overflow: auto;
   flex: 1;
 }
+.modal-header {
+  cursor: move;
+}
 @media (min-width: 768px) {
   .modal .modal-dialog {
     width: 700px;
@@ -8928,6 +9626,19 @@ span#login_widget > .button .badge,
   display: inline-block;
   margin-bottom: -4px;
 }
+[dir="rtl"] .center-nav form.pull-left {
+  float: right !important;
+  float: right;
+}
+[dir="rtl"] .center-nav .navbar-text {
+  float: right;
+}
+[dir="rtl"] .navbar-inner {
+  text-align: right;
+}
+[dir="rtl"] div.text-left {
+  text-align: right;
+}
 /*!
 *
 * IPython tree view
@@ -8944,34 +9655,42 @@ span#login_widget > .button .badge,
   margin: 0;
 }
 .alternate_upload input.fileinput {
-  text-align: center;
-  vertical-align: middle;
-  display: inline;
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
   opacity: 0;
   z-index: 2;
-  width: 12ex;
-  margin-right: -12ex;
+}
+.alternate_upload .btn-xs > input.fileinput {
+  margin: -1px -5px;
 }
 .alternate_upload .btn-upload {
+  position: relative;
   height: 22px;
+}
+::-webkit-file-upload-button {
+  cursor: pointer;
 }
 /**
  * Primary styles
  *
  * Author: Jupyter Development Team
  */
-[dir="rtl"] #tabs li {
-  float: right;
-}
 ul#tabs {
   margin-bottom: 4px;
-}
-[dir="rtl"] ul#tabs {
-  margin-right: 0px;
 }
 ul#tabs a {
   padding-top: 6px;
   padding-bottom: 4px;
+}
+[dir="rtl"] ul#tabs.nav-tabs > li {
+  float: right;
+}
+[dir="rtl"] ul#tabs.nav.nav-tabs {
+  padding-right: 0;
 }
 ul.breadcrumb a:focus,
 ul.breadcrumb a:hover {
@@ -8991,15 +9710,13 @@ ul.breadcrumb span {
 .list_toolbar .tree-buttons {
   padding-top: 1px;
 }
-[dir="rtl"] .list_toolbar .tree-buttons {
+[dir="rtl"] .list_toolbar .tree-buttons .pull-right {
   float: left !important;
+  float: left;
 }
-[dir="rtl"] .list_toolbar .pull-right {
-  padding-top: 1px;
-  float: left !important;
-}
-[dir="rtl"] .list_toolbar .pull-left {
-  float: right !important;
+[dir="rtl"] .list_toolbar .col-sm-4,
+[dir="rtl"] .list_toolbar .col-sm-8 {
+  float: right;
 }
 .dynamic-buttons {
   padding-top: 3px;
@@ -9055,7 +9772,7 @@ ul.breadcrumb span {
 .list_item > div input {
   margin-right: 7px;
   margin-left: 14px;
-  vertical-align: baseline;
+  vertical-align: text-bottom;
   line-height: 22px;
   position: relative;
   top: -1px;
@@ -9065,6 +9782,9 @@ ul.breadcrumb span {
   margin-left: -1px;
   vertical-align: baseline;
   line-height: 22px;
+}
+[dir="rtl"] .list_item > div input {
+  margin-right: 0;
 }
 .new-file input[type=checkbox] {
   visibility: hidden;
@@ -9080,6 +9800,14 @@ ul.breadcrumb span {
   margin-left: 7px;
   line-height: 22px;
   vertical-align: baseline;
+}
+.item_modified {
+  margin-right: 7px;
+  margin-left: 7px;
+}
+[dir="rtl"] .item_modified.pull-right {
+  float: left !important;
+  float: left;
 }
 .item_buttons {
   line-height: 1em;
@@ -9108,6 +9836,14 @@ ul.breadcrumb span {
   margin-right: 7px;
   float: left;
 }
+[dir="rtl"] .item_buttons.pull-right {
+  float: left !important;
+  float: left;
+}
+[dir="rtl"] .item_buttons .kernel-name {
+  margin-left: 7px;
+  float: right;
+}
 .toolbar_info {
   height: 24px;
   line-height: 24px;
@@ -9133,18 +9869,32 @@ ul.breadcrumb span {
   background-color: transparent;
   font-weight: bold;
 }
+.sort_button {
+  display: inline-block;
+  padding-left: 7px;
+}
+[dir="rtl"] .sort_button.pull-right {
+  float: left !important;
+  float: left;
+}
 #tree-selector {
   padding-right: 0px;
-}
-[dir="rtl"] #tree-selector a {
-  float: right;
 }
 #button-select-all {
   min-width: 50px;
 }
+[dir="rtl"] #button-select-all.btn {
+  float: right ;
+}
 #select-all {
   margin-left: 7px;
   margin-right: 2px;
+  margin-top: 2px;
+  height: 16px;
+}
+[dir="rtl"] #select-all.pull-left {
+  float: right !important;
+  float: right;
 }
 .menu_icon {
   margin-right: 2px;
@@ -9162,6 +9912,12 @@ ul.breadcrumb span {
   -moz-osx-font-smoothing: grayscale;
   content: "\f114";
 }
+.folder_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.folder_icon:before.fa-pull-right {
+  margin-left: .3em;
+}
 .folder_icon:before.pull-left {
   margin-right: .3em;
 }
@@ -9178,6 +9934,12 @@ ul.breadcrumb span {
   content: "\f02d";
   position: relative;
   top: -1px;
+}
+.notebook_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.notebook_icon:before.fa-pull-right {
+  margin-left: .3em;
 }
 .notebook_icon:before.pull-left {
   margin-right: .3em;
@@ -9197,6 +9959,12 @@ ul.breadcrumb span {
   top: -1px;
   color: #5cb85c;
 }
+.running_notebook_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.running_notebook_icon:before.fa-pull-right {
+  margin-left: .3em;
+}
 .running_notebook_icon:before.pull-left {
   margin-right: .3em;
 }
@@ -9214,6 +9982,12 @@ ul.breadcrumb span {
   position: relative;
   top: -2px;
 }
+.file_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.file_icon:before.fa-pull-right {
+  margin-left: .3em;
+}
 .file_icon:before.pull-left {
   margin-right: .3em;
 }
@@ -9228,8 +10002,11 @@ ul#new-menu {
   left: auto;
   right: 0;
 }
-[dir="rtl"] #new-menu {
-  text-align: right;
+#new-menu .dropdown-header {
+  font-size: 10px;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 0 0 3px;
+  margin: -3px 20px 0;
 }
 .kernel-menu-icon {
   padding-right: 12px;
@@ -9276,9 +10053,6 @@ ul#new-menu {
 #running .panel-group .panel .panel-body .list_container .list_item:last-child {
   border-bottom: 0px;
 }
-[dir="rtl"] #running .col-sm-8 {
-  float: right !important;
-}
 .delete-button {
   display: none;
 }
@@ -9286,6 +10060,12 @@ ul#new-menu {
   display: none;
 }
 .rename-button {
+  display: none;
+}
+.move-button {
+  display: none;
+}
+.download-button {
   display: none;
 }
 .shutdown-button {
@@ -9328,6 +10108,12 @@ ul#new-menu {
   -moz-osx-font-smoothing: grayscale;
   width: 20px;
 }
+.dirty-indicator.fa-pull-left {
+  margin-right: .3em;
+}
+.dirty-indicator.fa-pull-right {
+  margin-left: .3em;
+}
 .dirty-indicator.pull-left {
   margin-right: .3em;
 }
@@ -9342,6 +10128,12 @@ ul#new-menu {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   width: 20px;
+}
+.dirty-indicator-dirty.fa-pull-left {
+  margin-right: .3em;
+}
+.dirty-indicator-dirty.fa-pull-right {
+  margin-left: .3em;
 }
 .dirty-indicator-dirty.pull-left {
   margin-right: .3em;
@@ -9358,6 +10150,12 @@ ul#new-menu {
   -moz-osx-font-smoothing: grayscale;
   width: 20px;
 }
+.dirty-indicator-clean.fa-pull-left {
+  margin-right: .3em;
+}
+.dirty-indicator-clean.fa-pull-right {
+  margin-left: .3em;
+}
 .dirty-indicator-clean.pull-left {
   margin-right: .3em;
 }
@@ -9372,6 +10170,12 @@ ul#new-menu {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   content: "\f00c";
+}
+.dirty-indicator-clean:before.fa-pull-left {
+  margin-right: .3em;
+}
+.dirty-indicator-clean:before.fa-pull-right {
+  margin-left: .3em;
 }
 .dirty-indicator-clean:before.pull-left {
   margin-right: .3em;
@@ -9417,14 +10221,132 @@ ul#new-menu {
     box-shadow: 0px 0px 12px 1px rgba(87, 87, 87, 0.2);
   }
 }
+.CodeMirror-dialog {
+  background-color: #fff;
+}
 /*!
 *
 * IPython notebook
 *
 */
-/* CSS font colors for translated ANSI colors. */
+/* CSS font colors for translated ANSI escape sequences */
+/* The color values are a mix of
+   http://www.xcolors.net/dl/baskerville-ivorylight and
+   http://www.xcolors.net/dl/euphrasia */
+.ansi-black-fg {
+  color: #3E424D;
+}
+.ansi-black-bg {
+  background-color: #3E424D;
+}
+.ansi-black-intense-fg {
+  color: #282C36;
+}
+.ansi-black-intense-bg {
+  background-color: #282C36;
+}
+.ansi-red-fg {
+  color: #E75C58;
+}
+.ansi-red-bg {
+  background-color: #E75C58;
+}
+.ansi-red-intense-fg {
+  color: #B22B31;
+}
+.ansi-red-intense-bg {
+  background-color: #B22B31;
+}
+.ansi-green-fg {
+  color: #00A250;
+}
+.ansi-green-bg {
+  background-color: #00A250;
+}
+.ansi-green-intense-fg {
+  color: #007427;
+}
+.ansi-green-intense-bg {
+  background-color: #007427;
+}
+.ansi-yellow-fg {
+  color: #DDB62B;
+}
+.ansi-yellow-bg {
+  background-color: #DDB62B;
+}
+.ansi-yellow-intense-fg {
+  color: #B27D12;
+}
+.ansi-yellow-intense-bg {
+  background-color: #B27D12;
+}
+.ansi-blue-fg {
+  color: #208FFB;
+}
+.ansi-blue-bg {
+  background-color: #208FFB;
+}
+.ansi-blue-intense-fg {
+  color: #0065CA;
+}
+.ansi-blue-intense-bg {
+  background-color: #0065CA;
+}
+.ansi-magenta-fg {
+  color: #D160C4;
+}
+.ansi-magenta-bg {
+  background-color: #D160C4;
+}
+.ansi-magenta-intense-fg {
+  color: #A03196;
+}
+.ansi-magenta-intense-bg {
+  background-color: #A03196;
+}
+.ansi-cyan-fg {
+  color: #60C6C8;
+}
+.ansi-cyan-bg {
+  background-color: #60C6C8;
+}
+.ansi-cyan-intense-fg {
+  color: #258F8F;
+}
+.ansi-cyan-intense-bg {
+  background-color: #258F8F;
+}
+.ansi-white-fg {
+  color: #C5C1B4;
+}
+.ansi-white-bg {
+  background-color: #C5C1B4;
+}
+.ansi-white-intense-fg {
+  color: #A1A6B2;
+}
+.ansi-white-intense-bg {
+  background-color: #A1A6B2;
+}
+.ansi-default-inverse-fg {
+  color: #FFFFFF;
+}
+.ansi-default-inverse-bg {
+  background-color: #000000;
+}
+.ansi-bold {
+  font-weight: bold;
+}
+.ansi-underline {
+  text-decoration: underline;
+}
+/* The following styles are deprecated an will be removed in a future version */
 .ansibold {
   font-weight: bold;
+}
+.ansi-inverse {
+  outline: 0.5px dotted;
 }
 /* use dark versions for foreground, to improve visibility */
 .ansiblack {
@@ -9503,12 +10425,20 @@ div.cell {
   /* This acts as a spacer between cells, that is outside the border */
   margin: 0px;
   outline: none;
-  border-left-width: 1px;
-  padding-left: 5px;
-  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+  position: relative;
+  overflow: visible;
+}
+div.cell:before {
+  position: absolute;
+  display: block;
+  top: -1px;
+  left: -1px;
+  width: 5px;
+  height: calc(100% +  2px);
+  content: '';
+  background: transparent;
 }
 div.cell.jupyter-soft-selected {
-  border-left-color: #90CAF9;
   border-left-color: #E3F2FD;
   border-left-width: 1px;
   padding-left: 5px;
@@ -9521,27 +10451,39 @@ div.cell.jupyter-soft-selected {
     border-color: transparent;
   }
 }
-div.cell.selected {
+div.cell.selected,
+div.cell.selected.jupyter-soft-selected {
   border-color: #ababab;
-  border-left-width: 0px;
-  padding-left: 6px;
-  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+div.cell.selected:before,
+div.cell.selected.jupyter-soft-selected:before {
+  position: absolute;
+  display: block;
+  top: -1px;
+  left: -1px;
+  width: 5px;
+  height: calc(100% +  2px);
+  content: '';
+  background: #42A5F5;
 }
 @media print {
-  div.cell.selected {
+  div.cell.selected,
+  div.cell.selected.jupyter-soft-selected {
     border-color: transparent;
   }
 }
-div.cell.selected.jupyter-soft-selected {
-  border-left-width: 0;
-  padding-left: 6px;
-  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
-}
 .edit_mode div.cell.selected {
   border-color: #66BB6A;
-  border-left-width: 0px;
-  padding-left: 6px;
-  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+.edit_mode div.cell.selected:before {
+  position: absolute;
+  display: block;
+  top: -1px;
+  left: -1px;
+  width: 5px;
+  height: calc(100% +  2px);
+  content: '';
+  background: #66BB6A;
 }
 @media print {
   .edit_mode div.cell.selected {
@@ -9737,7 +10679,9 @@ div.input_area > div.highlight > pre {
 .CodeMirror-lines {
   /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
   /* we have set a different line-height and want this to scale with that. */
-  padding: 0.4em;
+  /* Note that this should set vertical padding only, since CodeMirror assumes
+       that horizontal padding will be set on CodeMirror pre */
+  padding: 0.4em 0;
 }
 .CodeMirror-linenumber {
   padding: 0 8px 0 4px;
@@ -9747,11 +10691,24 @@ div.input_area > div.highlight > pre {
   border-top-left-radius: 2px;
 }
 .CodeMirror pre {
-  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
-  /* .CodeMirror-lines */
-  padding: 0;
+  /* In CM3 this went to 4px from 0 in CM2. This sets horizontal padding only,
+    use .CodeMirror-lines for vertical */
+  padding: 0 0.4em;
   border: 0;
   border-radius: 0;
+}
+.CodeMirror-cursor {
+  border-left: 1.4px solid black;
+}
+@media screen and (min-width: 2138px) and (max-width: 4319px) {
+  .CodeMirror-cursor {
+    border-left: 2px solid black;
+  }
+}
+@media screen and (min-width: 4320px) {
+  .CodeMirror-cursor {
+    border-left: 4px solid black;
+  }
 }
 /*
 
@@ -10005,6 +10962,9 @@ div.output_area img.unconfined,
 div.output_area svg.unconfined {
   max-width: none;
 }
+div.output_area .mglyph > img {
+  max-width: none;
+}
 /* This is needed to protect the pre formating from global settings such
    as that of bootstrap */
 .output {
@@ -10043,7 +11003,7 @@ div.output_area svg.unconfined {
 }
 div.output_area pre {
   margin: 0;
-  padding: 0;
+  padding: 1px 0 1px 0;
   border: 0;
   vertical-align: baseline;
   color: black;
@@ -10203,39 +11163,35 @@ div.output_unrecognized a:hover {
 .rendered_html h6:first-child {
   margin-top: 1em;
 }
+.rendered_html ul:not(.list-inline),
+.rendered_html ol:not(.list-inline) {
+  padding-left: 2em;
+}
 .rendered_html ul {
   list-style: disc;
-  margin: 0em 2em;
-  padding-left: 0px;
 }
 .rendered_html ul ul {
   list-style: square;
-  margin: 0em 2em;
+  margin-top: 0;
 }
 .rendered_html ul ul ul {
   list-style: circle;
-  margin: 0em 2em;
 }
 .rendered_html ol {
   list-style: decimal;
-  margin: 0em 2em;
-  padding-left: 0px;
 }
 .rendered_html ol ol {
   list-style: upper-alpha;
-  margin: 0em 2em;
+  margin-top: 0;
 }
 .rendered_html ol ol ol {
   list-style: lower-alpha;
-  margin: 0em 2em;
 }
 .rendered_html ol ol ol ol {
   list-style: lower-roman;
-  margin: 0em 2em;
 }
 .rendered_html ol ol ol ol ol {
   list-style: decimal;
-  margin: 0em 2em;
 }
 .rendered_html * + ul {
   margin-top: 1em;
@@ -10249,14 +11205,23 @@ div.output_unrecognized a:hover {
 }
 .rendered_html pre {
   margin: 1em 2em;
+  padding: 0px;
+  background-color: #fff;
+}
+.rendered_html code {
+  background-color: #eff0f1;
+}
+.rendered_html p code {
+  padding: 1px 5px;
+}
+.rendered_html pre code {
+  background-color: #fff;
 }
 .rendered_html pre,
 .rendered_html code {
   border: 0;
-  background-color: #fff;
   color: #000;
   font-size: 100%;
-  padding: 0px;
 }
 .rendered_html blockquote {
   margin: 1em 2em;
@@ -10264,24 +11229,36 @@ div.output_unrecognized a:hover {
 .rendered_html table {
   margin-left: auto;
   margin-right: auto;
-  border: 1px solid black;
+  border: none;
   border-collapse: collapse;
+  border-spacing: 0;
+  color: black;
+  font-size: 12px;
+  table-layout: fixed;
+}
+.rendered_html thead {
+  border-bottom: 1px solid black;
+  vertical-align: bottom;
 }
 .rendered_html tr,
 .rendered_html th,
 .rendered_html td {
-  border: 1px solid black;
-  border-collapse: collapse;
-  margin: 1em 2em;
-}
-.rendered_html td,
-.rendered_html th {
-  text-align: left;
+  text-align: right;
   vertical-align: middle;
-  padding: 4px;
+  padding: 0.5em 0.5em;
+  line-height: normal;
+  white-space: normal;
+  max-width: none;
+  border: none;
 }
 .rendered_html th {
   font-weight: bold;
+}
+.rendered_html tbody tr:nth-child(odd) {
+  background: #f5f5f5;
+}
+.rendered_html tbody tr:hover {
+  background: rgba(66, 165, 245, 0.2);
 }
 .rendered_html * + table {
   margin-top: 1em;
@@ -10308,6 +11285,15 @@ div.output_unrecognized a:hover {
 .rendered_html img.unconfined,
 .rendered_html svg.unconfined {
   max-width: none;
+}
+.rendered_html .alert {
+  margin-bottom: initial;
+}
+.rendered_html * + .alert {
+  margin-top: 1em;
+}
+[dir="rtl"] .rendered_html p {
+  text-align: right;
 }
 div.text_cell {
   /* Old browsers */
@@ -10362,8 +11348,17 @@ h6:hover .anchor-link {
   overflow-x: auto;
   overflow-y: hidden;
 }
+.text_cell.rendered .rendered_html tr,
+.text_cell.rendered .rendered_html th,
+.text_cell.rendered .rendered_html td {
+  max-width: none;
+}
 .text_cell.unrendered .text_cell_render {
   display: none;
+}
+.text_cell .dropzone .input_area {
+  border: 2px dashed #bababa;
+  margin: -1px;
 }
 .cm-header-1,
 .cm-header-2,
@@ -10500,6 +11495,28 @@ kbd {
   padding-top: 1px;
   padding-bottom: 1px;
 }
+.jupyter-keybindings {
+  padding: 1px;
+  line-height: 24px;
+  border-bottom: 1px solid gray;
+}
+.jupyter-keybindings input {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+.jupyter-keybindings i {
+  padding: 6px;
+}
+.well code {
+  background-color: #ffffff;
+  border-color: #ababab;
+  border-width: 1px;
+  border-style: solid;
+  padding: 2px;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
 /* CSS for the cell toolbar */
 .celltoolbar {
   border: thin solid #CFCFCF;
@@ -10632,6 +11649,152 @@ select[multiple].celltoolbar select {
   margin-left: 5px;
   margin-right: 5px;
 }
+.tags_button_container {
+  width: 100%;
+  display: flex;
+}
+.tag-container {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+}
+.tag-container > * {
+  margin: 0 4px;
+}
+.remove-tag-btn {
+  margin-left: 4px;
+}
+.tags-input {
+  display: flex;
+}
+.cell-tag:last-child:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 40px;
+  height: 100%;
+  /* Fade to background color of cell toolbar */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0), #EEE);
+}
+.tags-input > * {
+  margin-left: 4px;
+}
+.cell-tag,
+.tags-input input,
+.tags-input button {
+  display: block;
+  width: 100%;
+  height: 32px;
+  padding: 6px 12px;
+  font-size: 13px;
+  line-height: 1.42857143;
+  color: #555555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  height: 30px;
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 1px;
+  box-shadow: none;
+  width: inherit;
+  font-size: inherit;
+  height: 22px;
+  line-height: 22px;
+  padding: 0px 4px;
+  display: inline-block;
+}
+.cell-tag:focus,
+.tags-input input:focus,
+.tags-input button:focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+.cell-tag::-moz-placeholder,
+.tags-input input::-moz-placeholder,
+.tags-input button::-moz-placeholder {
+  color: #999;
+  opacity: 1;
+}
+.cell-tag:-ms-input-placeholder,
+.tags-input input:-ms-input-placeholder,
+.tags-input button:-ms-input-placeholder {
+  color: #999;
+}
+.cell-tag::-webkit-input-placeholder,
+.tags-input input::-webkit-input-placeholder,
+.tags-input button::-webkit-input-placeholder {
+  color: #999;
+}
+.cell-tag::-ms-expand,
+.tags-input input::-ms-expand,
+.tags-input button::-ms-expand {
+  border: 0;
+  background-color: transparent;
+}
+.cell-tag[disabled],
+.tags-input input[disabled],
+.tags-input button[disabled],
+.cell-tag[readonly],
+.tags-input input[readonly],
+.tags-input button[readonly],
+fieldset[disabled] .cell-tag,
+fieldset[disabled] .tags-input input,
+fieldset[disabled] .tags-input button {
+  background-color: #eeeeee;
+  opacity: 1;
+}
+.cell-tag[disabled],
+.tags-input input[disabled],
+.tags-input button[disabled],
+fieldset[disabled] .cell-tag,
+fieldset[disabled] .tags-input input,
+fieldset[disabled] .tags-input button {
+  cursor: not-allowed;
+}
+textarea.cell-tag,
+textarea.tags-input input,
+textarea.tags-input button {
+  height: auto;
+}
+select.cell-tag,
+select.tags-input input,
+select.tags-input button {
+  height: 30px;
+  line-height: 30px;
+}
+textarea.cell-tag,
+textarea.tags-input input,
+textarea.tags-input button,
+select[multiple].cell-tag,
+select[multiple].tags-input input,
+select[multiple].tags-input button {
+  height: auto;
+}
+.cell-tag,
+.tags-input button {
+  padding: 0px 4px;
+}
+.cell-tag {
+  background-color: #fff;
+  white-space: nowrap;
+}
+.tags-input input[type=text]:focus {
+  outline: none;
+  box-shadow: none;
+  border-color: #ccc;
+}
 .completions {
   position: absolute;
   z-index: 110;
@@ -10657,16 +11820,28 @@ select[multiple].celltoolbar select {
 .completions select option.context {
   color: #286090;
 }
-#kernel_logo_widget {
-  float: right !important;
-  float: right;
-}
 #kernel_logo_widget .current_kernel_logo {
   display: none;
   margin-top: -1px;
   margin-bottom: -1px;
   width: 32px;
   height: 32px;
+}
+[dir="rtl"] #kernel_logo_widget {
+  float: left !important;
+  float: left;
+}
+.modal .modal-body .move-path {
+  display: flex;
+  flex-direction: row;
+  justify-content: space;
+  align-items: center;
+}
+.modal .modal-body .move-path .server-root {
+  padding-right: 20px;
+}
+.modal .modal-body .move-path .path-input {
+  flex: 1;
 }
 #menubar {
   box-sizing: border-box;
@@ -10688,11 +11863,41 @@ select[multiple].celltoolbar select {
 #menubar .navbar-collapse {
   clear: left;
 }
+[dir="rtl"] #menubar .navbar-toggle {
+  float: right;
+}
+[dir="rtl"] #menubar .navbar-collapse {
+  clear: right;
+}
+[dir="rtl"] #menubar .navbar-nav {
+  float: right;
+}
+[dir="rtl"] #menubar .nav {
+  padding-right: 0px;
+}
+[dir="rtl"] #menubar .navbar-nav > li {
+  float: right;
+}
+[dir="rtl"] #menubar .navbar-right {
+  float: left !important;
+}
+[dir="rtl"] ul.dropdown-menu {
+  text-align: right;
+  left: auto;
+}
+[dir="rtl"] ul#new-menu.dropdown-menu {
+  right: auto;
+  left: 0;
+}
 .nav-wrapper {
   border-bottom: 1px solid #e7e7e7;
 }
 i.menu-icon {
   padding-top: 4px;
+}
+[dir="rtl"] i.menu-icon.pull-right {
+  float: left !important;
+  float: left;
 }
 ul#help_menu li a {
   overflow: hidden;
@@ -10700,6 +11905,17 @@ ul#help_menu li a {
 }
 ul#help_menu li a i {
   margin-right: -1.2em;
+}
+[dir="rtl"] ul#help_menu li a {
+  padding-left: 2.2em;
+}
+[dir="rtl"] ul#help_menu li a i {
+  margin-right: 0;
+  margin-left: -1.2em;
+}
+[dir="rtl"] ul#help_menu li a i.pull-right {
+  float: left !important;
+  float: left;
 }
 .dropdown-submenu {
   position: relative;
@@ -10709,6 +11925,10 @@ ul#help_menu li a i {
   left: 100%;
   margin-top: -6px;
   margin-left: -1px;
+}
+[dir="rtl"] .dropdown-submenu > .dropdown-menu {
+  right: 100%;
+  margin-right: -1px;
 }
 .dropdown-submenu:hover > .dropdown-menu {
   display: block;
@@ -10727,11 +11947,23 @@ ul#help_menu li a i {
   margin-top: 2px;
   margin-right: -10px;
 }
+.dropdown-submenu > a:after.fa-pull-left {
+  margin-right: .3em;
+}
+.dropdown-submenu > a:after.fa-pull-right {
+  margin-left: .3em;
+}
 .dropdown-submenu > a:after.pull-left {
   margin-right: .3em;
 }
 .dropdown-submenu > a:after.pull-right {
   margin-left: .3em;
+}
+[dir="rtl"] .dropdown-submenu > a:after {
+  float: left;
+  content: "\f0d9";
+  margin-right: 0;
+  margin-left: -10px;
 }
 .dropdown-submenu:hover > a:after {
   color: #262626;
@@ -10748,6 +11980,10 @@ ul#help_menu li a i {
   float: right;
   z-index: 10;
 }
+[dir="rtl"] #notification_area {
+  float: left !important;
+  float: left;
+}
 .indicator_area {
   float: right !important;
   float: right;
@@ -10758,6 +11994,10 @@ ul#help_menu li a i {
   z-index: 10;
   text-align: center;
   width: auto;
+}
+[dir="rtl"] .indicator_area {
+  float: left !important;
+  float: left;
 }
 #kernel_indicator {
   float: right !important;
@@ -10775,6 +12015,12 @@ ul#help_menu li a i {
   padding-left: 5px;
   padding-right: 5px;
 }
+[dir="rtl"] #kernel_indicator {
+  float: left !important;
+  float: left;
+  border-left: 0;
+  border-right: 1px solid;
+}
 #modal_indicator {
   float: right !important;
   float: right;
@@ -10785,6 +12031,10 @@ ul#help_menu li a i {
   z-index: 10;
   text-align: center;
   width: auto;
+}
+[dir="rtl"] #modal_indicator {
+  float: left !important;
+  float: left;
 }
 #readonly-indicator {
   float: right !important;
@@ -10815,6 +12065,12 @@ ul#help_menu li a i {
   -moz-osx-font-smoothing: grayscale;
   content: "\f040";
 }
+.edit_mode .modal_indicator:before.fa-pull-left {
+  margin-right: .3em;
+}
+.edit_mode .modal_indicator:before.fa-pull-right {
+  margin-left: .3em;
+}
 .edit_mode .modal_indicator:before.pull-left {
   margin-right: .3em;
 }
@@ -10829,6 +12085,12 @@ ul#help_menu li a i {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   content: ' ';
+}
+.command_mode .modal_indicator:before.fa-pull-left {
+  margin-right: .3em;
+}
+.command_mode .modal_indicator:before.fa-pull-right {
+  margin-left: .3em;
 }
 .command_mode .modal_indicator:before.pull-left {
   margin-right: .3em;
@@ -10845,6 +12107,12 @@ ul#help_menu li a i {
   -moz-osx-font-smoothing: grayscale;
   content: "\f10c";
 }
+.kernel_idle_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.kernel_idle_icon:before.fa-pull-right {
+  margin-left: .3em;
+}
 .kernel_idle_icon:before.pull-left {
   margin-right: .3em;
 }
@@ -10859,6 +12127,12 @@ ul#help_menu li a i {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   content: "\f111";
+}
+.kernel_busy_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.kernel_busy_icon:before.fa-pull-right {
+  margin-left: .3em;
 }
 .kernel_busy_icon:before.pull-left {
   margin-right: .3em;
@@ -10875,6 +12149,12 @@ ul#help_menu li a i {
   -moz-osx-font-smoothing: grayscale;
   content: "\f1e2";
 }
+.kernel_dead_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.kernel_dead_icon:before.fa-pull-right {
+  margin-left: .3em;
+}
 .kernel_dead_icon:before.pull-left {
   margin-right: .3em;
 }
@@ -10889,6 +12169,12 @@ ul#help_menu li a i {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   content: "\f127";
+}
+.kernel_disconnected_icon:before.fa-pull-left {
+  margin-right: .3em;
+}
+.kernel_disconnected_icon:before.fa-pull-right {
+  margin-left: .3em;
 }
 .kernel_disconnected_icon:before.pull-left {
   margin-right: .3em;
@@ -11279,27 +12565,46 @@ div#pager .ui-resizable-handle::after {
   flex: 1;
 }
 span.save_widget {
-  margin-top: 6px;
+  height: 30px;
+  margin-top: 4px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  width: 50%;
+  flex: 1;
 }
 span.save_widget span.filename {
-  height: 1em;
+  height: 100%;
   line-height: 1em;
-  padding: 3px;
   margin-left: 16px;
   border: none;
   font-size: 146.5%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
   border-radius: 2px;
 }
 span.save_widget span.filename:hover {
   background-color: #e6e6e6;
 }
+[dir="rtl"] span.save_widget.pull-left {
+  float: right !important;
+  float: right;
+}
+[dir="rtl"] span.save_widget span.filename {
+  margin-left: 0;
+  margin-right: 16px;
+}
 span.checkpoint_status,
 span.autosave_status {
   font-size: small;
+  white-space: nowrap;
+  padding: 0 5px;
 }
 @media (max-width: 767px) {
   span.save_widget {
     font-size: small;
+    padding: 0 0 0 5px;
   }
   span.checkpoint_status,
   span.autosave_status {
@@ -11343,6 +12648,9 @@ span.autosave_status {
   margin-top: 0px;
   margin-left: 5px;
 }
+.toolbar-btn-label {
+  margin-left: 6px;
+}
 #maintoolbar {
   margin-bottom: -3px;
   margin-top: -8px;
@@ -11362,6 +12670,10 @@ span.autosave_status {
 }
 .select-xs {
   height: 24px;
+}
+[dir="rtl"] .btn-group > .btn,
+.btn-group-vertical > .btn {
+  float: right;
 }
 .pulse,
 .dropdown-menu > li > a.pulse,
@@ -11512,6 +12824,10 @@ ul.typeahead-list i {
   margin-left: -10px;
   width: 18px;
 }
+[dir="rtl"] ul.typeahead-list i {
+  margin-left: 0;
+  margin-right: -10px;
+}
 ul.typeahead-list {
   max-height: 80vh;
   overflow: auto;
@@ -11520,6 +12836,13 @@ ul.typeahead-list > li > a {
   /** Firefox bug **/
   /* see https://github.com/jupyter/notebook/issues/559 */
   white-space: normal;
+}
+ul.typeahead-list  > li > a.pull-right {
+  float: left !important;
+  float: left;
+}
+[dir="rtl"] .typeahead-list {
+  text-align: right;
 }
 .cmd-palette .modal-body {
   padding: 7px;
@@ -11531,10 +12854,19 @@ ul.typeahead-list > li > a {
   outline: none;
 }
 .no-shortcut {
-  display: none;
+  min-width: 20px;
+  color: transparent;
+}
+[dir="rtl"] .no-shortcut.pull-right {
+  float: left !important;
+  float: left;
+}
+[dir="rtl"] .command-shortcut.pull-right {
+  float: left !important;
+  float: left;
 }
 .command-shortcut:before {
-  content: "(command)";
+  content: "(command mode)";
   padding-right: 3px;
   color: #777777;
 }
@@ -11543,6 +12875,10 @@ ul.typeahead-list > li > a {
   padding-right: 3px;
   color: #777777;
 }
+[dir="rtl"] .edit-shortcut.pull-right {
+  float: left !important;
+  float: left;
+}
 #find-and-replace #replace-preview .match,
 #find-and-replace #replace-preview .insert {
   background-color: #BBDEFB;
@@ -11550,6 +12886,12 @@ ul.typeahead-list > li > a {
   border-style: solid;
   border-width: 1px;
   border-radius: 0px;
+}
+[dir="ltr"] #find-and-replace .input-group-btn + .form-control {
+  border-left: none;
+}
+[dir="rtl"] #find-and-replace .input-group-btn + .form-control {
+  border-right: none;
 }
 #find-and-replace #replace-preview .replace .match {
   background-color: #FFCDD2;
@@ -11747,7 +13089,7 @@ div#notebook {
 
 <!-- Loading mathjax macro -->
 <!-- Load mathjax -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_HTML"></script>
     <!-- MathJax configuration -->
     <script type="text/x-mathjax-config">
     MathJax.Hub.Config({
@@ -11772,12 +13114,12 @@ div#notebook {
     <div class="container" id="notebook-container">
 
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
+</div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Retrieve-data-from-eNanomapper-database">Retrieve data from eNanomapper database<a class="anchor-link" href="#Retrieve-data-from-eNanomapper-database">&#182;</a></h1><p><a href="https://search.data.enanomapper.net/">https://search.data.enanomapper.net/</a></p>
 <ul>
-<li>This notebook uses Apache Solr API and AMBIT REST API  (see Swagger interactive documentation at <a href="http://enanomapper.github.io/API/">http://enanomapper.github.io/API/</a> )</li>
+<li>This notebook uses Apache Solr API and AMBIT REST API  </li>
+<li>see OpenAPI3 interactive documentation at <a href="https://api.ideaconsult.net">https://api.ideaconsult.net</a></li>
 </ul>
 
 </div>
@@ -11785,14 +13127,26 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">importlib</span> <span class="k">import</span> <span class="n">reload</span> 
+<span class="kn">import</span> <span class="nn">yaml</span>
+<span class="kn">from</span> <span class="nn">solrscope</span> <span class="k">import</span> <span class="n">aa</span>
+<span class="kn">from</span> <span class="nn">solrscope</span> <span class="k">import</span> <span class="n">units</span>
+<span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">widgets</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">interact</span><span class="p">,</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">fixed</span><span class="p">,</span> <span class="n">interact_manual</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="kn">import</span> <span class="nn">measurement</span>
+<span class="kn">from</span> <span class="nn">solrscope</span> <span class="k">import</span> <span class="n">client_solr</span>
+<span class="kn">from</span> <span class="nn">solrscope</span> <span class="k">import</span> <span class="n">client_ambit</span>
+<span class="kn">from</span> <span class="nn">solrscope</span> <span class="k">import</span> <span class="n">annotation</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">urllib3</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">ipywidgets</span> <span class="k">as</span> <span class="nn">widgets</span>
@@ -11804,27 +13158,94 @@ div#notebook {
 <span class="k">global</span> <span class="n">logger</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
 
-<span class="o">%</span><span class="k">run</span> units.py
-
 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Started at </span><span class="si">%s</span><span class="s1"> </span><span class="se">\t</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">())</span>
-
-<span class="n">urllib3</span><span class="o">.</span><span class="n">disable_warnings</span><span class="p">()</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
 </pre></div>
 
-</div>
+    </div>
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Retrieve-endpoints">Retrieve endpoints<a class="anchor-link" href="#Retrieve-endpoints">&#182;</a></h3>
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">run</span> solrapi.py
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Select enanoMapper aggregated search service:&#39;</span><span class="p">)</span>
+<span class="n">style</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;description_width&#39;</span><span class="p">:</span> <span class="s1">&#39;initial&#39;</span><span class="p">}</span>
+<span class="n">config</span><span class="p">,</span><span class="n">config_servers</span><span class="p">,</span> <span class="n">config_security</span><span class="p">,</span> <span class="n">auth_object</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">aa</span><span class="o">.</span><span class="n">parseOpenAPI3</span><span class="p">()</span>    
+<span class="n">service_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
+    <span class="n">options</span><span class="o">=</span><span class="n">config_servers</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">],</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Service:&#39;</span><span class="p">,</span>
+    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">style</span><span class="o">=</span><span class="n">style</span>
+<span class="p">)</span>
+<span class="k">if</span> <span class="n">config_security</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">service</span> <span class="o">=</span> <span class="n">interactive</span><span class="p">(</span><span class="n">aa</span><span class="o">.</span><span class="n">search_service_open</span><span class="p">,</span><span class="n">url</span><span class="o">=</span><span class="n">service_widget</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="n">apikey_widget</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+            <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="n">config_security</span><span class="p">,</span>
+            <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="n">style</span>
+    <span class="p">)</span>    
+    <span class="n">service</span> <span class="o">=</span> <span class="n">interactive</span><span class="p">(</span><span class="n">aa</span><span class="o">.</span><span class="n">search_service_protected</span><span class="p">,</span><span class="n">url</span><span class="o">=</span><span class="n">service_widget</span><span class="p">,</span><span class="n">apikey</span><span class="o">=</span><span class="n">apikey_widget</span><span class="p">)</span>    
+
+<span class="n">display</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
 </pre></div>
 
+    </div>
 </div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Select enanoMapper aggregated search service:
+Enter `X-Gravitee-Api-Key` you have received upon subscription to http://api.ideaconsult.net
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="9fa81391-a347-463a-bf4e-a7a28a251112"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#9fa81391-a347-463a-bf4e-a7a28a251112');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "15b707a7b35f4babbf57eaf7ab98b06a", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
 </div>
 </div>
 
@@ -11834,10 +13255,31 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">run</span> enmapi.py
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">service_uri</span><span class="o">=</span><span class="n">service_widget</span><span class="o">.</span><span class="n">value</span>
+<span class="k">if</span> <span class="n">auth_object</span><span class="o">!=</span><span class="kc">None</span><span class="p">:</span>
+    <span class="n">auth_object</span><span class="o">.</span><span class="n">setKey</span><span class="p">(</span><span class="n">apikey_widget</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sending queries to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">service_uri</span><span class="p">))</span>
 </pre></div>
 
+    </div>
 </div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Sending queries to https://api.ideaconsult.net/nanoreg1
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 
@@ -11847,468 +13289,13 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">http_pool</span><span class="o">=</span><span class="n">urllib3</span><span class="o">.</span><span class="n">PoolManager</span><span class="p">()</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">facets</span> <span class="o">=</span> <span class="n">client_solr</span><span class="o">.</span><span class="n">Facets</span><span class="p">()</span>
 
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Retrieve-endpoints-using-AMBIT-REST-API">Retrieve endpoints using AMBIT REST API<a class="anchor-link" href="#Retrieve-endpoints-using-AMBIT-REST-API">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">ambit</span><span class="o">=</span><span class="n">AMBITQuery</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="s2">&quot;study&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">ambit</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
-<span class="n">data</span> <span class="o">=</span> <span class="n">ambit</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">http_pool</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>2018-12-20 16:56:28,690  INFO     Sending query to https://apps.ideaconsult.net/nanoreg1/query/study
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>https://apps.ideaconsult.net/nanoreg1
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>2018-12-20 16:56:29,936  INFO     Received response 
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#Select endpoint</span>
-<span class="n">_sections</span><span class="o">=</span><span class="p">{}</span>
-
-<span class="n">top_sections</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">for</span> <span class="n">facet</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;facet&#39;</span><span class="p">]:</span>
-    <span class="c1">#print(&quot;{}\t{}\t{}\t{}&quot;.format(facet[&#39;subcategory&#39;],facet[&#39;endpoint&#39;],facet[&#39;count&#39;],facet[&#39;value&#39;]))</span>
-    <span class="n">top</span> <span class="o">=</span> <span class="n">facet</span><span class="p">[</span><span class="s1">&#39;subcategory&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">top</span> <span class="ow">in</span> <span class="n">top_sections</span><span class="p">:</span>
-        <span class="n">top_sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">top</span><span class="p">)</span>
-        
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">top</span> <span class="ow">in</span> <span class="n">_sections</span><span class="p">:</span>
-        <span class="n">_sections</span><span class="p">[</span><span class="n">top</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    
-    <span class="n">_sections</span><span class="p">[</span><span class="n">top</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">facet</span><span class="p">[</span><span class="s1">&#39;endpoint&#39;</span><span class="p">])</span>
-
-<span class="n">top_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
-    <span class="n">options</span><span class="o">=</span><span class="n">top_sections</span><span class="p">,</span>
-    <span class="n">value</span><span class="o">=</span><span class="n">top_sections</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
-    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Select:&#39;</span><span class="p">,</span>
-    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">top_widget</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="f15fa221-4882-4dc9-a3c1-183f9af4d3a5"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#f15fa221-4882-4dc9-a3c1-183f9af4d3a5');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "7c59632793e043c9aab96d76a620017d", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">top</span><span class="o">=</span><span class="n">top_widget</span><span class="o">.</span><span class="n">value</span>
-<span class="n">category_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
-    <span class="n">options</span><span class="o">=</span><span class="n">_sections</span><span class="p">[</span><span class="n">top</span><span class="p">],</span>
-    <span class="n">value</span><span class="o">=</span><span class="n">_sections</span><span class="p">[</span><span class="n">top</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
-    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Endpoint:&#39;</span><span class="p">,</span>
-    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">category_widget</span><span class="p">)</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="2cf3c71c-2482-43bc-acfd-d2e6b44876db"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#2cf3c71c-2482-43bc-acfd-d2e6b44876db');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "281baf72c609451b9509a2e248275a3b", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h4 id="Setup-the-query">Setup the query<a class="anchor-link" href="#Setup-the-query">&#182;</a></h4>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">freetext_widget</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
-    <span class="n">value</span><span class="o">=</span><span class="s1">&#39;NM220,NM101&#39;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Search&#39;</span><span class="p">,</span>
-    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">)</span>
-<span class="n">freetext_widget</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="c31bca10-b7f4-4cd6-8582-14aee5706df2"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#c31bca10-b7f4-4cd6-8582-14aee5706df2');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "fe4a4c4c38604c36bcd98660b1f312c1", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">materialfilter</span><span class="o">=</span><span class="n">freetext_widget</span><span class="o">.</span><span class="n">value</span>
-<span class="k">if</span> <span class="s2">&quot;&quot;</span> <span class="o">==</span> <span class="n">materialfilter</span><span class="p">:</span>
-    <span class="n">materialfilter</span><span class="o">=</span><span class="kc">None</span>
-    
-<span class="n">section</span><span class="o">=</span><span class="n">category_widget</span><span class="o">.</span><span class="n">value</span>
-<span class="n">fields</span><span class="o">=</span><span class="kc">None</span>
-<span class="k">if</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">_fields</span><span class="p">:</span>
-    <span class="n">fields</span><span class="o">=</span><span class="n">_fields</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
-
-<span class="n">endpoint</span><span class="o">=</span><span class="s2">&quot;*&quot;</span>
-<span class="k">if</span> <span class="n">section</span> <span class="ow">in</span> <span class="n">_endpoint</span><span class="p">:</span>
-    <span class="n">endpoint</span><span class="o">=</span><span class="n">_endpoint</span><span class="p">[</span><span class="n">section</span><span class="p">]</span>
-    
-<span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;endpointfilter&#39;</span><span class="p">:</span> <span class="s1">&#39; effectendpoint_s: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">endpoint</span><span class="p">),</span>
-            <span class="s1">&#39;studyfilter&#39;</span><span class="p">:</span> <span class="s1">&#39; topcategory_s:(</span><span class="si">{}</span><span class="s1">) AND endpointcategory_s:(</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">top</span><span class="p">,</span><span class="n">section</span><span class="p">),</span>            
-            <span class="s1">&#39;query_guidance&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> 
-            <span class="s1">&#39;query_organism&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="s1">&#39;fields&#39;</span> <span class="p">:</span> <span class="n">fields</span>
-           <span class="p">}</span>
-    
-<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>  
-<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Free text query: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">materialfilter</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>2018-12-20 16:56:34,008  INFO     {&#39;endpointfilter&#39;: &#39; effectendpoint_s: *&#39;, &#39;studyfilter&#39;: &#39; topcategory_s:(ECOTOX) AND endpointcategory_s:(EC_DAPHNIATOX_SECTION)&#39;, &#39;query_guidance&#39;: None, &#39;query_organism&#39;: None, &#39;fields&#39;: None}
-2018-12-20 16:56:34,009  INFO     Free text query: NM220,NM101
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Run-the-query">Run the query<a class="anchor-link" href="#Run-the-query">&#182;</a></h3>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">try</span><span class="p">:</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;./config.solr.json&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">solr_services</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-<span class="k">except</span><span class="p">:</span>        
-    <span class="n">solr_services</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Something went wrong&quot;</span><span class="p">)</span>
-
-<span class="n">service_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
-    <span class="n">options</span><span class="o">=</span><span class="n">solr_services</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
-    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Service:&#39;</span><span class="p">,</span>
-    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">service_widget</span><span class="p">)</span>
-
-<span class="n">name_widget</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
-    <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
-    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;User name:&#39;</span><span class="p">,</span>
-    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span>
-<span class="p">)</span>
-<span class="n">password_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Password</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Password:&#39;</span><span class="p">,</span> <span class="n">placeholder</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-<span class="n">display</span><span class="p">(</span><span class="n">name_widget</span><span class="p">)</span>
-<span class="n">password_widget</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="9c782765-4789-4b1b-8149-d254806631e3"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#9c782765-4789-4b1b-8149-d254806631e3');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "75df43be7f00461ebf08f02ff685062c", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="17a3031c-b746-434b-ad18-2e3f22fea2fa"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#17a3031c-b746-434b-ad18-2e3f22fea2fa');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "cff5b227e2214055a7eca761e15e0824", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-
-
- 
- 
-<div id="c0d80a8c-2153-43f1-8985-032f006564ce"></div>
-<div class="output_subarea output_widget_view ">
-<script type="text/javascript">
-var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
-</script>
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id": "c2a84c6498b54077a3155bac2907caec", "version_major": 2, "version_minor": 0}
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">query</span><span class="o">=</span><span class="n">getSolrQuery</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span><span class="n">url</span><span class="o">=</span><span class="n">solr_services</span><span class="p">[</span><span class="n">service_widget</span><span class="o">.</span><span class="n">value</span><span class="p">])</span>
-<span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>  
-
-<span class="c1">#logger.info(settings)</span>
-<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="n">rows</span> <span class="o">=</span> <span class="n">sendSolrRequest</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">settings</span><span class="p">,</span><span class="n">http</span><span class="o">=</span><span class="n">http_pool</span><span class="p">,</span><span class="n">textfilter</span><span class="o">=</span><span class="n">materialfilter</span><span class="p">,</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span><span class="n">rows</span><span class="o">=</span><span class="n">rows</span><span class="p">,</span><span class="n">basic_auth</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_widget</span><span class="o">.</span><span class="n">value</span><span class="p">,</span><span class="n">password_widget</span><span class="o">.</span><span class="n">value</span><span class="p">))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>2018-12-20 16:56:45,096  INFO     {&#39;url&#39;: &#39;https://solr.ideaconsult.net/solr/nanoreg_shard1_replica1/select&#39;, &#39;fl&#39;: &#39;name_hs,publicname_hs,substanceType_hs,s_uuid_hs,[child parentFilter=filter(type_s:substance) childFilter=&#34;filter(type_s:study AND  topcategory_s:(ECOTOX) AND endpointcategory_s:(EC_DAPHNIATOX_SECTION) AND  effectendpoint_s: *)  OR filter(type_s:params AND  topcategory_s:(ECOTOX) AND endpointcategory_s:(EC_DAPHNIATOX_SECTION))  OR filter(type_s:conditions AND  topcategory_s:(ECOTOX) AND endpointcategory_s:(EC_DAPHNIATOX_SECTION)) OR filter(type_s:composition AND component_s:CONSTITUENT)&#34; limit=10000]&#39;, &#39;fq&#39;: &#39;&#39;, &#39;q&#39;: &#39;{!parent which=type_s:substance}&#39;}
-2018-12-20 16:56:45,099  INFO     Sending query to https://solr.ideaconsult.net/solr/nanoreg_shard1_replica1/select
-2018-12-20 16:56:45,459  INFO     {
-  &#34;name_hs&#34;: &#34;NM-100 (TiO2 50-150 nm)&#34;,
-  &#34;publicname_hs&#34;: &#34;JRCNM01000a&#34;,
-  &#34;substanceType_hs&#34;: &#34;NPO_1486&#34;,
-  &#34;s_uuid_hs&#34;: &#34;NNRG-18280a4a-45e9-adc0-df3b-125397b1255f&#34;
-}
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#print(&quot;Substances: {}&quot;.format(len(rows)))</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">section</span><span class="o">+</span><span class="s2">&quot;.nosmiles.txt&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="c1">#df.head()</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">facets</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">service_uri</span><span class="p">,</span><span class="n">auth_object</span><span class="p">,</span> <span class="n">query</span><span class="o">=</span><span class="s2">&quot;*:*&quot;</span><span class="p">,</span><span class="n">fields</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;topcategory_s&quot;</span><span class="p">,</span><span class="s2">&quot;endpointcategory_s&quot;</span><span class="p">])</span>    
 <span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 
-</div>
+    </div>
 </div>
 </div>
 
@@ -12318,7 +13305,7 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
 
 <div class="output_area">
 
-<div class="prompt output_prompt">Out[12]:</div>
+    <div class="prompt output_prompt">Out[4]:</div>
 
 
 
@@ -12341,153 +13328,56 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>public.name</th>
-      <th>r.purposeFlag</th>
-      <th>r.reliability</th>
-      <th>r.studyResultType</th>
-      <th>substance.name</th>
-      <th>substance.type</th>
-      <th>substance.uuid</th>
-      <th>value.endpoint</th>
-      <th>value.lo</th>
-      <th>value.qualifier.lo</th>
-      <th>...</th>
-      <th>x.params.MEDIUM.CO2_concentration_%v/v</th>
-      <th>x.params.MEDIUM.O2_concentration_%v/v</th>
-      <th>x.params.MEDIUM.composition</th>
-      <th>x.params.MEDIUM.ionictrength_m</th>
-      <th>x.params.MEDIUM.ionictrength_mM</th>
-      <th>x.params.MEDIUM.ph</th>
-      <th>x.params.MEDIUM.temperature_Celsius</th>
-      <th>x.params.Vial</th>
-      <th>x.params.guidance</th>
-      <th>x.reference_year</th>
+      <th>topcategory_s</th>
+      <th>endpointcategory_s</th>
+      <th>Number of data points</th>
+      <th>endpointcategory_term</th>
+      <th>endpointcategory_name</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>JRCNM01001a</td>
-      <td></td>
-      <td>None</td>
-      <td></td>
-      <td>NM-101 (TiO2 6 nm)</td>
-      <td>NPO_1486</td>
-      <td>NNRG-a51b2e58-4105-9643-3016-3f4b431171e2</td>
-      <td>L.L. (LOWER LIMIT)</td>
-      <td>32.32</td>
-      <td></td>
-      <td>...</td>
-      <td>0</td>
-      <td>30</td>
-      <td>CaCl2.2H2O  294.00 %v/v,MgSO4.7H2O  12325.00 %...</td>
-      <td>NaN</td>
-      <td>884</td>
-      <td>NaN</td>
-      <td>22</td>
-      <td>JRCNM01001a990498</td>
-      <td>SOP-Toxicity Test with Daphnia magna (without ...</td>
-      <td>2016</td>
+      <td>TOX</td>
+      <td>ENM_0000068_SECTION</td>
+      <td>10990</td>
+      <td>http://www.bioassayontology.org/bao#ENM_0000068</td>
+      <td>CellViability</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>JRCNM01001a</td>
-      <td></td>
-      <td>None</td>
-      <td></td>
-      <td>NM-101 (TiO2 6 nm)</td>
-      <td>NPO_1486</td>
-      <td>NNRG-a51b2e58-4105-9643-3016-3f4b431171e2</td>
-      <td>U.L. (UPPER LIMIT)</td>
-      <td>106.03</td>
-      <td></td>
-      <td>...</td>
-      <td>0</td>
-      <td>30</td>
-      <td>CaCl2.2H2O  294.00 %v/v,MgSO4.7H2O  12325.00 %...</td>
-      <td>NaN</td>
-      <td>884</td>
-      <td>NaN</td>
-      <td>22</td>
-      <td>JRCNM01001a990498</td>
-      <td>SOP-Toxicity Test with Daphnia magna (without ...</td>
-      <td>2016</td>
+      <td>TOX</td>
+      <td>TO_GENETIC_IN_VITRO_SECTION</td>
+      <td>7811</td>
+      <td>http://www.bioassayontology.org/bao#BAO_0002167</td>
+      <td>Genetic toxicity invitro</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>JRCNM01001a</td>
-      <td></td>
-      <td>None</td>
-      <td></td>
-      <td>NM-101 (TiO2 6 nm)</td>
-      <td>NPO_1486</td>
-      <td>NNRG-a51b2e58-4105-9643-3016-3f4b431171e2</td>
-      <td>LC20 LETHAL CONCENTRATION</td>
-      <td>61.20</td>
-      <td></td>
-      <td>...</td>
-      <td>0</td>
-      <td>30</td>
-      <td>CaCl2.2H2O  294.00 %v/v,MgSO4.7H2O  12325.00 %...</td>
-      <td>NaN</td>
-      <td>884</td>
-      <td>NaN</td>
-      <td>22</td>
-      <td>JRCNM01001a990498</td>
-      <td>SOP-Toxicity Test with Daphnia magna (without ...</td>
-      <td>2016</td>
+      <td>TOX</td>
+      <td>NPO_1339_SECTION</td>
+      <td>3429</td>
+      <td>http://purl.obolibrary.org/obo/NPO_1339</td>
+      <td>Immunotoxicity</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>JRCNM01001a</td>
-      <td></td>
-      <td>None</td>
-      <td></td>
-      <td>NM-101 (TiO2 6 nm)</td>
-      <td>NPO_1486</td>
-      <td>NNRG-a51b2e58-4105-9643-3016-3f4b431171e2</td>
-      <td>L.L. (LOWER LIMIT)</td>
-      <td>89.32</td>
-      <td></td>
-      <td>...</td>
-      <td>0</td>
-      <td>30</td>
-      <td>CaCl2.2H2O  294.00 %v/v,MgSO4.7H2O  12325.00 %...</td>
-      <td>NaN</td>
-      <td>884</td>
-      <td>NaN</td>
-      <td>22</td>
-      <td>JRCNM01001a990498</td>
-      <td>SOP-Toxicity Test with Daphnia magna (without ...</td>
-      <td>2016</td>
+      <td>TOX</td>
+      <td>TO_REPEATED_ORAL_SECTION</td>
+      <td>1487</td>
+      <td>http://purl.enanomapper.org/onto/ENM_0000021</td>
+      <td>Repeated dose toxicity-oral</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>JRCNM01001a</td>
-      <td></td>
-      <td>None</td>
-      <td></td>
-      <td>NM-101 (TiO2 6 nm)</td>
-      <td>NPO_1486</td>
-      <td>NNRG-a51b2e58-4105-9643-3016-3f4b431171e2</td>
-      <td>U.L. (UPPER LIMIT)</td>
-      <td>281.47</td>
-      <td></td>
-      <td>...</td>
-      <td>0</td>
-      <td>30</td>
-      <td>CaCl2.2H2O  294.00 %v/v,MgSO4.7H2O  12325.00 %...</td>
-      <td>NaN</td>
-      <td>884</td>
-      <td>NaN</td>
-      <td>22</td>
-      <td>JRCNM01001a990498</td>
-      <td>SOP-Toxicity Test with Daphnia magna (without ...</td>
-      <td>2016</td>
+      <td>TOX</td>
+      <td>ENM_0000044_SECTION</td>
+      <td>1322</td>
+      <td>http://purl.enanomapper.org/onto/ENM_0000044</td>
+      <td>Barrier integrity</td>
     </tr>
   </tbody>
 </table>
-<p>5 rows × 40 columns</p>
 </div>
 </div>
 
@@ -12499,22 +13389,43 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="k">def</span> <span class="nf">highlight_max</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="n">is_max</span> <span class="o">=</span> <span class="n">s</span> <span class="o">==</span> <span class="n">s</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
-    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;background-color: red&#39;</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">is_max</span><span class="p">]</span>
-
-<span class="k">for</span> <span class="n">criteria</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;value.lo&quot;</span><span class="p">]:</span>
-    <span class="n">tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;public.name&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;x.oht.top&#39;</span><span class="p">,</span><span class="s1">&#39;x.oht.section&#39;</span><span class="p">,</span><span class="s1">&#39;x.guidance&#39;</span><span class="p">,</span><span class="s1">&#39;value.endpoint&#39;</span><span class="p">,</span><span class="s1">&#39;value.qualifier.lo&#39;</span><span class="p">,</span><span class="s1">&#39;value.unit&#39;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-    <span class="c1">#tmp.style.highlight_null(null_color=&#39;red&#39;)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">top_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
+    <span class="n">options</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;topcategory_s&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">(),</span>
+    <span class="n">value</span><span class="o">=</span><span class="s2">&quot;P-CHEM&quot;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Select:&#39;</span><span class="p">,</span>
+    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">category_widget</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">Dropdown</span><span class="p">(</span>
+    <span class="n">options</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;topcategory_s&#39;</span><span class="p">]</span><span class="o">==</span><span class="s2">&quot;P-CHEM&quot;</span><span class="p">][[</span><span class="s2">&quot;endpointcategory_name&quot;</span><span class="p">,</span><span class="s2">&quot;endpointcategory_s&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)),</span>
+    <span class="c1">#value=,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Category:&#39;</span><span class="p">,</span>
+    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">freetext_widget</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="s1">&#39;NM220,NM101&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Free text query&#39;</span><span class="p">,</span>
+    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+<span class="n">endpoint_widget</span><span class="o">=</span><span class="n">widgets</span><span class="o">.</span><span class="n">Text</span><span class="p">(</span>
+    <span class="n">value</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Endpoint&#39;</span><span class="p">,</span>
+    <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+<span class="k">def</span> <span class="nf">define_query</span><span class="p">(</span><span class="n">_top</span><span class="p">,</span><span class="n">_section</span><span class="p">,</span><span class="n">_freetext</span><span class="p">,</span><span class="n">_endpoint</span><span class="p">):</span>
+    <span class="c1">#category_widget.options=df[df[&#39;topcategory_s&#39;]==top][&#39;endpointcategory_s&#39;].unique()</span>
+    <span class="n">filtered</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;topcategory_s&#39;</span><span class="p">]</span><span class="o">==</span><span class="n">_top</span><span class="p">]</span>
+    <span class="n">category_widget</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">filtered</span><span class="p">[[</span><span class="s2">&quot;endpointcategory_name&quot;</span><span class="p">,</span><span class="s2">&quot;endpointcategory_s&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">itertuples</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">))</span>
+    <span class="n">top</span> <span class="o">=</span> <span class="n">_top</span>
+    <span class="n">section</span><span class="o">=</span> <span class="n">_section</span>
     
-    <span class="n">display</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">highlight_max</span><span class="p">,</span><span class="n">subset</span><span class="o">=</span><span class="n">top_sections</span><span class="p">))</span>
+    
+<span class="n">interact</span><span class="p">(</span><span class="n">define_query</span><span class="p">,</span><span class="n">_top</span><span class="o">=</span> <span class="n">top_widget</span><span class="p">,</span><span class="n">_section</span><span class="o">=</span><span class="n">category_widget</span><span class="p">,</span><span class="n">_freetext</span><span class="o">=</span><span class="n">freetext_widget</span><span class="p">,</span><span class="n">_endpoint</span><span class="o">=</span><span class="n">endpoint_widget</span><span class="p">)</span>
 </pre></div>
 
-</div>
+    </div>
 </div>
 </div>
 
@@ -12524,126 +13435,490 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
 
 <div class="output_area">
 
-<div class="prompt"></div>
+    <div class="prompt"></div>
+
+
+
+
+
+ 
+ 
+<div id="d7d55d76-d4f2-45b1-9e80-ed3c7288c4ba"></div>
+<div class="output_subarea output_widget_view ">
+<script type="text/javascript">
+var element = $('#d7d55d76-d4f2-45b1-9e80-ed3c7288c4ba');
+</script>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "01b1d6a68116471983c172f1c17ae675", "version_major": 2, "version_minor": 0}
+</script>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[5]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;function __main__.define_query(_top, _section, _freetext, _endpoint)&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Setup-the-query">Setup the query<a class="anchor-link" href="#Setup-the-query">&#182;</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">top</span> <span class="o">=</span> <span class="n">top_widget</span><span class="o">.</span><span class="n">value</span>
+<span class="n">section</span> <span class="o">=</span> <span class="n">category_widget</span><span class="o">.</span><span class="n">value</span>
+<span class="n">materialfilter</span><span class="o">=</span><span class="n">freetext_widget</span><span class="o">.</span><span class="n">value</span>
+<span class="n">endpoint</span><span class="o">=</span><span class="n">endpoint_widget</span><span class="o">.</span><span class="n">value</span>
+<span class="k">if</span> <span class="s2">&quot;&quot;</span> <span class="o">==</span> <span class="n">materialfilter</span><span class="p">:</span>
+    <span class="n">materialfilter</span><span class="o">=</span><span class="kc">None</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="se">\t</span><span class="si">{}</span><span class="se">\t</span><span class="si">{}</span><span class="se">\t</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">top</span><span class="p">,</span><span class="n">section</span><span class="p">,</span><span class="n">materialfilter</span><span class="p">,</span><span class="n">endpoint</span><span class="p">))</span>
+
+<span class="n">docs_query</span> <span class="o">=</span> <span class="n">client_solr</span><span class="o">.</span><span class="n">StudyDocuments</span><span class="p">()</span>
+<span class="n">docs_query</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;endpointfilter&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39; effectendpoint_s: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">endpoint</span><span class="p">)</span>
+<span class="n">docs_query</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;query_guidance&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">docs_query</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;query_organism&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">docs_query</span><span class="o">.</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;fields&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">docs_query</span><span class="o">.</span><span class="n">setStudyFilter</span><span class="p">({</span><span class="s1">&#39; topcategory_s&#39;</span><span class="p">:</span> <span class="n">top</span><span class="p">,</span> <span class="s1">&#39;endpointcategory_s&#39;</span><span class="p">:</span><span class="n">section</span><span class="p">})</span> 
+                    
+<span class="n">query</span> <span class="o">=</span> <span class="n">docs_query</span><span class="o">.</span><span class="n">getQuery</span><span class="p">(</span><span class="n">textfilter</span><span class="o">=</span><span class="n">materialfilter</span><span class="p">,</span><span class="n">facets</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">fq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">_params</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_conditions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_composition</span><span class="o">=</span><span class="kc">False</span> <span class="p">);</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>2019-12-15 10:30:48,787  INFO     P-CHEM	ZETA_POTENTIAL_SECTION	NM220,NM101	*
+2019-12-15 10:30:48,787  INFO     {&#39;q&#39;: &#39;{!parent which=type_s:substance}(NM220,NM101)&#39;, &#39;fq&#39;: None, &#39;wt&#39;: &#39;json&#39;, &#39;fl&#39;: &#39;dbtag_hss,name_hs,publicname_hs,substanceType_hs,owner_name_hs,s_uuid_hs,[child parentFilter=filter(type_s:substance) childFilter=&#34;filter(type_s:study AND     topcategory_s:P-CHEM AND endpointcategory_s:ZETA_POTENTIAL_SECTION AND  effectendpoint_s: *)  OR filter(type_s:params AND     topcategory_s:P-CHEM AND endpointcategory_s:ZETA_POTENTIAL_SECTION)  OR filter(type_s:conditions AND     topcategory_s:P-CHEM AND endpointcategory_s:ZETA_POTENTIAL_SECTION) &#34; limit=10000]&#39;, &#39;json.facet&#39;: &#39;&#39;, &#39;rows&#39;: 10}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Run-the-query">Run the query<a class="anchor-link" href="#Run-the-query">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">client_solr</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">service_uri</span><span class="p">,</span><span class="n">query</span><span class="o">=</span><span class="n">query</span><span class="p">,</span><span class="n">auth</span><span class="o">=</span><span class="n">auth_object</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+<span class="n">docs</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;response&#39;</span><span class="p">][</span><span class="s1">&#39;docs&#39;</span><span class="p">]</span>
+<span class="c1">#print(docs)</span>
+<span class="n">rows</span> <span class="o">=</span> <span class="n">docs_query</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>2019-12-15 10:30:51,891  INFO     200
+2019-12-15 10:30:51,893  INFO     {
+  &#34;dbtag_hss&#34;: [
+    &#34;NNRG&#34;
+  ],
+  &#34;name_hs&#34;: &#34;NM-100 (TiO2 50-150 nm)&#34;,
+  &#34;publicname_hs&#34;: &#34;JRCNM01000a&#34;,
+  &#34;owner_name_hs&#34;: &#34;NANoREG&#34;,
+  &#34;substanceType_hs&#34;: &#34;NPO_1486&#34;,
+  &#34;s_uuid_hs&#34;: &#34;NNRG-18280a4a-45e9-adc0-df3b-125397b1255f&#34;
+}
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#print(&quot;Substances: {}&quot;.format(len(rows)))</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="n">results</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">section</span><span class="o">+</span><span class="s2">&quot;.nosmiles.txt&quot;</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1">#df.head()</span>
+<span class="n">results</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[8]:</div>
+
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>db</th>
+      <th>m.materialprovider</th>
+      <th>m.public.name</th>
+      <th>m.substance.name</th>
+      <th>m.substance.type</th>
+      <th>p.guidance</th>
+      <th>p.oht.module</th>
+      <th>p.oht.section</th>
+      <th>p.reference</th>
+      <th>p.reference_year</th>
+      <th>...</th>
+      <th>x.params.MEDIUM.ph_d</th>
+      <th>x.params.MEDIUM.temperature_UNIT</th>
+      <th>x.params.MEDIUM.temperature_d</th>
+      <th>x.params.T.PDI</th>
+      <th>x.params.Vial</th>
+      <th>x.params.guidance</th>
+      <th>xR.purposeFlag</th>
+      <th>xR.reliability</th>
+      <th>xR.studyResultType</th>
+      <th>xx.QualityRemark</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>NNRG</td>
+      <td>NANoREG</td>
+      <td>JRCNM01001a</td>
+      <td>NM-101 (TiO2 6 nm)</td>
+      <td>NPO_1486</td>
+      <td>DLS</td>
+      <td>P-CHEM</td>
+      <td>ZETA_POTENTIAL_SECTION</td>
+      <td>IEM_NM101_MEM_25ug/ml_1h_zeta</td>
+      <td>2016</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>Celsius</td>
+      <td>37.0</td>
+      <td>NaN</td>
+      <td>990472</td>
+      <td>DLS</td>
+      <td></td>
+      <td>None</td>
+      <td>Measured</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NNRG</td>
+      <td>NANoREG</td>
+      <td>JRCNM01001a</td>
+      <td>NM-101 (TiO2 6 nm)</td>
+      <td>NPO_1486</td>
+      <td>DLS</td>
+      <td>P-CHEM</td>
+      <td>ZETA_POTENTIAL_SECTION</td>
+      <td>IEM_NM101_MEM_25ug/ml_24h_zeta</td>
+      <td>2016</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>Celsius</td>
+      <td>37.0</td>
+      <td>NaN</td>
+      <td>990472</td>
+      <td>DLS</td>
+      <td></td>
+      <td>None</td>
+      <td>Measured</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NNRG</td>
+      <td>NANoREG</td>
+      <td>JRCNM01001a</td>
+      <td>NM-101 (TiO2 6 nm)</td>
+      <td>NPO_1486</td>
+      <td>DLS</td>
+      <td>P-CHEM</td>
+      <td>ZETA_POTENTIAL_SECTION</td>
+      <td>IEM_NM101_RPMI_25ug/ml_1h_zeta</td>
+      <td>2016</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>Celsius</td>
+      <td>37.0</td>
+      <td>NaN</td>
+      <td>990472</td>
+      <td>DLS</td>
+      <td></td>
+      <td>None</td>
+      <td>Measured</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>NNRG</td>
+      <td>NANoREG</td>
+      <td>JRCNM01001a</td>
+      <td>NM-101 (TiO2 6 nm)</td>
+      <td>NPO_1486</td>
+      <td>DLS</td>
+      <td>P-CHEM</td>
+      <td>ZETA_POTENTIAL_SECTION</td>
+      <td>IEM_NM101_RPMI_25ug/ml_24h_zeta</td>
+      <td>2016</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>Celsius</td>
+      <td>37.0</td>
+      <td>NaN</td>
+      <td>990472</td>
+      <td>DLS</td>
+      <td></td>
+      <td>None</td>
+      <td>Measured</td>
+      <td></td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>NNRG</td>
+      <td>NANoREG</td>
+      <td>JRCNM01000a</td>
+      <td>NM-100 (TiO2 110 nm)</td>
+      <td>NPO_1486</td>
+      <td>DLS</td>
+      <td>P-CHEM</td>
+      <td>ZETA_POTENTIAL_SECTION</td>
+      <td>IEM_NM100_MEM_25ug/ml_1h_zeta</td>
+      <td>2016</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>Celsius</td>
+      <td>37.0</td>
+      <td>NaN</td>
+      <td>06978</td>
+      <td>DLS</td>
+      <td></td>
+      <td>None</td>
+      <td>Measured</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 49 columns</p>
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">results</span><span class="o">.</span><span class="n">columns</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[9]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>Index([&#39;db&#39;, &#39;m.materialprovider&#39;, &#39;m.public.name&#39;, &#39;m.substance.name&#39;,
+       &#39;m.substance.type&#39;, &#39;p.guidance&#39;, &#39;p.oht.module&#39;, &#39;p.oht.section&#39;,
+       &#39;p.reference&#39;, &#39;p.reference_year&#39;, &#39;p.study_provider&#39;, &#39;uuid.assay&#39;,
+       &#39;uuid.document&#39;, &#39;uuid.investigation&#39;, &#39;uuid.substance&#39;,
+       &#39;value.endpoint&#39;, &#39;value.endpoint_synonym&#39;, &#39;value.endpoint_type&#39;,
+       &#39;value.range.lo&#39;, &#39;value.range.lo.qualifier&#39;, &#39;value.range.up&#39;,
+       &#39;value.range.up.qualifier&#39;, &#39;value.text&#39;, &#39;value.uncertainty&#39;,
+       &#39;value.uncertainty_type&#39;, &#39;value.unit&#39;, &#39;x.params.Dispersion protocol&#39;,
+       &#39;x.params.MEDIUM&#39;, &#39;x.params.MEDIUM.CO2_concentration_UNIT&#39;,
+       &#39;x.params.MEDIUM.CO2_concentration_d&#39;,
+       &#39;x.params.MEDIUM.O2_concentration_UNIT&#39;,
+       &#39;x.params.MEDIUM.O2_concentration_d&#39;, &#39;x.params.MEDIUM.composition&#39;,
+       &#39;x.params.MEDIUM.ionictrength_UNIT&#39;, &#39;x.params.MEDIUM.ionictrength_d&#39;,
+       &#39;x.params.MEDIUM.ph_LOQUALIFIER&#39;, &#39;x.params.MEDIUM.ph_LOVALUE_d&#39;,
+       &#39;x.params.MEDIUM.ph_UPQUALIFIER&#39;, &#39;x.params.MEDIUM.ph_UPVALUE_d&#39;,
+       &#39;x.params.MEDIUM.ph_d&#39;, &#39;x.params.MEDIUM.temperature_UNIT&#39;,
+       &#39;x.params.MEDIUM.temperature_d&#39;, &#39;x.params.T.PDI&#39;, &#39;x.params.Vial&#39;,
+       &#39;x.params.guidance&#39;, &#39;xR.purposeFlag&#39;, &#39;xR.reliability&#39;,
+       &#39;xR.studyResultType&#39;, &#39;xx.QualityRemark&#39;],
+      dtype=&#39;object&#39;)</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">def</span> <span class="nf">highlight_max</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">is_max</span> <span class="o">=</span> <span class="n">s</span> <span class="o">==</span> <span class="n">s</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;background-color: red&#39;</span> <span class="k">if</span> <span class="n">v</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">is_max</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">criteria</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;value.range.lo&quot;</span><span class="p">]:</span>
+    <span class="n">tmp</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">pivot_table</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">criteria</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;m.public.name&#39;</span><span class="p">],</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;p.oht.module&#39;</span><span class="p">,</span><span class="s1">&#39;p.oht.section&#39;</span><span class="p">,</span><span class="s1">&#39;p.guidance&#39;</span><span class="p">,</span><span class="s1">&#39;value.endpoint&#39;</span><span class="p">,</span><span class="s1">&#39;value.endpoint_type&#39;</span><span class="p">,</span><span class="s1">&#39;value.range.lo.qualifier&#39;</span><span class="p">,</span><span class="s1">&#39;value.unit&#39;</span><span class="p">],</span> <span class="n">aggfunc</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="c1">#tmp.style.highlight_null(null_color=&#39;red&#39;)</span>
+    
+    <span class="c1">#display(tmp.style.apply(highlight_max,subset=top_sections))</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">highlight_max</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
 
 
 
 <div class="output_html rendered_html output_subarea ">
 <style  type="text/css" >
-    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col1 {
+    #T_36d424be_1f15_11ea_a414_80ee7350bfa7row0_col2 {
             background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col2 {
+        }    #T_36d424be_1f15_11ea_a414_80ee7350bfa7row1_col1 {
             background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col3 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col4 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col5 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col6 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col7 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col8 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col9 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col10 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col11 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col12 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col13 {
-            background-color:  red;
-        }    #T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col14 {
+        }    #T_36d424be_1f15_11ea_a414_80ee7350bfa7row2_col0 {
             background-color:  red;
         }</style>  
-<table id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7" > 
+<table id="T_36d424be_1f15_11ea_a414_80ee7350bfa7" > 
 <thead>    <tr> 
-        <th class="index_name level0" >x.oht.top</th> 
-        <th class="col_heading level0 col0" >public.name</th> 
-        <th class="col_heading level0 col1" colspan=14>ECOTOX</th> 
+        <th class="index_name level0" >p.oht.module</th> 
+        <th class="col_heading level0 col0" >m.public.name</th> 
+        <th class="col_heading level0 col1" colspan=2>P-CHEM</th> 
     </tr>    <tr> 
-        <th class="index_name level1" >x.oht.section</th> 
+        <th class="index_name level1" >p.oht.section</th> 
         <th class="col_heading level1 col0" ></th> 
-        <th class="col_heading level1 col1" colspan=14>EC_DAPHNIATOX_SECTION</th> 
+        <th class="col_heading level1 col1" colspan=2>ZETA_POTENTIAL_SECTION</th> 
     </tr>    <tr> 
-        <th class="index_name level2" >x.guidance</th> 
+        <th class="index_name level2" >p.guidance</th> 
         <th class="col_heading level2 col0" ></th> 
-        <th class="col_heading level2 col1" colspan=4>SOP-TOXICITY TEST WITH DAPHNIA MAGNA (WITHOUT NOM)</th> 
-        <th class="col_heading level2 col5" colspan=2>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITATA (WITH NOM)</th> 
-        <th class="col_heading level2 col7" colspan=4>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITATA (WITHOUT NOM)</th> 
-        <th class="col_heading level2 col11" colspan=4>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITATA WITH NOM</th> 
+        <th class="col_heading level2 col1" colspan=2>DLS</th> 
     </tr>    <tr> 
         <th class="index_name level3" >value.endpoint</th> 
         <th class="col_heading level3 col0" ></th> 
-        <th class="col_heading level3 col1" >L.L. (LOWER LIMIT)</th> 
-        <th class="col_heading level3 col2" >LC20 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col3" >LC50 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col4" >U.L. (UPPER LIMIT)</th> 
-        <th class="col_heading level3 col5" >EC10 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col6" >EC50 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col7" >L.L. (LOWER LIMIT)</th> 
-        <th class="col_heading level3 col8" >LC10 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col9" >LC50 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col10" >U.L. (UPPER LIMIT)</th> 
-        <th class="col_heading level3 col11" >48H-EC20 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col12" >48H-EC50 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col13" >72H-EC20 LETHAL CONCENTRATION</th> 
-        <th class="col_heading level3 col14" >72H-EC50 LETHAL CONCENTRATION</th> 
+        <th class="col_heading level3 col1" colspan=2>ZETA POTENTIAL</th> 
     </tr>    <tr> 
-        <th class="index_name level4" >value.qualifier.lo</th> 
+        <th class="index_name level4" >value.endpoint_type</th> 
         <th class="col_heading level4 col0" ></th> 
-        <th class="col_heading level4 col1" ></th> 
-        <th class="col_heading level4 col2" ></th> 
-        <th class="col_heading level4 col3" ></th> 
-        <th class="col_heading level4 col4" ></th> 
-        <th class="col_heading level4 col5" ></th> 
-        <th class="col_heading level4 col6" ></th> 
-        <th class="col_heading level4 col7" ></th> 
-        <th class="col_heading level4 col8" ></th> 
-        <th class="col_heading level4 col9" ></th> 
-        <th class="col_heading level4 col10" ></th> 
-        <th class="col_heading level4 col11" ></th> 
-        <th class="col_heading level4 col12" ></th> 
-        <th class="col_heading level4 col13" ></th> 
-        <th class="col_heading level4 col14" ></th> 
+        <th class="col_heading level4 col1" colspan=2></th> 
     </tr>    <tr> 
-        <th class="index_name level5" >value.unit</th> 
+        <th class="index_name level5" >value.range.lo.qualifier</th> 
         <th class="col_heading level5 col0" ></th> 
-        <th class="col_heading level5 col1" >mg/l</th> 
-        <th class="col_heading level5 col2" ></th> 
-        <th class="col_heading level5 col3" ></th> 
-        <th class="col_heading level5 col4" >mg/l</th> 
-        <th class="col_heading level5 col5" >mg/l</th> 
-        <th class="col_heading level5 col6" >mg/l</th> 
-        <th class="col_heading level5 col7" >mg/l</th> 
-        <th class="col_heading level5 col8" ></th> 
-        <th class="col_heading level5 col9" ></th> 
-        <th class="col_heading level5 col10" >mg/l</th> 
-        <th class="col_heading level5 col11" >mg/l</th> 
-        <th class="col_heading level5 col12" >mg/l</th> 
-        <th class="col_heading level5 col13" >mg/l</th> 
-        <th class="col_heading level5 col14" >mg/l</th> 
+        <th class="col_heading level5 col1" colspan=2></th> 
+    </tr>    <tr> 
+        <th class="index_name level6" >value.unit</th> 
+        <th class="col_heading level6 col0" ></th> 
+        <th class="col_heading level6 col1" ></th> 
+        <th class="col_heading level6 col2" >mV</th> 
     </tr></thead> 
 <tbody>    <tr> 
-        <th id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7level0_row0" class="row_heading level0 row0" >0</th> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col0" class="data row0 col0" >JRCNM01001a</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col1" class="data row0 col1" >60.82</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col2" class="data row0 col2" >61.2</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col3" class="data row0 col3" >131.14</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col4" class="data row0 col4" >193.75</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col5" class="data row0 col5" >0.093</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col6" class="data row0 col6" >43.09</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col7" class="data row0 col7" >10.36</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col8" class="data row0 col8" >4.38</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col9" class="data row0 col9" >50.57</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col10" class="data row0 col10" >72.955</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col11" class="data row0 col11" >100</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col12" class="data row0 col12" >100</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col13" class="data row0 col13" >3.95</td> 
-        <td id="T_7a9e3fe4_0467_11e9_8099_74867a361cb7row0_col14" class="data row0 col14" >20.41</td> 
+        <th id="T_36d424be_1f15_11ea_a414_80ee7350bfa7level0_row0" class="row_heading level0 row0" >0</th> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row0_col0" class="data row0 col0" >JRCNM01000a</td> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row0_col1" class="data row0 col1" >nan</td> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row0_col2" class="data row0 col2" >-11.3928</td> 
+    </tr>    <tr> 
+        <th id="T_36d424be_1f15_11ea_a414_80ee7350bfa7level0_row1" class="row_heading level0 row1" >1</th> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row1_col0" class="data row1 col0" >JRCNM01001a</td> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row1_col1" class="data row1 col1" >-23.45</td> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row1_col2" class="data row1 col2" >-12.4036</td> 
+    </tr>    <tr> 
+        <th id="T_36d424be_1f15_11ea_a414_80ee7350bfa7level0_row2" class="row_heading level0 row2" >2</th> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row2_col0" class="data row2 col0" >NM-220</td> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row2_col1" class="data row2 col1" >nan</td> 
+        <td id="T_36d424be_1f15_11ea_a414_80ee7350bfa7row2_col2" class="data row2 col2" >-18.4137</td> 
     </tr></tbody> 
 </table> 
 </div>
@@ -12656,16 +13931,16 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tmp</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;public.name&quot;</span><span class="p">,</span><span class="s2">&quot;x.guidance&quot;</span><span class="p">,</span><span class="s2">&quot;value.endpoint&quot;</span><span class="p">,</span><span class="s2">&quot;value.qualifier.lo&quot;</span><span class="p">,</span><span class="s2">&quot;value.unit&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;value.lo&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">,</span><span class="s2">&quot;max&quot;</span><span class="p">,</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span><span class="s2">&quot;std&quot;</span><span class="p">,</span><span class="s2">&quot;count&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">tmp</span><span class="o">=</span><span class="n">results</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;m.public.name&quot;</span><span class="p">,</span><span class="s2">&quot;p.guidance&quot;</span><span class="p">,</span><span class="s2">&quot;value.endpoint&quot;</span><span class="p">,</span><span class="s2">&quot;value.endpoint_type&quot;</span><span class="p">,</span><span class="s2">&quot;value.range.lo.qualifier&quot;</span><span class="p">,</span><span class="s2">&quot;value.unit&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;value.range.lo&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">,</span><span class="s2">&quot;max&quot;</span><span class="p">,</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span><span class="s2">&quot;std&quot;</span><span class="p">,</span><span class="s2">&quot;count&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
 <span class="n">tmp</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">tmp</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Substances </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 <span class="n">display</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
 </pre></div>
 
-</div>
+    </div>
 </div>
 </div>
 
@@ -12675,18 +13950,18 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
 
 <div class="output_area">
 
-<div class="prompt"></div>
+    <div class="prompt"></div>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>Substances 14
+<pre>Substances 4
 </pre>
 </div>
 </div>
 
 <div class="output_area">
 
-<div class="prompt"></div>
+    <div class="prompt"></div>
 
 
 
@@ -12709,200 +13984,75 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
   <thead>
     <tr style="text-align: right;">
       <th></th>
-      <th>public.name_</th>
-      <th>x.guidance_</th>
+      <th>m.public.name_</th>
+      <th>p.guidance_</th>
       <th>value.endpoint_</th>
-      <th>value.qualifier.lo_</th>
+      <th>value.endpoint_type_</th>
+      <th>value.range.lo.qualifier_</th>
       <th>value.unit_</th>
-      <th>value.lo_min</th>
-      <th>value.lo_max</th>
-      <th>value.lo_mean</th>
-      <th>value.lo_std</th>
-      <th>value.lo_count</th>
+      <th>value.range.lo_min</th>
+      <th>value.range.lo_max</th>
+      <th>value.range.lo_mean</th>
+      <th>value.range.lo_std</th>
+      <th>value.range.lo_count</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th>0</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH DAPHNIA MAGNA (WITHOUT ...</td>
-      <td>L.L. (LOWER LIMIT)</td>
+      <td>JRCNM01000a</td>
+      <td>DLS</td>
+      <td>ZETA POTENTIAL</td>
       <td></td>
-      <td>mg/l</td>
-      <td>32.320</td>
-      <td>89.320</td>
-      <td>60.820</td>
-      <td>40.305087</td>
-      <td>2</td>
+      <td></td>
+      <td>mV</td>
+      <td>-16.464</td>
+      <td>-2.91</td>
+      <td>-11.392833</td>
+      <td>6.593190</td>
+      <td>6</td>
     </tr>
     <tr>
       <th>1</th>
       <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH DAPHNIA MAGNA (WITHOUT ...</td>
-      <td>LC20 LETHAL CONCENTRATION</td>
+      <td>DLS</td>
+      <td>ZETA POTENTIAL</td>
       <td></td>
       <td></td>
-      <td>61.200</td>
-      <td>61.200</td>
-      <td>61.200</td>
-      <td>NaN</td>
-      <td>1</td>
+      <td></td>
+      <td>-23.600</td>
+      <td>-23.30</td>
+      <td>-23.450000</td>
+      <td>0.212132</td>
+      <td>2</td>
     </tr>
     <tr>
       <th>2</th>
       <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH DAPHNIA MAGNA (WITHOUT ...</td>
-      <td>LC50 LETHAL CONCENTRATION</td>
+      <td>DLS</td>
+      <td>ZETA POTENTIAL</td>
       <td></td>
       <td></td>
-      <td>131.140</td>
-      <td>131.140</td>
-      <td>131.140</td>
-      <td>NaN</td>
-      <td>1</td>
+      <td>mV</td>
+      <td>-15.627</td>
+      <td>-5.90</td>
+      <td>-12.403600</td>
+      <td>4.091118</td>
+      <td>5</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH DAPHNIA MAGNA (WITHOUT ...</td>
-      <td>U.L. (UPPER LIMIT)</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>106.030</td>
-      <td>281.470</td>
-      <td>193.750</td>
-      <td>124.054814</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>EC10 LETHAL CONCENTRATION</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>0.093</td>
-      <td>0.093</td>
-      <td>0.093</td>
-      <td>0.000000</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>EC50 LETHAL CONCENTRATION</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>43.090</td>
-      <td>43.090</td>
-      <td>43.090</td>
-      <td>0.000000</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>L.L. (LOWER LIMIT)</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>1.480</td>
-      <td>19.240</td>
-      <td>10.360</td>
-      <td>12.558216</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>7</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>LC10 LETHAL CONCENTRATION</td>
+      <td>NM-220</td>
+      <td>DLS</td>
+      <td>ZETA POTENTIAL</td>
       <td></td>
       <td></td>
-      <td>4.380</td>
-      <td>4.380</td>
-      <td>4.380</td>
-      <td>NaN</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>8</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>LC50 LETHAL CONCENTRATION</td>
-      <td></td>
-      <td></td>
-      <td>50.570</td>
-      <td>50.570</td>
-      <td>50.570</td>
-      <td>NaN</td>
-      <td>1</td>
-    </tr>
-    <tr>
-      <th>9</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>U.L. (UPPER LIMIT)</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>12.980</td>
-      <td>132.930</td>
-      <td>72.955</td>
-      <td>84.817458</td>
-      <td>2</td>
-    </tr>
-    <tr>
-      <th>10</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>48H-EC20 LETHAL CONCENTRATION</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>100.000</td>
-      <td>100.000</td>
-      <td>100.000</td>
-      <td>0.000000</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>11</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>48H-EC50 LETHAL CONCENTRATION</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>100.000</td>
-      <td>100.000</td>
-      <td>100.000</td>
-      <td>0.000000</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>12</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>72H-EC20 LETHAL CONCENTRATION</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>3.950</td>
-      <td>3.950</td>
-      <td>3.950</td>
-      <td>0.000000</td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <th>13</th>
-      <td>JRCNM01001a</td>
-      <td>SOP-TOXICITY TEST WITH MICROALGAE P.SUBCAPITAT...</td>
-      <td>72H-EC50 LETHAL CONCENTRATION</td>
-      <td></td>
-      <td>mg/l</td>
-      <td>20.410</td>
-      <td>20.410</td>
-      <td>20.410</td>
-      <td>0.000000</td>
-      <td>3</td>
+      <td>mV</td>
+      <td>-24.300</td>
+      <td>-15.10</td>
+      <td>-18.413667</td>
+      <td>3.676312</td>
+      <td>6</td>
     </tr>
   </tbody>
 </table>
@@ -12914,6 +14064,14 @@ var element = $('#c0d80a8c-2153-43f1-8985-032f006564ce');
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>.</p>
+
+</div>
+</div>
 </div>
     </div>
   </div>
