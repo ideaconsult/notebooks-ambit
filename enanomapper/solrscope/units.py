@@ -1,5 +1,6 @@
 #units conversion
 #http://python-measurement.readthedocs.io/en/latest/topics/measures.html
+#pip install measurement
 from measurement.measures import Weight
 from measurement.measures import Volume
 from measurement.measures import Time

@@ -150,7 +150,7 @@ class StudyDocuments:
         self.settings['query_organism'] = None
         self.settings['endpointfilter'] = None
         self.settings['query_guidance'] = None
-        self.settings['fields'] = None
+        self.settings['fields'] = "dbtag_hss,name_hs,publicname_hs,substanceType_hs,owner_name_hs,s_uuid_hs,substance_annotation_hss"
         
     def getSettings(self):
         return self.settings
@@ -188,8 +188,12 @@ class StudyDocuments:
             compositionFilter=''
 
         #monoconstituentFilter = " AND substanceType_s:(mono constituent substance)"
-
-        fl = 'dbtag_hss,name_hs,publicname_hs,substanceType_hs,owner_name_hs,s_uuid_hs,[child parentFilter=filter(type_s:substance) childFilter="filter(type_s:study {} {}) {} {} {}" limit=10000]'.format(studyfilter,endpointfilter,paramsFilter,conditionsFilter,compositionFilter)
+        if self.settings["fields"] is None:
+            _fl="*"
+        else:
+            _fl=self.settings["fields"]
+            
+        fl = '{},[child parentFilter=filter(type_s:substance) childFilter="filter(type_s:study {} {}) {} {} {}" limit=10000]'.format(_fl,studyfilter,endpointfilter,paramsFilter,conditionsFilter,compositionFilter)
 
         if textfilter==None:
             query='{!parent which=type_s:substance}'
@@ -212,7 +216,11 @@ class StudyDocuments:
                 df[col] = df[col].astype('category')
         return df
     
-    def parse(self,docs):
+    def process_record(recordno,doc):
+        if recordno==1:
+                logger.info(json.dumps(doc, indent=2))
+        
+    def parse(self,docs,process=process_record):
         rows=[]
         logger= logging.getLogger()
         logger.debug("Parsing solr resposne")
@@ -222,9 +230,8 @@ class StudyDocuments:
         for doc in docs:
             
             record=record+1
-
-            if record==1:
-                logger.info(json.dumps(doc, indent=2))
+            if process!=None:
+                process(record,doc)
 
             params = {}            
             conditions = {} 
@@ -452,6 +459,7 @@ class StudyDocuments:
                          'm.substance.name' : doc['name_hs'], 
                          'm.public.name' : doc['publicname_hs'], 
                          'm.materialprovider' : doc['owner_name_hs'], 
+                         #'m.substance.annotation' : ';'.join(doc['substance_annotation_hss']), 
                          #'substance.uuid' : substance_uuid, 
                          'm.substance.type' : substancetype, 
                          'p.oht.module' : childdoc['topcategory_s'],
