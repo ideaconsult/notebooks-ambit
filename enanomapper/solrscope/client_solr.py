@@ -120,10 +120,11 @@ class Facets:
             this.parse(response_json['facets'],prefix=">",process=process)
             df = pd.DataFrame(_stats,columns=colnames).drop("Z", axis=1)
             if "substanceType_s" in df.columns:
-                a = annotation.DictionarySubstancetypes()
+                a = annotation.DictionarySubstancetypes(verbose=False)
                 df[ 'substanceType_name']=df[ 'substanceType_s'].apply(a.annotate)
             if "substanceType_hs" in df.columns:
-                a = annotation.DictionarySubstancetypes()
+                a = annotation.DictionarySubstancetypes(verbose=False)
+                a.verbose=False
                 df[ 'substanceType_name']=df[ 'substanceType_hs'].apply(a.annotate)            
             if "endpointcategory_s" in df.columns:    
                 a = annotation.DictionaryEndpointCategory()
