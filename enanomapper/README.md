@@ -1,12 +1,23 @@
 # Demonstration of eNanoMapper API
 
-## [tutorial.ipynb](tutorial.ipynb)
+## Prerequisites
+### Pip
+```
+pip install -r ../requirements.txt
+```
 
-## [enanomapper.db.ipynb](enanomapper.db.ipynb)  
-    
+### Conda
+```
+conda env update -f ../environment.yml
+```
+
+## Notebooks
+
+### [tutorial.ipynb](tutorial.ipynb)
+
+### [enanomapper.db.ipynb](enanomapper.db.ipynb)
 - [markdown](enanomapper.db.md) and [html](enanomapper.db.html) rendering
 
-## [summary.ipynb](summary.ipynb)
+### [summary.ipynb](summary.ipynb)
 
-## [explore.ipynb](explore.ipynb)
-
+### [explore.ipynb](explore.ipynb)
