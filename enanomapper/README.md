@@ -1,4 +1,5 @@
 # Demonstration of eNanoMapper API
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/ideaconsult/notebooks-ambit/master)
 
 ## Prerequisites
 ### Pip
