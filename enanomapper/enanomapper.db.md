@@ -9,16 +9,16 @@ https://search.data.enanomapper.net/
 ```python
 from importlib import reload 
 import yaml
-from solrscope import aa
-from solrscope import units
+from pynanomapper import aa
+from pynanomapper import units
 import ipywidgets as widgets
 from ipywidgets import interact, interactive, fixed, interact_manual
 import requests
 
 import measurement
-from solrscope import client_solr
-from solrscope import client_ambit
-from solrscope import annotation
+from pynanomapper import client_solr
+from pynanomapper import client_ambit
+from pynanomapper import annotation
 
 import pandas as pd
 import os.path
