@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - default
 dependencies:
-  - python
+  - python~=3.5
   - pip
   - requests
   - ipywidgets
@@ -13,4 +13,4 @@ dependencies:
   - qgrid
   - measurement
   - pip:
-      - pynanomapper
+      - pynanomapper>=1.0.5
