@@ -3,6 +3,7 @@ upstream = ["retrieve_templates"]
 solr_api_key = None
 solr_api_url = None
 folder_output = None
+query=None
 # -
 
 
@@ -102,21 +103,24 @@ class Templates:
         except Exception as err:
             print(err)        
 
-def get_facets(solr_api_url,auth_object,q="*:*"):
+def get_facets(solr_api_url,solr_api_key,q="*:*",fields=["document_uuid_s","topcategory_s","endpointcategory_s","E.method_s"]):
+    config,config_servers, config_security, auth_object, msg = aa.parseOpenAPI3() 
+    if auth_object!=None:
+        auth_object.setKey(solr_api_key)    
     facets = client_solr.Facets()
-    return  facets.summary(solr_api_url,auth_object, query=q,fields=["document_uuid_s","topcategory_s","endpointcategory_s","E.method_s"])    
+    return  facets.summary(solr_api_url,auth_object, query=q,fields=fields)    
 
 
-def get_documents_by_method(solr_api_url,auth_object,q="*:*"):
+def get_documents_by_method(solr_api_url,auth_object,q="*:*",method="BET"):
     docs_query = client_solr.StudyDocuments()
     docs_query.settings['endpointfilter'] = None 
     materialfilter=None
     docs_query.settings['query_guidance'] = None
     docs_query.settings['query_organism'] = None
-    docs_query.setStudyFilter({"topcategory_s" : "*", "endpointcategory_s" : "*"})
+    docs_query.setStudyFilter({"topcategory_s" : "*", "endpointcategory_s" : "*", "E.method_s" : "({})".format(method)})
     docs_query.settings['fields'] = "*"                    
     query = docs_query.getQuery(textfilter=q,facets=None,fq=None, rows=10000, _params=True, _conditions=True, _composition=True );
-    print(query)
+    #print(query)
     r = client_solr.post(solr_api_url,query=query,auth=auth_object)
 
     results = None
@@ -133,46 +137,52 @@ def get_documents_by_method(solr_api_url,auth_object,q="*:*"):
 
 
 
-def prepare(solr_api_url,solr_api_key,folder_output):
+def prepare(solr_api_url,solr_api_key,folder_output,query="owner_name_s:GRACIOUS",method="BET"):
+    print(query)
     config,config_servers, config_security, auth_object, msg = aa.parseOpenAPI3() 
     if auth_object!=None:
         auth_object.setKey(solr_api_key)
     
-    q="owner_name_s:GRACIOUS"
+    q=query
 
-    templates = Templates(folder_output)
-    results = get_documents_by_method(solr_api_url,auth_object,q)
+    
+    results = get_documents_by_method(solr_api_url,auth_object,q,method)
     params = pd.DataFrame([col.replace("x.params.","") for col in results.columns if col.startswith("x.params.")],columns=["param"])
     params["lookup"] = params["param"].apply(lambda x: "PARAMS_"+x.upper().replace(" ","_"))
     params["type"] = params["param"].apply(lambda x: "number" if x.endswith("_d") else ("QUALIFIER" if x.endswith("QUALIFIER") else ("unit" if x.endswith("UNIT") else "STRING")))
     params.sort_values(by=['param'],inplace=True)
     params.to_csv(os.path.join(folder_output,"params.txt"),sep="\t",index=False,encoding="utf-8")
 
-    return templates,results,params
+    return results,params
 
 def cleanup(val):
     return val.replace("_"," ").replace("."," ");
 
-templates,results,params= prepare(solr_api_url,solr_api_key,folder_output)
 
-#param_strings = params.loc[params["type"]=="STRING"]
-#param_strings
+templates = Templates(folder_output)
+
 
 _tag_method="x.params.E.method"
 _tag_endpoint = "value.endpoint"
 _tag_unit = "value.unit"
 _tag_section = "p.oht.section"
 #this could be done with facets
-tmp = results[[_tag_section,_tag_method]].drop_duplicates()
+#tmp = results[[_tag_section,_tag_method]].drop_duplicates()
+
 sentences=[]
-for index,row in tmp.iterrows():
-    section = row[_tag_section]
-    method = row[_tag_method]
+facets = get_facets(solr_api_url,solr_api_key,q=query,fields=["endpointcategory_s","E.method_s"])
 
+for index,row in facets.iterrows():
+    section = row["endpointcategory_s"]
+    method = row["E.method_s"]
+    
+    results,params= prepare(solr_api_url,solr_api_key,folder_output,query=query,method=method)
     _template_key = templates.template_by_method(section,method);
-
-    results4method = results.loc[results[_tag_method]==method]
-    tmp = results4method.dropna(axis=1,how="all")
+    
+    #results4method = results.loc[results[_tag_method]==method]
+    #results4method = results
+    #tmp = results4method.dropna(axis=1,how="all")
+    tmp = results
     #display(results4method)
     #results4method.to_csv("method.csv")
     #print(results4method.columns)

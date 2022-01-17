@@ -9,6 +9,7 @@ tasks:
       folder_output: "{{folder_output}}"    
       solr_api_url: "{{solr_api_url}}"   
       solr_api_key: "{{solr_api_key}}"   
+      query: "{{query}}"
 
   - source: tasks/retrieve_templates.py
     product:
