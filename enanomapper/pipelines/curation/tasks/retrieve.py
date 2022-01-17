@@ -14,6 +14,8 @@ from pynanomapper import client_solr
 import pandas as pd
 import os, os.path
 import json
+import re
+import pprint
 
 import logging
 from logging.config import fileConfig
@@ -23,15 +25,82 @@ logger = logging.getLogger()
 import pandas as pd
 pd.set_option('display.max_columns', None)
 
-def get_templates(folder_output):
-    try:
-        with open(os.path.join(folder_output,"templates","pchem.json"), 'r',encoding="utf-8") as file:
-            template = json.load(file)
+class Templates:
+    def __init__(self,folder,subfolder = "templates",file="pchem.json"):
+        self.load(folder,subfolder,file)
+        pass
 
-        return template;
-    except Exception as err:
+    def add(self, x):
+        self.data.append(x)
+
+    def template_by_method(self,section,method):
+        _method = method
+        if not (_method in self.templates):
+            if _method in self.keys:
+                _method = self.keys[_method]
+
+        if _method in self.templates:
+            return self.templates[_method]
+
+        _method = section
+        if not (_method in self.templates):
+            if _method in self.keys:
+                _method = self.keys[_method]
+        if _method in self.templates:
+            return self.templates[_method]
         return None
 
+    def load(self,folder,subfolder = "templates",file="pchem.json"):
+        try:
+            with open(os.path.join(folder,subfolder,file), 'r',encoding="utf-8") as file:
+                template = json.load(file)
+
+            self.templates =  template["templates"];
+            self.keys= template["template_keys"]
+        except Exception as err:
+            return None
+
+    def is_method_parameter(self,p):
+        p = p.replace("x.params.","")
+        lookup = ["E.method","material state","Operator","Sample name","date of analysis","date of preparation","batch","E.sop_reference","Vial","_Version_","Guidance","__input_file"]
+        return not (p in lookup)
+
+    def clean_pynanomapper_field(self,p):
+        p = re.sub("_d$","",p)  #we want numeric fields as well
+        p = re.sub("_s$","",p) 
+        if re.search("_UNIT$",p) != None:
+            return None
+        if re.search("_UPQUALIFIER$",p) != None:
+            return None  
+        if re.search("_LOQUALIFIER$",p) != None:
+            return None              
+        if re.search("_LOVALUE$",p) != None:
+            return None    
+        if re.search("_UPVALUE$",p) != None:
+            return None        
+        p = p.replace("x.params.","").replace("T.","T_").replace("E.","E_").replace(" ","_")
+
+        return p
+
+    def add_field(self,key,p):   
+        p = self.clean_pynanomapper_field(p)                                    
+        if p is None:
+            return
+
+        id = "params_{}".format(p).upper()
+        title = p.replace("_"," ").replace("T.","").replace("E.","")
+        if not key in self.templates:
+            self.templates[key] = []
+        field = {"field":id,"Sheet":key,"Column":-1,"Value":title,"Unit":""}
+        self.templates[key].append(field);
+
+    def save(self,folder_output,subfolder = "templates",file="pchem.json"):
+        try:
+            with open(os.path.join(folder_output,subfolder,file), 'w',encoding="utf-8") as outfile:
+                tmp = {"templates" : self.templates,"template_keys" : self.keys}
+                json.dump(tmp, outfile)
+        except Exception as err:
+            print(err)        
 
 def get_facets(solr_api_url,auth_object,q="*:*"):
     facets = client_solr.Facets()
@@ -71,7 +140,7 @@ def prepare(solr_api_url,solr_api_key,folder_output):
     
     q="owner_name_s:GRACIOUS"
 
-    templates = get_templates(folder_output)
+    templates = Templates(folder_output)
     results = get_documents_by_method(solr_api_url,auth_object,q)
     params = pd.DataFrame([col.replace("x.params.","") for col in results.columns if col.startswith("x.params.")],columns=["param"])
     params["lookup"] = params["param"].apply(lambda x: "PARAMS_"+x.upper().replace(" ","_"))
@@ -81,6 +150,8 @@ def prepare(solr_api_url,solr_api_key,folder_output):
 
     return templates,results,params
 
+def cleanup(val):
+    return val.replace("_"," ").replace("."," ");
 
 templates,results,params= prepare(solr_api_url,solr_api_key,folder_output)
 
@@ -89,48 +160,85 @@ templates,results,params= prepare(solr_api_url,solr_api_key,folder_output)
 
 _tag_method="x.params.E.method"
 _tag_endpoint = "value.endpoint"
-methods = results[_tag_method].unique()
-#methods=["DLS","BET","AUC"]
-for method in methods:
+_tag_unit = "value.unit"
+_tag_section = "p.oht.section"
+#this could be done with facets
+tmp = results[[_tag_section,_tag_method]].drop_duplicates()
+sentences=[]
+for index,row in tmp.iterrows():
+    section = row[_tag_section]
+    method = row[_tag_method]
+
+    _template_key = templates.template_by_method(section,method);
+
     results4method = results.loc[results[_tag_method]==method]
     tmp = results4method.dropna(axis=1,how="all")
     #display(results4method)
     #results4method.to_csv("method.csv")
     #print(results4method.columns)
     #cols = ["uuid.document",_tag_method]
-    cols = [_tag_endpoint,_tag_method]
+    cols = [_tag_endpoint,_tag_unit,_tag_method]
+    cols_extra = []
+    
+
     for p in filter(lambda e : e.startswith("x.params."),tmp.columns):
         #tbd this condition
-        if p == _tag_method or p == "x.params.material state" or p == "x.params.Operator" or p=="x.params.Sample name" or p == "x.params.date of analysis" or p=="x.params.date of preparation" or p=="x.params.batch" or p=="x.params.E.sop_reference" or p=="x.params.Vial":
-            continue
-        key = p.replace("x.params.","PARAMS_").replace(".","_").replace(" ","_").upper()
-        try:
-            if key in templates["templates"][method]:
-                #print(p,key)
-                cols.append(p)
-        except Exception as err:
-            #print(err)
-            pass
-    print(cols)
-    
+        if templates.is_method_parameter(p):
+            key = templates.clean_pynanomapper_field(p);
+            
+            if key is None:
+                continue
+            else:
+                key = "PARAMS_{}".format(key.upper())
+            
+            try:
+                if _template_key is None:
+                    templates.add_field(method,p);
+                    #cols_extra.append(p)                 
+                elif key in _template_key:
+                    #print(p,key)
+                    cols.append(p)
+                else:
+                    print("!!!Parameter not in template for \t",method,"\t",p,"\t",key)
+                    cols_extra.append(key)                    
+            except Exception as err:
+                #print(err)
+                pass
+    #print(cols)
+    if _template_key is None:
+        print(">>> '{} {}' template not found!".format(section,method))   
+        _template_key = templates.template_by_method(section,method); 
+        #pprint.pprint(_template_key)
+    else:
+        print(">>> ",section,method)
+        print(cols_extra)
     try:
         tmp = tmp[cols].drop_duplicates().fillna("")
         #display(tmp)
-        tmp.to_csv(os.path.join(folder_output,"{}.csv".format(method)))
+        tmp.to_csv(os.path.join(folder_output,"data","{}.csv".format(method)))
         
+
         for r in tmp.index:
             msg = ""
             for c in cols:
                 if c==_tag_endpoint:
-                    msg = tmp[c][r] + " obtained by "
+                    msg = cleanup(tmp[c][r]) + " " + tmp[_tag_unit][r] + " obtained by "
+                elif c==_tag_unit:
+                    continue
                 elif c == _tag_method:
-                    msg= msg + tmp[c][r] + "  analysis "
+                    msg= msg +cleanup(tmp[c][r]) + "  analysis "
                 else:
                     if tmp[c][r]!="":
-                        msg = msg + " ," + c.replace("x.params.","").replace("T.","").lower() + " " + tmp[c][r]     
+                        col="PARAMS_"+templates.clean_pynanomapper_field(c).upper()
+                        #print(c,col,_template_key[col]["Value"])
+                        msg =  "{} ,{} {}".format(msg,_template_key[col]["Value"],tmp[c][r])
             msg = msg + "."
-            print(msg)
+            sentences.append(msg)
+    
 
 
     except Exception as err:
-        print(err)
+        print(method,err)
+
+templates.save(folder_output,"templates","pchem_new.json")       
+pd.DataFrame(sentences,columns=["sentence"]).to_csv(os.path.join(folder_output,"sentences.csv"),index=False,encoding="utf-8")     
