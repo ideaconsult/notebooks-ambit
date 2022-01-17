@@ -20,6 +20,8 @@ from logging.config import fileConfig
 #fileConfig('logging_config.ini')
 global logger
 logger = logging.getLogger()
+import pandas as pd
+pd.set_option('display.max_columns', None)
 
 def get_templates(folder_output):
     try:
@@ -82,5 +84,53 @@ def prepare(solr_api_url,solr_api_key,folder_output):
 
 templates,results,params= prepare(solr_api_url,solr_api_key,folder_output)
 
-param_strings = params.loc[params["type"]=="STRING"]
-param_strings
+#param_strings = params.loc[params["type"]=="STRING"]
+#param_strings
+
+_tag_method="x.params.E.method"
+_tag_endpoint = "value.endpoint"
+methods = results[_tag_method].unique()
+#methods=["DLS","BET","AUC"]
+for method in methods:
+    results4method = results.loc[results[_tag_method]==method]
+    tmp = results4method.dropna(axis=1,how="all")
+    #display(results4method)
+    #results4method.to_csv("method.csv")
+    #print(results4method.columns)
+    #cols = ["uuid.document",_tag_method]
+    cols = [_tag_endpoint,_tag_method]
+    for p in filter(lambda e : e.startswith("x.params."),tmp.columns):
+        #tbd this condition
+        if p == _tag_method or p == "x.params.material state" or p == "x.params.Operator" or p=="x.params.Sample name" or p == "x.params.date of analysis" or p=="x.params.date of preparation" or p=="x.params.batch" or p=="x.params.E.sop_reference" or p=="x.params.Vial":
+            continue
+        key = p.replace("x.params.","PARAMS_").replace(".","_").replace(" ","_").upper()
+        try:
+            if key in templates["templates"][method]:
+                #print(p,key)
+                cols.append(p)
+        except Exception as err:
+            #print(err)
+            pass
+    print(cols)
+    
+    try:
+        tmp = tmp[cols].drop_duplicates().fillna("")
+        #display(tmp)
+        tmp.to_csv(os.path.join(folder_output,"{}.csv".format(method)))
+        
+        for r in tmp.index:
+            msg = ""
+            for c in cols:
+                if c==_tag_endpoint:
+                    msg = tmp[c][r] + " obtained by "
+                elif c == _tag_method:
+                    msg= msg + tmp[c][r] + "  analysis "
+                else:
+                    if tmp[c][r]!="":
+                        msg = msg + " ," + c.replace("x.params.","").replace("T.","").lower() + " " + tmp[c][r]     
+            msg = msg + "."
+            print(msg)
+
+
+    except Exception as err:
+        print(err)
