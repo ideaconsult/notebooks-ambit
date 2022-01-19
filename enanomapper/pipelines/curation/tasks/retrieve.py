@@ -147,17 +147,26 @@ def prepare(solr_api_url,solr_api_key,folder_output,query="owner_name_s:GRACIOUS
 
     
     results = get_documents_by_method(solr_api_url,auth_object,q,method)
-    params = pd.DataFrame([col.replace("x.params.","") for col in results.columns if col.startswith("x.params.")],columns=["param"])
-    params["lookup"] = params["param"].apply(lambda x: "PARAMS_"+x.upper().replace(" ","_"))
-    params["type"] = params["param"].apply(lambda x: "number" if x.endswith("_d") else ("QUALIFIER" if x.endswith("QUALIFIER") else ("unit" if x.endswith("UNIT") else "STRING")))
-    params.sort_values(by=['param'],inplace=True)
-    params.to_csv(os.path.join(folder_output,"params.txt"),sep="\t",index=False,encoding="utf-8")
 
-    return results,params
+
+    return results
 
 def cleanup(val):
     return val.replace("_"," ").replace("."," ");
 
+import io 
+def retrieve_params(solr_api_url,solr_api_key):
+    config,config_servers, config_security, auth_object, msg = aa.parseOpenAPI3() 
+    if auth_object!=None:
+        auth_object.setKey(solr_api_key)    
+    r = client_solr.get(solr_api_url ,query={"q": "*:*", "wt": "csv", "rows" : 0},auth=auth_object)
+    
+    params =pd.read_csv(io.StringIO(r.content.decode('utf-8')))
+    tmp = pd.DataFrame(params.columns,columns=["field"])
+    tmp["type"] = tmp["field"].apply(lambda x: "number" if x.endswith("_d") else ("QUALIFIER" if x.endswith("QUALIFIER") else ("unit" if x.endswith("UNIT") else "STRING")))
+    tmp["field_clean"]=tmp["field"].apply(lambda col: re.sub("_s$","",re.sub("_d$","",re.sub("_UPQUALIFIER_s$","",re.sub("_LOVALUE_d$","",re.sub("_LOQUALIFIER_s$","",re.sub("_UPVALUE_d$","",re.sub("_UNIT_s$","",col))))))).replace(".","_"))
+    tmp.sort_values(by=['field_clean'],inplace=True)
+    return tmp
 
 templates = Templates(folder_output)
 
@@ -176,7 +185,7 @@ for index,row in facets.iterrows():
     section = row["endpointcategory_s"]
     method = row["E.method_s"]
     
-    results,params= prepare(solr_api_url,solr_api_key,folder_output,query=query,method=method)
+    results= prepare(solr_api_url,solr_api_key,folder_output,query=query,method=method)
     _template_key = templates.template_by_method(section,method);
     
     #results4method = results.loc[results[_tag_method]==method]
@@ -252,3 +261,6 @@ for index,row in facets.iterrows():
 
 templates.save(folder_output,"templates","pchem_new.json")       
 pd.DataFrame(sentences,columns=["sentence"]).to_csv(os.path.join(folder_output,"sentences.csv"),index=False,encoding="utf-8")     
+
+params = retrieve_params(solr_api_url,solr_api_key)
+params.to_csv(os.path.join(folder_output,"params.txt"),sep="\t",index=False,encoding="utf-8")
