@@ -35,6 +35,17 @@ tasks:
 
     params:
       folder_output: "{{folder_output}}"    
+
+  - source: tasks/overview.py
+    product:
+      nb: "products/overview.ipynb"     
+
+    params:
+      folder_output: "{{folder_output}}" 
+      solr_api_url: "{{solr_api_url}}"   
+      solr_api_key: "{{solr_api_key}}"     
+      annotation_folder: "{{annotation_folder}}"  
+      query: "{{query}}"        
       
  
 
