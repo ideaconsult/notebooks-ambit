@@ -20,6 +20,14 @@ tasks:
       folder_output: "{{folder_output}}"    
       templates_pchem: "{{templates_pchem}}"   
 
+  - source: tasks/match_params.py
+    product:
+      nb: "products/match_params.ipynb"
+      data: "{{folder_output}}/terms/matched_params.txt"
+
+    params:
+      folder_output: "{{folder_output}}"      
+
   - source: tasks/onto.py
     product:
       nb: "products/onto.ipynb"
@@ -28,13 +36,7 @@ tasks:
     params:
       folder_output: "{{folder_output}}"    
       
-
-  - source: tasks/match_params.py
-    product:
-      nb: "products/match_params.ipynb"
-
-    params:
-      folder_output: "{{folder_output}}"    
+ 
 
 
 
