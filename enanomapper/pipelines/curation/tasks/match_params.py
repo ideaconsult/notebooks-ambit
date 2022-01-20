@@ -20,4 +20,4 @@ for prm in prms:
         tmp.append([prm,m[0],m[1]])
     
 df = pd.DataFrame(tmp,columns=["field_clean","match","score"])
-df.to_csv(os.path.join(folder_output,"terms","matched_params.txt",sep="\t"),index=False)    
+df.to_csv(os.path.join(folder_output,"terms","matched_params.txt"),sep="\t",index=False)    
