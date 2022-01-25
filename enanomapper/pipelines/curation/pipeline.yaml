@@ -34,7 +34,9 @@ tasks:
       data: "{{folder_output}}/terms"      
 
     params:
-      folder_output: "{{folder_output}}"    
+      folder_output: "{{folder_output}}"
+      blueprint: "{{blueprint}}"                
+
 
   - source: tasks/overview.py
     product:
@@ -47,6 +49,14 @@ tasks:
       annotation_folder: "{{annotation_folder}}"  
       query: "{{query}}"        
       
+  - source: tasks/blueprint.py
+    product:
+      nb: "products/blueprint.ipynb"  
+      data: "{{folder_output}}/terms/blueprint.json"   
+
+    params:
+      folder_output: "{{folder_output}}" 
+      blueprint: "{{blueprint}}"       
  
 
 

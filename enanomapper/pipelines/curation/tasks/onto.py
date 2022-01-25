@@ -1,6 +1,7 @@
 # + tags=["parameters"]
 upstream = None
 folder_output = None
+blueprint = None
 # -
 
 import pandas as pd
@@ -8,15 +9,17 @@ import requests
 import os,os.path
 import numpy as np
 import hnswlib
+import traceback
 
 class Vocabulary:
-
+    
     def __init__(self,folder,subfolder = "terms"):
         self.folder = folder
         self.subfolder = subfolder
 
-    def load_ontology(self,url="http://data.bioontology.org/ontologies/ENM/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb&download_format=csv",
+    def load_ontology(self,url="https://data.bioontology.org/ontologies/ENM/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb&download_format=csv",
                     onto_file='enm.csv.gz',usecols=None, synonyms_sep=None,synonyms_fields=["Synonyms"],definition_fields=["Definitions"]):
+        
         onto_file = os.path.join(self.folder,self.subfolder,onto_file)
         if not os.path.isfile(onto_file):
             print(url)
@@ -64,75 +67,56 @@ class Vocabulary:
         return enm
 
     def load_ontology_byname(self,onto_name="ENM",synonyms_fields=["Synonyms"],definition_fields=["Definitions"]):
-        df = self.load_ontology(url="http://data.bioontology.org/ontologies/{}/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb&download_format=csv".format(onto_name),onto_file="{}.csv.gz".format(onto_name.lower()),synonyms_fields=synonyms_fields,definition_fields=definition_fields)
+        
+        url="https://data.bioontology.org/ontologies/{}/download?apikey=8b5b7825-538d-40e0-9e9e-5ab9274a9aeb&download_format=csv".format(onto_name)
+        df = self.load_ontology(url,
+            onto_file="{}.csv.gz".format(onto_name.lower()),synonyms_fields=synonyms_fields,definition_fields=definition_fields)
         df["ontology"]=onto_name
         return df
+    
+    def load(self,name="ENM"):
+        print(name)
+        if name=="ENM": 
+            return self.load_ontology_enm()
+        elif name=="EFO": 
+            return self.load_ontology_efo()
+        elif name=="CSEO": 
+            return self.load_ontology_cseo()
+        else:
+            return self.load_ontology_byname(name)
 
     def load_ontology_enm(self):
-        return self.load_ontology_byname("ENM",synonyms_fields=["Synonyms","has_exact_synonym","FULL_SYN"],definition_fields=["Definitions","definition","http://www.w3.org/2000/01/rdf-schema#isDefinedBy","DEFINITION"])
-
-    def load_ontology_mmo(self):
-        return self.load_ontology_byname("MMO")
-
-    def load_ontology_chmo(self):
-        return self.load_ontology_byname("CHMO")
-
-    def load_ontology_bao(self):
-        return self.load_ontology_byname("BAO")
+        return self.load_ontology_byname(onto_name="ENM",synonyms_fields=["Synonyms","has_exact_synonym","FULL_SYN"],definition_fields=["Definitions","definition","http://www.w3.org/2000/01/rdf-schema#isDefinedBy","DEFINITION"])
 
     def load_ontology_efo(self):
-        return self.load_ontology_byname("EFO",synonyms_fields=["Synonyms"],definition_fields=["Definitions","definition"])
-
-    def load_ontology_massspectrometry(self):
-        return self.load_ontology_byname("MS")
-
-    def load_ontology_experimentalfactors(self):
-        return self.load_ontology_byname("EFO")
-
-    def load_ontology_celline(self):
-        return self.load_ontology_byname("CLO")
-
-    def load_ontology_SNOMED_CT(self):
-        return self.load_ontology_byname("SCTO")
-
-    def load_ontology_NPO(self):
-        return self.load_ontology_byname("NPO")
+        return self.load_ontology_byname(onto_name="EFO",synonyms_fields=["Synonyms"],definition_fields=["Definitions","definition"])
 
     def load_ontology_cseo(self):
-        return self.load_ontology_byname("CSEO",synonyms_field="http://scai.fraunhofer.de/CSEO#Synonym",definition_fields=["http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#DEFINITION"])
+        return self.load_ontology_byname(onto_name="CSEO",synonyms_field="http://scai.fraunhofer.de/CSEO#Synonym",definition_fields=["http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#DEFINITION"])
 
-    def load_ontology_uo(self):
-        return self.load_ontology_byname("UO")
+vocab = Vocabulary(folder=folder_output)
+try:
+    ontology = ["ENM"]
+    terms_file = os.path.join(folder_output,"terms","terms.txt")
+    print(terms_file)
+    if os.path.isfile(terms_file):
+        terms = pd.read_csv(terms_file,sep="\t",encoding="utf-8")
+        print(terms)
+    else:
+        terms = None
 
-    def load_ontology_MESH(self):
-        return self.load_ontology_byname("MESH")
+        for onto in ontology:
+            tmp = vocab.load(onto)
+            tmp["training"] = tmp["Preferred Label"] + ". " +tmp["Definitions"]            
+            if terms is None:
+                terms = tmp
+            else:
+                terms.append(tmp)
 
-    def load_ontology_OBI(self):
-        return self.load_ontology_byname("OBI")
+        pd.DataFrame(terms).to_csv(os.path.join(folder_output,"terms","terms.txt",sep="\t",encoding="utf-8"))
+except Exception as err:
+    print(traceback.format_exc()) 
 
-    #Protein ontology
-    def load_ontology_PR(self):
-        return self.load_ontology_byname("PR")
-
-    #Toxic process ontology
-    def load_ontology_toxicprocess(self):
-        return self.load_ontology_byname("TXPO")
-
-    # some useful terms but no definitions or synonyms
-    def load_ontology_nucleartoxicity(self):
-        return self.load_ontology_byname("ONTOTOXNUC")
-
-    def load_ontology_biomodels(self):
-        return self.load_ontology_byname("BIOMODELS")
-
-    def load_ontology_systembiology(self):
-        return self.load_ontology_byname("SBO")
-
-    def load_ontology_LOINC(self):
-        return self.load_ontology_byname("LOINC")
-
-    def load_ontology_EDAM(self):
-        return self.load_ontology_byname("EDAM")
 
 def ann(embedding_tensor,distance="ip"):
     dim = np.shape(embedding_tensor)[1]
@@ -161,12 +145,7 @@ def ann(embedding_tensor,distance="ip"):
     return p
     
 
-vocab = Vocabulary(folder=folder_output)
-
-tmp = vocab.load_ontology_enm()
-tmp["training"] = tmp["Preferred Label"] + ". " +tmp["Definitions"]
-tmp.head()
-
+    
 #for index,row in tmp.iterrows():
 #    print(row["Definitions"])
 
@@ -189,7 +168,7 @@ model = SentenceTransformer(model_name, device=torch_device)
 
 if not os.path.isfile(ann_index):
 
-    definitions = tmp["training"].to_list()
+    definitions = terms["training"].to_list()
 
     embeddings = model.encode(definitions, 
                             show_progress_bar=True,
@@ -203,11 +182,24 @@ if not os.path.isfile(ann_index):
 e_idx = hnswlib.Index(space="ip",dim=768)
 e_idx.load_index(ann_index )
 
-query="transmission electron microscope TEM"
-embeddings = model.encode(query, 
-                show_progress_bar=True,
-                normalize_embeddings=True)
+#query="transmission electron microscope TEM"
+#embeddings = model.encode(query, 
+#                show_progress_bar=True,
+#                normalize_embeddings=True)
 
-labels,distances =  e_idx.knn_query(embeddings, k=20)
-for label, distance in zip(labels[0],distances[0]):
-    print(distance,tmp.iloc[label]["Class ID"],"\t",tmp.iloc[label]["Preferred Label"],"\t",tmp.iloc[label]["Definitions"])                    
+##labels,distances =  e_idx.knn_query(embeddings, k=20)
+#for label, distance in zip(labels[0],distances[0]):
+#    print(distance,tmp.iloc[label]["Class ID"],"\t",tmp.iloc[label]["Preferred Label"],"\t",tmp.iloc[label]["Definitions"])      
+
+params = pd.read_csv(os.path.join(folder_output,"params.txt"),sep="\t",encoding="utf-8")
+prms =params["field_clean"].unique()
+#tmp = []
+for prm in prms:
+    query = prm.replace("_"," ")
+    embeddings = model.encode(query, 
+                    show_progress_bar=True,
+                    normalize_embeddings=True)
+
+    labels,distances =  e_idx.knn_query(embeddings, k=3)
+    for label, distance in zip(labels[0],distances[0]):
+        print(query,distance,terms.iloc[label]["Class ID"],"\t",tmp.iloc[label]["Preferred Label"],"\t",tmp.iloc[label]["Definitions"])      
