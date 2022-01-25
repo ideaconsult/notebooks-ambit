@@ -35,7 +35,9 @@ tasks:
 
     params:
       folder_output: "{{folder_output}}"
-      blueprint: "{{blueprint}}"                
+      blueprint: "{{blueprint}}"    
+      model_embedding: "{{model_embedding}}"
+      hnsw_distance: "{{hnsw_distance}}"            
 
 
   - source: tasks/overview.py

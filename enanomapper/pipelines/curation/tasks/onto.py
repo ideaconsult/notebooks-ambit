@@ -2,6 +2,8 @@
 upstream = None
 folder_output = None
 blueprint = None
+model_embedding = None
+hnsw_distance = None
 # -
 
 import pandas as pd
@@ -96,7 +98,9 @@ class Vocabulary:
 
 vocab = Vocabulary(folder=folder_output)
 try:
-    ontology = ["ENM"]
+    #ontology = ["CHMO","BAO","EDAM","NPO"]
+    ontology = ["EDAM","EFO","CHEBI","IOBC","ECSO","FIX","REX","CCONT","OBCS","IAO","EXO","ECTO","HHEAR","CHEAR","PHENX","OAE","PATO","NPO","HUPSON","CRISP",
+"SWEET","CHEMINF","MMO","CHMO","BAO","MS","CLO","UO","MESH","OBI","TXPO","BIOMODELS","EDAM","LOINC","SBO","ENM"]
     terms_file = os.path.join(folder_output,"terms","terms.txt")
     print(terms_file)
     if os.path.isfile(terms_file):
@@ -106,16 +110,20 @@ try:
         terms = None
 
         for onto in ontology:
-            tmp = vocab.load(onto)
-            tmp["training"] = tmp["Preferred Label"] + ". " +tmp["Definitions"]            
-            if terms is None:
-                terms = tmp
-            else:
-                terms.append(tmp)
+            try:
+                tmp = vocab.load(onto)
+                tmp["training"] = tmp["Preferred Label"] + ". " +tmp["Definitions"]            
+                if terms is None:
+                    terms = tmp
+                else:
+                    terms = pd.concat([terms,tmp])
+            except Exception as err:
+                print(err)
+            
 
-        pd.DataFrame(terms).to_csv(os.path.join(folder_output,"terms","terms.txt",sep="\t",encoding="utf-8"))
+        pd.DataFrame(terms).to_csv(terms_file,sep="\t",encoding="utf-8")
 except Exception as err:
-    print(traceback.format_exc()) 
+    print(err)
 
 
 def ann(embedding_tensor,distance="ip"):
@@ -151,7 +159,7 @@ def ann(embedding_tensor,distance="ip"):
 
 import torch
 
-ann_index=os.path.join(folder_output,"terms","hnswlib.index")
+ann_index=os.path.join(folder_output,"terms","{}_{}_hnswlib.index".format(model_embedding,hnsw_distance))
 use_cuda = torch.cuda.is_available()
 if use_cuda:
     print('__CUDNN VERSION:', torch.backends.cudnn.version())
@@ -163,8 +171,8 @@ else:
     torch_device = "cpu"
 from sentence_transformers import SentenceTransformer
     #distilbert-base-nli-stsb-mean-tokens for symmetric search
-model_name="msmarco-distilbert-base-dot-prod-v3"
-model = SentenceTransformer(model_name, device=torch_device)
+
+model = SentenceTransformer(model_embedding, device=torch_device)
 
 if not os.path.isfile(ann_index):
 
@@ -177,9 +185,9 @@ if not os.path.isfile(ann_index):
 
     p = ann(embeddings)
 
-    p.save_index(os.path.join(folder_output,"terms","hnswlib.index"))
+    p.save_index(ann_index)
 
-e_idx = hnswlib.Index(space="ip",dim=768)
+e_idx = hnswlib.Index(space=hnsw_distance,dim=768)
 e_idx.load_index(ann_index )
 
 #query="transmission electron microscope TEM"
@@ -194,12 +202,18 @@ e_idx.load_index(ann_index )
 params = pd.read_csv(os.path.join(folder_output,"params.txt"),sep="\t",encoding="utf-8")
 prms =params["field_clean"].unique()
 #tmp = []
-for prm in prms:
-    query = prm.replace("_"," ")
-    embeddings = model.encode(query, 
-                    show_progress_bar=True,
-                    normalize_embeddings=True)
 
-    labels,distances =  e_idx.knn_query(embeddings, k=3)
-    for label, distance in zip(labels[0],distances[0]):
-        print(query,distance,terms.iloc[label]["Class ID"],"\t",tmp.iloc[label]["Preferred Label"],"\t",tmp.iloc[label]["Definitions"])      
+ann_hits = os.path.join(folder_output,"terms","{}_{}_params_hits.txt".format(model_embedding,hnsw_distance))
+with open(ann_hits, 'w',encoding='utf-8') as f:
+    f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format("query","rank","distance","id","label","definition"));
+    for prm in prms:
+        query = prm.replace("E_","").replace("T_","").replace("_"," ")
+        embeddings = model.encode(query, 
+                        show_progress_bar=True,
+                        normalize_embeddings=True)
+
+        labels,distances =  e_idx.knn_query(embeddings, k=3)
+        rank = 1
+        for label, distance in zip(labels[0],distances[0]):
+            f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
+            rank=rank+1
