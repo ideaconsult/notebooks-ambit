@@ -39,6 +39,15 @@ tasks:
       model_embedding: "{{model_embedding}}"
       hnsw_distance: "{{hnsw_distance}}"            
 
+  - source: tasks/onto_stats.py
+    product:
+      nb: "products/onto_stats.ipynb"
+
+
+    params:
+      folder_output: "{{folder_output}}"
+      model_embedding: "{{model_embedding}}"
+      hnsw_distance: "{{hnsw_distance}}"  
 
   - source: tasks/overview.py
     product:

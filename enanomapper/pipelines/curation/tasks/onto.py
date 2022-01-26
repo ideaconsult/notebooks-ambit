@@ -200,14 +200,14 @@ e_idx.load_index(ann_index )
 #    print(distance,tmp.iloc[label]["Class ID"],"\t",tmp.iloc[label]["Preferred Label"],"\t",tmp.iloc[label]["Definitions"])      
 
 params = pd.read_csv(os.path.join(folder_output,"params.txt"),sep="\t",encoding="utf-8")
-prms =params["field_clean"].unique()
+prms =params["title"].unique()
 #tmp = []
 
 ann_hits = os.path.join(folder_output,"terms","{}_{}_params_hits.txt".format(model_embedding,hnsw_distance))
 with open(ann_hits, 'w',encoding='utf-8') as f:
     f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format("query","rank","distance","id","label","definition"));
     for prm in prms:
-        query = prm.replace("E_","").replace("T_","").replace("_"," ")
+        query = prm
         embeddings = model.encode(query, 
                         show_progress_bar=True,
                         normalize_embeddings=True)
@@ -217,3 +217,4 @@ with open(ann_hits, 'w',encoding='utf-8') as f:
         for label, distance in zip(labels[0],distances[0]):
             f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
             rank=rank+1
+
