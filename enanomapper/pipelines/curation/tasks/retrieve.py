@@ -69,6 +69,8 @@ class Templates:
     def clean_pynanomapper_field(self,p):
         p = re.sub("_d$","",p)  #we want numeric fields as well
         p = re.sub("_s$","",p) 
+        p = re.sub("_hs$","",p)
+        p = re.sub("_ss$","",p)
         if re.search("_UNIT$",p) != None:
             return None
         if re.search("_UPQUALIFIER$",p) != None:
@@ -79,9 +81,19 @@ class Templates:
             return None    
         if re.search("_UPVALUE$",p) != None:
             return None        
-        p = p.replace("x.params.","").replace("T.","T_").replace("E.","E_").replace(" ","_")
+        p = re.sub("^T.","T_",p)
+        p = re.sub("^E.","E_",p)
+        p = p.replace("x.params.","").replace(" ","_")
 
         return p
+
+    def field2title(self,p):
+
+        p = re.sub("^T_","",p)
+        p = re.sub("^E_","",p)
+        p = p.replace("-"," ").trim().lower()
+
+        return p        
 
     def add_field(self,key,p):   
         p = self.clean_pynanomapper_field(p)                                    
@@ -89,7 +101,10 @@ class Templates:
             return
 
         id = "params_{}".format(p).upper()
-        title = p.replace("_"," ").replace("T.","").replace("E.","")
+
+        p = re.sub("^T.","",p)
+        p = re.sub("^E.","",p)        
+        title = p.replace("_"," ")
         if not key in self.templates:
             self.templates[key] = []
         field = {"field":id,"Sheet":key,"Column":-1,"Value":title,"Unit":""}
@@ -165,6 +180,7 @@ def retrieve_params(solr_api_url,solr_api_key):
     tmp = pd.DataFrame(params.columns,columns=["field"])
     tmp["type"] = tmp["field"].apply(lambda x: "number" if x.endswith("_d") else ("QUALIFIER" if x.endswith("QUALIFIER") else ("unit" if x.endswith("UNIT") else "STRING")))
     tmp["field_clean"]=tmp["field"].apply(lambda col: re.sub("_s$","",re.sub("_d$","",re.sub("_UPQUALIFIER_s$","",re.sub("_LOVALUE_d$","",re.sub("_LOQUALIFIER_s$","",re.sub("_UPVALUE_d$","",re.sub("_UNIT_s$","",col))))))).replace(".","_"))
+    tmp["title"]=tmp["field_clean"].apply(lambda col: re.sub("^T_","",re.sub("^Е_","",col)).replace("_"," ").strip())
     tmp.sort_values(by=['field_clean'],inplace=True)
     return tmp
 
