@@ -218,3 +218,13 @@ with open(ann_hits, 'w',encoding='utf-8') as f:
             f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
             rank=rank+1
 
+
+query="elements can be determined semiquantitatively using X-ray fluorescence (XRF)"
+embeddings = model.encode(query, 
+                        show_progress_bar=True,
+                        normalize_embeddings=True)
+labels,distances =  e_idx.knn_query(embeddings, k=3)     
+rank = 1
+for label, distance in zip(labels[0],distances[0]):
+    print("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
+    rank=rank+1     

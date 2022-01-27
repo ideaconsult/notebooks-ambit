@@ -43,11 +43,18 @@ tasks:
     product:
       nb: "products/onto_stats.ipynb"
 
-
     params:
       folder_output: "{{folder_output}}"
       model_embedding: "{{model_embedding}}"
       hnsw_distance: "{{hnsw_distance}}"  
+
+  - source: tasks/spacy.py
+    product:
+      nb: "products/spacy.ipynb"
+
+    params:
+      folder_output: "{{folder_output}}"
+       
 
   - source: tasks/overview.py
     product:
