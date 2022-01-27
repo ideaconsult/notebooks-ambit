@@ -1,0 +1,13 @@
+
+folder_output: "example"
+solr_api_url: "https://api.ideaconsult.net/nanoreg1"
+solr_api_key: ""
+templates_pchem: "https://search.data.enanomapper.net/api/templates/pchem.json"
+query: "*:*"
+annotation_folder: "/enanomapper/annotation/"
+blueprint: "blueprint.json"
+#model_embedding: "msmarco-distilbert-base-dot-prod-v3"
+#model_embedding: "paraphrase-distilroberta-base-v1"
+model_embedding: "all-mpnet-base-v2"
+hnsw_distance: "cosine"
+
