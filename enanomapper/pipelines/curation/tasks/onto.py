@@ -179,7 +179,7 @@ if not os.path.isfile(ann_index):
     definitions = terms["training"].to_list()
 
     embeddings = model.encode(definitions, 
-                            show_progress_bar=True,
+                            show_progress_bar=False,
                             normalize_embeddings=True)
     embeddings.shape
 
@@ -209,7 +209,7 @@ with open(ann_hits, 'w',encoding='utf-8') as f:
     for prm in prms:
         query = prm
         embeddings = model.encode(query, 
-                        show_progress_bar=True,
+                        show_progress_bar=False,
                         normalize_embeddings=True)
 
         labels,distances =  e_idx.knn_query(embeddings, k=3)
@@ -219,12 +219,19 @@ with open(ann_hits, 'w',encoding='utf-8') as f:
             rank=rank+1
 
 
-query="elements can be determined semiquantitatively using X-ray fluorescence (XRF)"
-embeddings = model.encode(query, 
-                        show_progress_bar=True,
-                        normalize_embeddings=True)
-labels,distances =  e_idx.knn_query(embeddings, k=3)     
-rank = 1
-for label, distance in zip(labels[0],distances[0]):
-    print("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
-    rank=rank+1     
+import spacy
+#spacy.prefer_gpu()
+nlp = spacy.load("en_core_web_sm")
+
+text=("elements can be determined semiquantitatively using X-ray fluorescence (XRF)")
+doc = nlp(text)
+for chunk in doc.noun_chunks:
+    query = chunk.text
+    embeddings = model.encode(query, 
+                            show_progress_bar=False,
+                            normalize_embeddings=True)
+    labels,distances =  e_idx.knn_query(embeddings, k=3)     
+    rank = 1
+    for label, distance in zip(labels[0],distances[0]):
+        print("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
+        rank=rank+1     

@@ -54,6 +54,9 @@ tasks:
 
     params:
       folder_output: "{{folder_output}}"
+      model_embedding: "{{model_embedding}}"
+      hnsw_distance: "{{hnsw_distance}}"    
+      documents: "{{documents}}"  
        
 
   - source: tasks/overview.py
