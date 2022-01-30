@@ -1,5 +1,5 @@
 # + tags=["parameters"]
-upstream = None
+upstream = ["retrieve","onto"]
 folder_output = None
 model_embedding = None
 hnsw_distance = None
@@ -8,7 +8,7 @@ documents = None
 
 import hnswlib
 import spacy
-from spacypdfreader import pdf_reader 
+
 import os, os.path
 import torch
 
@@ -58,9 +58,9 @@ def analyse_doc(terms,model,e_idx,doc_terms,file,output_f,nhits=3):
 
 
     try: 
-        print("Noun phrases:")
-        for noun in doc_terms.keys():
-            query = noun
+        #print("Noun phrases:")
+        for term,score in doc_terms.iteritems():
+            query = term
             if len(query)<2:
                 continue
             embeddings = model.encode(query, 
@@ -71,7 +71,7 @@ def analyse_doc(terms,model,e_idx,doc_terms,file,output_f,nhits=3):
             rank = 1
             for label, distance in zip(labels[0],distances[0]):
                 if distance<0.25:
-                    output_f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(file,query,doc_terms[query],rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
+                    output_f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(file,query,score,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
                     rank=rank+1
             output_f.flush()
     except Exception as err:
@@ -85,14 +85,26 @@ def analyse_doc(terms,model,e_idx,doc_terms,file,output_f,nhits=3):
 #    print(entity.text, entity.label_)
 from pathlib import Path
 import PyPDF2
+import pyate
+import yake
 def annotate_terms(documents,terms,model,e_idx,ann_hits):
+
+    language = "en"
+    max_ngram_size = 5
+    deduplication_threshold = 0.8
+    deduplication_algo = 'seqm'
+    windowSize = 2
+    numOfKeywords = 100
+
+    custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
 
     pathlist = Path(documents).glob('**/*.pdf')
     nlp = spacy.load("en_core_web_sm")
-    ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_hits.txt".format(model_embedding,hnsw_distance))
+    #nlp.add_pipe("combo_basic")
+    #ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_terms.txt".format(model_embedding,hnsw_distance))
     with open(ann_hits, 'w',encoding='utf-8') as output_f:
-        output_f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format("file","query","count","rank","distance","id","label","definition"));
-
+        output_f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format("file","query","score","rank","distance","id","label","definition"));
+    
         for path in pathlist:
             pdfObj = open(str(path), 'rb')
             try:
@@ -107,30 +119,18 @@ def annotate_terms(documents,terms,model,e_idx,ann_hits):
                 txt = ""
                 for i in range(0, np):
                     txt = txt + reader.getPage(i).extractText()
-                doc = nlp(txt)
-                nouns = get_nouns(doc) 
-                analyse_doc(terms,model,e_idx,nouns,os.path.basename(str(path)),output_f)
+                #doc = nlp(txt)
+                #doc_terms = doc._.combo_basic.sort_values(ascending=False)
+                doc_terms = pd.Series(dict((x, y) for x, y in custom_kw_extractor.extract_keywords(txt)))
+                analyse_doc(terms,model,e_idx,doc_terms,os.path.basename(str(path)),output_f)
             except Exception as err:
                 print(err)
             finally:
                 pdfObj.close()
+  
 
-#annotate_nounphrases(documents,folder_output,model_embedding,hnsw_distance,terms):
-
-def annotate_nounphrases(documents,terms,model,e_idx,ann_hits):
-    
-    pathlist = Path(documents).glob('**/*.pdf')
-    nlp = spacy.load("en_core_web_sm")
-
-    with open(ann_hits, 'w',encoding='utf-8') as output_f:
-        output_f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format("file","query","count","rank","distance","id","label","definition"));
-
-        for path in pathlist:
-            file = os.path.basename(str(path))
-            doc = pdf_reader(str(path), nlp)        
-            nouns = get_nouns(doc)    
-            analyse_doc(terms,model,e_idx,nouns,file,output_f,nhits=2)
 
 ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_hits.txt".format(model_embedding,hnsw_distance))
+ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_terms.txt".format(model_embedding,hnsw_distance))
 #annotate_nounphrases(documents,terms,model,e_idx,ann_hits)
 annotate_terms(documents,terms,model,e_idx,ann_hits)

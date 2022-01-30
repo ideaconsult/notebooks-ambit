@@ -57,7 +57,14 @@ tasks:
       model_embedding: "{{model_embedding}}"
       hnsw_distance: "{{hnsw_distance}}"    
       documents: "{{documents}}"  
-       
+
+  - source: tasks/scispacy.py
+    product:
+      nb: "products/scispacy.ipynb"
+
+    params:
+      folder_output: "{{folder_output}}"
+      documents: "{{documents}}"         
 
   - source: tasks/overview.py
     product:
