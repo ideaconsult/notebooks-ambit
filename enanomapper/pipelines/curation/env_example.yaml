@@ -10,4 +10,5 @@ blueprint: "blueprint.json"
 #model_embedding: "paraphrase-distilroberta-base-v1"
 model_embedding: "all-mpnet-base-v2"
 hnsw_distance: "cosine"
-
+documents: "."
+scispacy_enable: False

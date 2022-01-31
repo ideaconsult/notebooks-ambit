@@ -64,7 +64,8 @@ tasks:
 
     params:
       folder_output: "{{folder_output}}"
-      documents: "{{documents}}"         
+      documents: "{{documents}}"      
+      scispacy_enable: "{{scispacy_enable}}"   
 
   - source: tasks/overview.py
     product:

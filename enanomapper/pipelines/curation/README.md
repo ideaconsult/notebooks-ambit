@@ -45,3 +45,21 @@ ploomber interact
 ## Exporting to other systems
 
 [soopervisor](https://soopervisor.readthedocs.io/) allows you to run ploomber projects in other environments (Kubernetes, AWS Batch, AWS Lambda and Airflow). Check out the docs to learn more.
+
+
+## Conda environment
+conda env export -n ml2 > environment.yml
+
+#conda env update -f environment.yml -n ml3
+
+#https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#building-identical-conda-environments
+conda list --explicit
+
+#conda create --name ml4 --clone ml_template
+
+conda create -n pipeline1 pytorch torchvision cudatoolkit spacy cupy  ploomber
+
+conda update -n base -c defaults 
+
+Note: scispacy requires older spacy version 
+workaround - first  conda install nmslib  ; then pip instal scispacy
