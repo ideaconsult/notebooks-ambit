@@ -38,22 +38,7 @@ import pandas as pd
 terms_file = os.path.join(folder_output,"terms","terms.txt")
 terms = pd.read_csv(terms_file,sep="\t",encoding="utf-8")
 
-def get_nouns(doc):
-    nouns = {}
-    for chunk in doc.noun_chunks:
-        query = chunk.text.replace("\n"," ").replace("\r"," ").replace("."," ").replace("  "," ").strip().lower()
-        try:
-            float(query)
-            continue
-        except:
-            pass
-        if len(query)<2:
-            continue
-        elif query in nouns:
-            nouns[query] = nouns[query]+1
-        else:
-            nouns[query] = 1
-    return nouns
+
 def analyse_doc(terms,model,e_idx,doc_terms,file,output_f,nhits=3):
 
 
@@ -87,19 +72,10 @@ from pathlib import Path
 import PyPDF2
 import pyate
 import yake
-def annotate_terms(documents,terms,model,e_idx,ann_hits):
-
-    language = "en"
-    max_ngram_size = 5
-    deduplication_threshold = 0.8
-    deduplication_algo = 'seqm'
-    windowSize = 2
-    numOfKeywords = 100
-
-    custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
+def annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys):
 
     pathlist = Path(documents).glob('**/*.pdf')
-    nlp = spacy.load("en_core_web_sm")
+    
     #nlp.add_pipe("combo_basic")
     #ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_terms.txt".format(model_embedding,hnsw_distance))
     with open(ann_hits, 'w',encoding='utf-8') as output_f:
@@ -121,16 +97,51 @@ def annotate_terms(documents,terms,model,e_idx,ann_hits):
                     txt = txt + reader.getPage(i).extractText()
                 #doc = nlp(txt)
                 #doc_terms = doc._.combo_basic.sort_values(ascending=False)
-                doc_terms = pd.Series(dict((x, y) for x, y in custom_kw_extractor.extract_keywords(txt)))
+                
+                doc_terms = extract_keys(txt)
                 analyse_doc(terms,model,e_idx,doc_terms,os.path.basename(str(path)),output_f)
+                
             except Exception as err:
                 print(err)
             finally:
                 pdfObj.close()
-  
+
+nlp = spacy.load("en_core_web_sm")
 
 
-ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_hits.txt".format(model_embedding,hnsw_distance))
-ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_terms.txt".format(model_embedding,hnsw_distance))
-#annotate_nounphrases(documents,terms,model,e_idx,ann_hits)
-annotate_terms(documents,terms,model,e_idx,ann_hits)
+def get_nouns(txt):
+    doc = nlp(txt)
+    nouns = {}
+    for chunk in doc.noun_chunks:
+        query = chunk.text.replace("\n"," ").replace("\r"," ").replace("."," ").replace("  "," ").strip().lower()
+        try:
+            float(query)
+            continue
+        except:
+            pass
+        if len(query)<2:
+            continue
+        elif query in nouns:
+            nouns[query] = nouns[query]+1
+        else:
+            nouns[query] = 1
+    return pd.Series(nouns)
+
+
+language = "en"
+max_ngram_size = 5
+deduplication_threshold = 0.8
+deduplication_algo = 'seqm'
+windowSize = 2
+numOfKeywords = 100
+
+custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
+
+def get_keys_by_yake(txt):
+    return pd.Series(dict((x, y) for x, y in custom_kw_extractor.extract_keywords(txt)))
+
+#ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_nouns.txt".format(model_embedding,hnsw_distance))
+#annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_nouns)
+
+ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_yake.txt".format(model_embedding,hnsw_distance))
+annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_keys_by_yake)

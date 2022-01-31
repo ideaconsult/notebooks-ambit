@@ -5,6 +5,7 @@ solr_api_url = None
 solr_api_key = None
 annotation_folder = None
 query=None
+plot_dose_response=None
 # -
 
 from pynanomapper import client_solr,aa
@@ -105,92 +106,124 @@ def get_docs(query):
 #df.to_csv(os.path.join(folder_output,"results.txt"),sep="\t")
 
 
-_query = {'q': query, 'fq': 'type_s:study', 'wt': 'json',  'rows': 10000}
-r = client_solr.post(solr_api_url,query=_query,auth=auth_object)
 
-import numpy as np
-import matplotlib.pyplot as plt
 
-import plotly.express as px
-df = pd.DataFrame(r.json()['response']['docs'])
-if not df.empty:
-    try:
-        df["time"] = df["_CONDITION_exposure_time_d"].astype(str)+  df["_CONDITION_exposure_time_UNIT_s"]
-    except:
-        df["time"] = ""
-    #df.fillna("",inplace=True)
-    #df["time"] = df.apply(lambda x: '{:d} {}'.format(int(x["_CONDITION_exposure_time_d"]), x["_CONDITION_exposure_time_UNIT_s"]), axis = 1)
-    #df.head()
-    df.rename(columns={'E.cell_type_s' : 'Cell'},inplace=True)
-    df.loc[df['Cell'] == 'NCI-H441'] = "H441"
 
-    columns = ['id', 'name_s', 'publicname_s', 'owner_name_s', 'substanceType_s',
-        's_uuid_s', 'type_s', 'document_uuid_s', 'investigation_uuid_s',
-        'assay_uuid_s', 'topcategory_s', 'endpointcategory_s', 'guidance_s',
-        'endpoint_s', 'effectendpoint_s', 'effectendpoint_type_s',
-        'reference_owner_s', 'reference_year_s', 'reference_s', 'loValue_d',
-        'unit_s','E.method_s', 'E.cell_type_s',
-        '_CONDITION_concentration_UNIT_s', '_CONDITION_concentration_d',
-        '_CONDITION_exposure_time_UNIT_s', '_CONDITION_exposure_time_d',
-        '_CONDITION_replicate_s', '_CONDITION_material_s', '_version_', 'err_d',
-        'errQualifier_s', 'guidance_synonym_ss', 'effectendpoint_synonym_ss',
-            'E.method_synonym_ss']
-    methods=df['E.method_s'].unique()
-    for method in methods:
-        #fig = plt.figure()
-        
-        _tmp1 = df.loc[df["E.method_s"]==method]
-        endpoints =_tmp1['endpoint_s'].unique()
-        for endpoint in endpoints:
-            _forendpoint = _tmp1["endpoint_s"]==endpoint
-            _forendpointtype = _tmp1['effectendpoint_type_s']=='AVERAGE'
-            _tmp2 = _tmp1.loc[_forendpoint & _forendpointtype]
-            #print(_tmp1.loc[_forendpoint]['effectendpoint_type_s'].unique())
-            cus = _tmp2['_CONDITION_concentration_UNIT_s'].unique()
-            for cu in cus:
-                _forcu = _tmp2['_CONDITION_concentration_UNIT_s']==cu
-                _tmp3 = _tmp2.loc[_forcu]
-                _tmp3.fillna("",inplace=True)
-                units = _tmp3['unit_s'].unique()
-                try:
-
-                    fig = px.scatter(_tmp3, y="loValue_d", x="_CONDITION_concentration_d",   color="publicname_s", error_y="err_d",
-                                facet_row = "time",facet_col = 'Cell',
-                                log_x=False, width=1200, height=1200,
-                                hover_name='endpoint_s', hover_data=["publicname_s", "endpointcategory_s", "E.method_s","endpoint_s",'_CONDITION_concentration_d','document_uuid_s'],
-                                labels={
-                                "_CONDITION_concentration_d": "Concentration ({})".format(cu),
-                                "loValue_d": "{} {}".format(endpoint,units),
-                                "publicname_s": "Material"
+def plot_dose_response(df,method, endpoint,units, concentration_unit,facet_row="time",facet_col="Cell", color="publicname_s",imgfile="output.png"):
+    
+    fig = px.scatter(df, y="loValue_d", x="_CONDITION_concentration_d",   color=color, error_y="err_d",
+                    facet_row =facet_row,facet_col = facet_col,
+                    log_x=False, width=1200, height=1200,
+                    hover_name='effectendpoint_s', 
+                    hover_data=["publicname_s", "endpointcategory_s", "E.method_s","effectendpoint_s",'_CONDITION_concentration_d','document_uuid_s'],
+                    labels={
+                    "_CONDITION_concentration_d": "Concentration ({})".format(concentration_unit),
+                    "loValue_d": "{} {}".format(endpoint,units),
+                    "publicname_s": "Material",
+                    "reference_owner_s" : "Provider"
                     },
-                    )
-                    fig.update_layout(
-                            autosize=True,
+    )
+    fig.update_layout(
+             autosize=True,
                         # width=900,
                         # height=500,
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)'                       
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)'                       
                                     )
-                    fig.update_xaxes(showgrid=True, gridwidth=1,linecolor='black', gridcolor='LightGray')
-                    fig.update_yaxes(showgrid=True, gridwidth=1,linecolor='black', gridcolor='LightGray')                
+    fig.update_xaxes(showgrid=True, gridwidth=1,linecolor='black', gridcolor='LightGray')
+    fig.update_yaxes(showgrid=True, gridwidth=1,linecolor='black', gridcolor='LightGray')                
                         #fig.update_traces(textposition='top center')
                     #category = _tmp3['endpointcategory_s'].unique()
-                    fig.update_layout(title_text="{} ({})".format(method,endpoint), title_x=0.5)
-                    fig.show()
-                    fig.write_image(os.path.join(folder_output,"data","{}_{}.png").format(endpoint,method))
-                except Exception as err:
-                    print(err,method,endpoint,_tmp3['effectendpoint_type_s'].unique(),_tmp3["time"].unique())
-                    #display(_tmp3[["E.method_s","endpoint_s","publicname_s","loValue_d","unit_s","_CONDITION_concentration_d","_CONDITION_concentration_UNIT_s","time"]].head())
+    fig.update_layout(title_text="{}: {} ({})".format(method,endpoint,units), title_x=0.5)
+    fig.show()
+    fig.write_image(imgfile)
+          
+import numpy as np
+import matplotlib.pyplot as plt
+import plotly.express as px
 
+# we don't want to read everything in one go
 
-    import plotly.express as px
+def dose_response_overview(query):
+    _query = "*:*" if query=="" else query
+    facets = client_solr.Facets()
+    facets.set_annotation_folder(annotation_folder)
+    _tag_method = "E.method_s"
+    _tag_endpoint= "effectendpoint_s"
+    _tag_endpoint_type= "effectendpoint_type_s"
+    _tag_conc_unit = '_CONDITION_concentration_UNIT_s'
+    _tag_conc = '_CONDITION_concentration_d'
+    _tag_time_unit = '_CONDITION_exposure_time_UNIT_s'
+    _tag_time = '_CONDITION_exposure_time_d'
+    df = facets.summary(solr_api_url,auth_object, query=_query,fields=[
+            "topcategory_s","endpointcategory_s",_tag_method,_tag_endpoint,"effectendpoint_type_s",
+            _tag_conc,_tag_conc_unit,
+            _tag_time,_tag_time_unit
+            ],log_query=log_query,log_result=beautify)    
+
+    df.head()
+
+    columns = ['id', 'name_s', 'publicname_s', 'owner_name_s', 'substanceType_s',
+            's_uuid_s', 'type_s', 'document_uuid_s', 'investigation_uuid_s',
+            'assay_uuid_s', 'topcategory_s', 'endpointcategory_s', 'guidance_s',
+            'endpoint_s', 'effectendpoint_s', 'effectendpoint_type_s',
+            'reference_owner_s', 'reference_year_s', 'reference_s', 'loValue_d',
+            'unit_s','E.method_s', 'E.cell_type_s',
+            _tag_conc_unit, _tag_conc,
+            _tag_time_unit, _tag_time,
+            '_CONDITION_replicate_s', '_CONDITION_material_s', '_version_', 'err_d',
+            'errQualifier_s', 'guidance_synonym_ss', 'effectendpoint_synonym_ss',
+                'E.method_synonym_ss']
+            
+    for index,row in df.iterrows():
+        method = row[_tag_method]
+        endpoint= row[_tag_endpoint]
+
+        query = "{}:{} {}:{} {}:[* TO *] ".format(_tag_method,method,_tag_endpoint,endpoint,_tag_conc)
+        _query = {'q': query, 'fq': 'type_s:study', 'wt': 'json',  'rows': 10000}
+        r = client_solr.post(solr_api_url,query=_query,auth=auth_object)
+        
+        tmp = pd.DataFrame(r.json()['response']['docs'])
+        tmp["time"] = ""
+        if not _tag_conc in tmp.columns:
+            continue
+        time = ""
+
+        
+        if _tag_time in tmp.columns:
+            tmp["time"] = tmp[_tag_time]
+        if _tag_time_unit in tmp.columns:
+            tmp["time"] = tmp["time"] + " " + row[_tag_time_unit]      
+
+        r.close()
+        cells = tmp["E.cell_type_s"].unique()
+        for cell in cells:
+            tmp_cell = tmp.loc[tmp["E.cell_type_s"]==cell]
+            units = tmp_cell["unit_s"].unique()
+            for unit in units:
+                tmp_endpoint_unit = tmp.loc[tmp["unit_s"]==unit]
+                conc_units = tmp_endpoint_unit[_tag_conc_unit].unique()
+                for cu in conc_units:
+                    tmp_endpoint_unit_cu = tmp_endpoint_unit.loc[tmp_endpoint_unit[_tag_conc_unit]==cu]
+                    if not tmp_endpoint_unit_cu.empty:
+                        print(method,endpoint,cell,unit,cu)
+            #print(tmp.columns)
+                        #display(tmp_endpoint_unit_cu[["publicname_s",_tag_conc,_tag_conc_unit,"time","reference_owner_s"]].head())
+                        imgfile = os.path.join(folder_output,"data","{}_{}_{}_{}_{}.png").format(method,endpoint,unit.replace("/","_"),cell,cu.replace("/","_"))
+                        plot_dose_response(tmp_endpoint_unit_cu,method, endpoint,unit, cu,facet_row="time",facet_col="publicname_s",color="reference_owner_s",imgfile=imgfile)                
+        #break;
+
+if plot_dose_response:
+    dose_response_overview(query)
+
+def tests():
     tmp = df.groupby(["E.method_s"]).size().reset_index(name='counts')
     #tmp
     fig = px.pie(tmp, values='counts', names='E.method_s', title='Methods')
     fig.show()
     fig.write_image(os.path.join(folder_output,"data","methods.png"))                
 
-    import plotly.express as px
+
     tmp = df.groupby(["Cell"]).size().reset_index(name='counts')
     #tmp
     fig = px.pie(tmp, values='counts', names='Cell', title='Cells')

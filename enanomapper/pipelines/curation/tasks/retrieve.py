@@ -153,7 +153,7 @@ def get_documents_by_method(solr_api_url,auth_object,q="*:*",method="BET"):
 
 
 def prepare(solr_api_url,solr_api_key,folder_output,query="owner_name_s:GRACIOUS",method="BET"):
-    print(query)
+    #print(query)
     config,config_servers, config_security, auth_object, msg = aa.parseOpenAPI3() 
     if auth_object!=None:
         auth_object.setKey(solr_api_key)
@@ -208,6 +208,8 @@ for index,row in facets.iterrows():
     #results4method = results
     #tmp = results4method.dropna(axis=1,how="all")
     tmp = results
+    if tmp is None:
+        continue
     #display(results4method)
     #results4method.to_csv("method.csv")
     #print(results4method.columns)
