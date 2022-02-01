@@ -128,20 +128,24 @@ def get_nouns(txt):
     return pd.Series(nouns)
 
 
-language = "en"
-max_ngram_size = 5
-deduplication_threshold = 0.8
-deduplication_algo = 'seqm'
-windowSize = 2
-numOfKeywords = 100
-
-custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
 
 def get_keys_by_yake(txt):
     return pd.Series(dict((x, y) for x, y in custom_kw_extractor.extract_keywords(txt)))
 
-#ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_nouns.txt".format(model_embedding,hnsw_distance))
-#annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_nouns)
+ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_nouns.txt".format(model_embedding,hnsw_distance))
+if not os.path.isfile(ann_hits):
+    annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_nouns)
+
 
 ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_yake.txt".format(model_embedding,hnsw_distance))
-annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_keys_by_yake)
+if not os.path.isfile(ann_hits):
+    language = "en"
+    max_ngram_size = 5
+    deduplication_threshold = 0.8
+    deduplication_algo = 'seqm'
+    windowSize = 2
+    numOfKeywords = 100
+    custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
+    annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_keys_by_yake)
+
+#ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_entities.txt".format(model_embedding,hnsw_distance))

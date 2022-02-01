@@ -11,6 +11,18 @@ tasks:
       solr_api_key: "{{solr_api_key}}"   
       query: "{{query}}"
 
+  - source: tasks/retrieve_study_metadata.py
+    product:
+      nb: "products/retrieve_study_metadata.ipynb"
+
+    params:
+      folder_output: "{{folder_output}}"    
+      solr_api_url: "{{solr_api_url}}"   
+      solr_api_key: "{{solr_api_key}}"   
+      query: "{{query}}"     
+      model_embedding: "{{model_embedding}}"
+      hnsw_distance: "{{hnsw_distance}}"       
+
   - source: tasks/retrieve_templates.py
     product:
       nb: "products/retrieve_templates.ipynb"
@@ -57,6 +69,16 @@ tasks:
       model_embedding: "{{model_embedding}}"
       hnsw_distance: "{{hnsw_distance}}"    
       documents: "{{documents}}"  
+
+  - source: tasks/kgraph.py
+    product:
+      nb: "products/kgraph.ipynb"
+
+    params:
+      folder_output: "{{folder_output}}"
+      model_embedding: "{{model_embedding}}"
+      hnsw_distance: "{{hnsw_distance}}"    
+
 
   - source: tasks/scispacy.py
     product:

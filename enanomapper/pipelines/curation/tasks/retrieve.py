@@ -180,7 +180,7 @@ def retrieve_params(solr_api_url,solr_api_key):
     tmp = pd.DataFrame(params.columns,columns=["field"])
     tmp["type"] = tmp["field"].apply(lambda x: "number" if x.endswith("_d") else ("QUALIFIER" if x.endswith("QUALIFIER") else ("unit" if x.endswith("UNIT") else "STRING")))
     tmp["field_clean"]=tmp["field"].apply(lambda col: re.sub("_s$","",re.sub("_d$","",re.sub("_UPQUALIFIER_s$","",re.sub("_LOVALUE_d$","",re.sub("_LOQUALIFIER_s$","",re.sub("_UPVALUE_d$","",re.sub("_UNIT_s$","",col))))))).replace(".","_"))
-    tmp["title"]=tmp["field_clean"].apply(lambda col: re.sub("^T_","",re.sub("^Е_","",col)).replace("_"," ").strip())
+    tmp["title"]=tmp["field_clean"].apply(lambda col: re.sub("^T_","",re.sub("^E_","",col)).replace("_"," ").strip())
     tmp.sort_values(by=['field_clean'],inplace=True)
     return tmp
 
