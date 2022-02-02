@@ -3,21 +3,19 @@ upstream = ["spacy","retrieve_study_metadata"]
 folder_output = None
 model_embedding = None
 hnsw_distance = None
+ann_pdf_hits = None
+prefix = None
+study_kgraph_file = None
 # -
 
 import os
 import pandas as pd
 import json
 
-study_graph = os.path.join(folder_output,"pykeen","study_kgraph.txt")
+df = pd.read_csv(ann_pdf_hits,sep="\t")
 
-#ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_nouns.txt".format(model_embedding,hnsw_distance))
-ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_yake.txt".format(model_embedding,hnsw_distance))
-
-df = pd.read_csv(ann_hits,sep="\t")
-
-training_file = os.path.join(folder_output,"pykeen","{}_{}_pdf_training.txt".format(model_embedding,hnsw_distance))
-kg_file = os.path.join(folder_output,"pykeen","results")
+training_file = os.path.join(folder_output,"pykeen","{}{}_{}_pdf_training.txt".format(prefix,model_embedding,hnsw_distance))
+kg_file = os.path.join(folder_output,"pykeen","{}results".format(prefix))
 
 
 training = df[["file","rank","id"]]
@@ -27,9 +25,9 @@ training.to_csv(training_file,sep="\t",index=False,header=False)
 
 import shutil
 
-combinedtraining_file = os.path.join(folder_output,"pykeen","{}_{}_pdf_combinedtraining.txt".format(model_embedding,hnsw_distance))
+combinedtraining_file = os.path.join(folder_output,"pykeen","{}{}_{}_pdf_combinedtraining.txt".format(prefix,model_embedding,hnsw_distance))
 with open( combinedtraining_file,'wb') as wfd:
-    for f in [training_file,study_graph]:
+    for f in [training_file,study_kgraph_file]:
         with open(f,'rb') as fd:
             shutil.copyfileobj(fd, wfd)
 
@@ -82,7 +80,7 @@ def ann(embedding_tensor,distance="cosine"):
     return p
 from pathlib import Path
 import torch
-entity_index = os.path.join(folder_output,"pykeen","kgraph.hnswlib.index")
+entity_index = os.path.join(folder_output,"pykeen","{}kgraph.hnswlib.index".format(prefix))
 if os.path.isfile(entity_index):
     #load
     #e_idx = hnswlib.Index(space=hnsw_distance,dim=768)
@@ -135,8 +133,8 @@ X = pca.transform(entity_embedding_tensor)
 df["x"]=X[:,0]
 df["y"]=X[:,1]
 
-df["type"] = df.apply(lambda x: "term" if x['id'].startswith("http") else ("document" if x['id'].endswith(".pdf") else "study"),axis=1)
-
+#df["type"] = df.apply(lambda x: "term" if x['id'].startswith("http") else ("document" if x['id'].endswith(".pdf") else "study"),axis=1)
+df["type"] = df.apply(lambda x: "term" if x['id'].startswith("http") else ("document" if x['id'].endswith(".pdf") else ("study" if x['id'].startswith("NR") else "keyword")),axis=1)
 
 import plotly.express as px
 fig = px.scatter(df, x="x", y="y", color="type",  log_x=False, width=1200, height=800,
@@ -149,14 +147,23 @@ fig.show()
 
 v = pd.DataFrame(entity_embedding_tensor,index=df["id"].values)
 
+findings = []
 for i1,row1 in v.iterrows():
-    if i1.endswith(".pdf") or i1.startswith("http"):
+    if i1.endswith(".pdf") or i1.startswith("http"): #or (not i1.startswith("NR")):
         continue
     labels,distances =  e_idx.knn_query(row1.values, k=100)
     for label, distance in zip(labels[0],distances[0]):
-        if distance > 0.8:
+        if distance > 0.6:
             continue
         _pid = entity_id_to_label[str(label)]
+        if i1==_pid:
+            continue
         if _pid.endswith(".pdf") :
             print("{}\t{}\t{}".format(i1,_pid,distance))
+            findings.append((i1,_pid,distance,"document"))
+        else:
+            findings.append((i1,_pid,distance,""))
+
+df = pd.DataFrame(findings,columns=["study","document","distance","type"])
+df.to_csv(os.path.join(folder_output,"pykeen","{}kgraph_findings.txt".format(prefix)),sep="\t",index=False)
     

@@ -3,13 +3,13 @@ upstream = ["onto"]
 folder_output = None
 model_embedding = None
 hnsw_distance = None
+ann_param_hits = None
 # -
 
 import os,os.path
 import pandas as pd
 
-ann_hits = os.path.join(folder_output,"terms","{}_{}_params_hits.txt".format(model_embedding,hnsw_distance))
-df = pd.read_csv(ann_hits,sep="\t")
+df = pd.read_csv(ann_param_hits,sep="\t")
 
 import plotly.express as px
 tmp = df[["distance","rank"]].dropna()

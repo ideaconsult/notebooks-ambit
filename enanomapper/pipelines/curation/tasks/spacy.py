@@ -4,6 +4,9 @@ folder_output = None
 model_embedding = None
 hnsw_distance = None
 documents = None
+terms_file = None
+prefix = None
+ann_index = None
 # -
 
 import hnswlib
@@ -12,7 +15,7 @@ import spacy
 import os, os.path
 import torch
 
-ann_index=os.path.join(folder_output,"terms","{}_{}_hnswlib.index".format(model_embedding,hnsw_distance))
+
 use_cuda = torch.cuda.is_available()
 if use_cuda:
     print('__CUDNN VERSION:', torch.backends.cudnn.version())
@@ -35,7 +38,7 @@ spacy.prefer_gpu()
 
 
 import pandas as pd
-terms_file = os.path.join(folder_output,"terms","terms.txt")
+
 terms = pd.read_csv(terms_file,sep="\t",encoding="utf-8")
 
 
@@ -77,7 +80,7 @@ def annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys):
     pathlist = Path(documents).glob('**/*.pdf')
     
     #nlp.add_pipe("combo_basic")
-    #ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_terms.txt".format(model_embedding,hnsw_distance))
+
     with open(ann_hits, 'w',encoding='utf-8') as output_f:
         output_f.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format("file","query","score","rank","distance","id","label","definition"));
     
@@ -132,13 +135,13 @@ def get_nouns(txt):
 def get_keys_by_yake(txt):
     return pd.Series(dict((x, y) for x, y in custom_kw_extractor.extract_keywords(txt)))
 
-ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_nouns.txt".format(model_embedding,hnsw_distance))
-if not os.path.isfile(ann_hits):
-    annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_nouns)
+ann_pdf_hits = os.path.join(folder_output,"terms","{}{}_{}_pdf_nouns.txt".format(prefix,model_embedding,hnsw_distance))
+if not os.path.isfile(ann_pdf_hits):
+    annotate_terms(documents,terms,model,e_idx,ann_pdf_hits,extract_keys=get_nouns)
 
 
-ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_yake.txt".format(model_embedding,hnsw_distance))
-if not os.path.isfile(ann_hits):
+ann_pdf_hits = os.path.join(folder_output,"terms","{}{}_{}_pdf_yake.txt".format(prefix,model_embedding,hnsw_distance))
+if not os.path.isfile(ann_pdf_hits):
     language = "en"
     max_ngram_size = 5
     deduplication_threshold = 0.8
@@ -146,6 +149,6 @@ if not os.path.isfile(ann_hits):
     windowSize = 2
     numOfKeywords = 100
     custom_kw_extractor = yake.KeywordExtractor(lan=language, n=max_ngram_size, dedupLim=deduplication_threshold, dedupFunc=deduplication_algo, windowsSize=windowSize, top=numOfKeywords, features=None)
-    annotate_terms(documents,terms,model,e_idx,ann_hits,extract_keys=get_keys_by_yake)
+    annotate_terms(documents,terms,model,e_idx,ann_pdf_hits,extract_keys=get_keys_by_yake)
 
-#ann_hits = os.path.join(folder_output,"terms","{}_{}_pdf_entities.txt".format(model_embedding,hnsw_distance))
+#ann_pdf_hits = os.path.join(folder_output,"terms","{}_{}_pdf_entities.txt".format(model_embedding,hnsw_distance))

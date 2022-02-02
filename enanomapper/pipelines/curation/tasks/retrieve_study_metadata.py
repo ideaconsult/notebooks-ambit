@@ -6,6 +6,11 @@ folder_output = None
 query=None
 model_embedding = None
 hnsw_distance = None
+prefix = None
+terms_file = None
+ann_index = None
+annotation_folder = None
+study_kgraph_file = None
 # -
 
 import io 
@@ -28,6 +33,7 @@ def get_facets(solr_api_url,solr_api_key,q=query,fields=["document_uuid_s","guid
     if auth_object!=None:
         auth_object.setKey(solr_api_key)    
     facets = client_solr.Facets()
+    facets.set_annotation_folder(annotation_folder)
     return  facets.summary(solr_api_url,auth_object, query=q,fields=fields)        
 
 import torch
@@ -47,24 +53,51 @@ class KG:
                         show_progress_bar=False,
                         normalize_embeddings=True)
 
-        labels,distances =  self.e_idx.knn_query(embeddings, k=3)
+        labels,distances =  self.e_idx.knn_query(embeddings, k=10)
         links = []
         for label, distance in zip(labels[0],distances[0]):
-            links.append(self.terms.iloc[label]["Class ID"])
+            if distance<0.3:
+                links.append(self.terms.iloc[label]["Class ID"])
         self.lookup[query] = links
         return links
 
+    def add_triple(self,study_kg,s,p,o):
+        if s=="_" or s=="" or s=="???":
+            return        
+        if o=="_" or o=="" or o=="???":
+            return
+        else:
+            study_kg.append((s,"type","study"))
+            study_kg.append((s,"keyword",o))
+            study_kg.append((o,"type",p))
+
+    def study2kg(self,df):
+        study_kg=[]
+        #["document_uuid_s","endpointcategory_s","guidance_s","effectendpoint_s","E.method_s","E.cell_type_s"]
+        for index,row in df.iterrows():
+            
+            doc = row["document_uuid_s"]
 
 
+            for o in ["E.method_s","effectendpoint_s","guidance_s","endpointcategory_name","E.cell_type_s"]:
+                ents = self.link_entity(row[o]) 
+                for entity in ents:
+                    self.add_triple(study_kg,doc,o.replace("_s","").replace("E.",""),entity)
 
-    def study2kg(self,df,params):
+ 
+        tmp = pd.DataFrame(study_kg)   
+        tmp.drop_duplicates(inplace=True)
+        return tmp        
+
+
+    def params2kg(self,df,params):
         df.drop(columns=['id','type_s','__input_file_s','_version_','Vial_s'],inplace=True)
         df.drop_duplicates(inplace=True)
-        print(df.shape)
+        #print(df.shape)
 
         study_kg=[]
         for index,row in df.iterrows():
-            print(index)
+            #print(index)
             doc = row["document_uuid_s"]
             if row["E.method_s"] == "supplier":
                 continue
@@ -101,9 +134,9 @@ from sentence_transformers import SentenceTransformer
 
 params = pd.read_csv(os.path.join(folder_output,"params.txt"),sep="\t",encoding="utf-8")
 
-df = retrieve_params(solr_api_url,solr_api_key,query="*:*")    
-print(df.shape)
-ann_index=os.path.join(folder_output,"terms","{}_{}_hnswlib.index".format(model_embedding,hnsw_distance))
+#df = retrieve_params(solr_api_url,solr_api_key,query="*:*")    
+#print(df.shape)
+
 use_cuda = torch.cuda.is_available()
 if use_cuda:
     print('__CUDNN VERSION:', torch.backends.cudnn.version())
@@ -117,11 +150,14 @@ else:
             #distilbert-base-nli-stsb-mean-tokens for symmetric search
 
 model = SentenceTransformer(model_embedding, device=torch_device)
-terms_file = os.path.join(folder_output,"terms","terms.txt")
+
 kg = KG(terms_file,ann_index,model)
 
-tmp = kg.study2kg(df,params)
+#tmp = kg.params2kg(df,params)
+#tmp.drop_duplicates(inplace=True)
+
+df = get_facets(solr_api_url,solr_api_key,q=query,fields=["document_uuid_s","endpointcategory_s","guidance_s","effectendpoint_s","E.method_s","E.cell_type_s"])
+tmp = kg.study2kg(df)
 tmp.drop_duplicates(inplace=True)
 
-#get_facets(solr_api_url,solr_api_key,q=query,fields=["document_uuid_s","guidance_s","effectendpoint_s"])
-tmp.to_csv(os.path.join(folder_output,"pykeen","study_kgraph.txt"),sep="\t",index=False,header=False)
+tmp.to_csv(study_kgraph_file,sep="\t",index=False,header=False)

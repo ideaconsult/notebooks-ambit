@@ -1,9 +1,13 @@
 # + tags=["parameters"]
-upstream = None
+upstream = ["retrieve","blueprint"]
 folder_output = None
 blueprint = None
 model_embedding = None
 hnsw_distance = None
+prefix=None
+terms_file=None
+ann_index = None
+ann_param_hits = None
 # -
 
 import pandas as pd
@@ -12,6 +16,8 @@ import os,os.path
 import numpy as np
 import hnswlib
 import traceback
+
+
 
 class Vocabulary:
     
@@ -99,13 +105,14 @@ class Vocabulary:
 vocab = Vocabulary(folder=folder_output)
 try:
     #ontology = ["CHMO","BAO","EDAM","NPO"]
-    ontology = ["EDAM","EFO","CHEBI","IOBC","ECSO","FIX","REX","CCONT","OBCS","IAO","EXO","ECTO","HHEAR","CHEAR","PHENX","OAE","PATO","NPO","HUPSON","CRISP",
-"SWEET","CHEMINF","MMO","CHMO","BAO","MS","CLO","UO","MESH","OBI","TXPO","BIOMODELS","EDAM","LOINC","SBO","ENM"]
-    terms_file = os.path.join(folder_output,"terms","terms.txt")
+    ontology = ["CHMO","ENM","BAO"]
+    #ontology = ["EDAM","EFO","CHEBI","IOBC","ECSO","FIX","REX","CCONT","OBCS","IAO","EXO","ECTO","HHEAR","CHEAR","PHENX","OAE","PATO","NPO","HUPSON","CRISP",
+#"SWEET","CHEMINF","MMO","CHMO","BAO","MS","CLO","UO","MESH","OBI","TXPO","BIOMODELS","EDAM","LOINC","SBO","ENM"]
+    
     print(terms_file)
     if os.path.isfile(terms_file):
         terms = pd.read_csv(terms_file,sep="\t",encoding="utf-8")
-        print(terms)
+        #print(terms)
     else:
         terms = None
 
@@ -120,8 +127,15 @@ try:
             except Exception as err:
                 print(err)
             
+        blueprint_file = os.path.join(folder_output,"terms","blueprint.csv")
+        if os.path.isfile(blueprint_file):
+            blueprint = pd.read_csv(blueprint_file,sep="\t",encoding="utf-8")
+            if terms is None:
+                terms = blueprint
+            else:
+                terms = pd.concat([terms,blueprint])
 
-        pd.DataFrame(terms).to_csv(terms_file,sep="\t",encoding="utf-8")
+        pd.DataFrame(terms).to_csv(terms_file,sep="\t",encoding="utf-8",index=False)
 except Exception as err:
     print(err)
 
@@ -159,7 +173,7 @@ def ann(embedding_tensor,distance="ip"):
 
 import torch
 
-ann_index=os.path.join(folder_output,"terms","{}_{}_hnswlib.index".format(model_embedding,hnsw_distance))
+
 use_cuda = torch.cuda.is_available()
 if use_cuda:
     print('__CUDNN VERSION:', torch.backends.cudnn.version())
@@ -174,6 +188,7 @@ from sentence_transformers import SentenceTransformer
 
 model = SentenceTransformer(model_embedding, device=torch_device)
 
+import json
 if not os.path.isfile(ann_index):
 
     definitions = terms["training"].to_list()
@@ -203,8 +218,8 @@ params = pd.read_csv(os.path.join(folder_output,"params.txt"),sep="\t",encoding=
 prms =params["title"].unique()
 #tmp = []
 
-ann_hits = os.path.join(folder_output,"terms","{}_{}_params_hits.txt".format(model_embedding,hnsw_distance))
-with open(ann_hits, 'w',encoding='utf-8') as f:
+
+with open(ann_param_hits, 'w',encoding='utf-8') as f:
     f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format("query","rank","distance","id","label","definition"));
     for prm in prms:
         query = prm
@@ -215,8 +230,9 @@ with open(ann_hits, 'w',encoding='utf-8') as f:
         labels,distances =  e_idx.knn_query(embeddings, k=3)
         rank = 1
         for label, distance in zip(labels[0],distances[0]):
-            f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
-            rank=rank+1
+            if distance<0.3:
+                f.write("{}\t{}\t{}\t{}\t{}\t{}\n".format(query,rank,distance,terms.iloc[label]["Class ID"],terms.iloc[label]["Preferred Label"],terms.iloc[label]["Definitions"]))
+                rank=rank+1
 
 
 import spacy

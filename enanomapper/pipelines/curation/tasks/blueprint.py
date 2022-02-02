@@ -7,6 +7,8 @@ blueprint = None
 import os,os.path
 import json
 import urllib.parse
+import pandas as pd
+
 
 def convert_blueprint(file):
     project="GRACIOUS"
@@ -109,9 +111,39 @@ def parse_grouping_kb(tagger,classes,project="GRACIOUS"):
         if 'decendents' in h:
             parse_grouping_kb(tagger,h['decendents'])
 
+def prepare4embedding(blueprint_file):    
+    blueprint_json = None
+    if os.path.isfile(blueprint_file):
+        with open(blueprint_file, "r") as _file:
+            blueprint_json = json.load(_file)
+        df = []
+        for item in blueprint_json:
+            if "IATA_KB" in item["ontology"]:
+                continue
+            _id = item["id"].replace("ID_","").replace("UE_"," ").replace("HH_"," ").replace("EN_"," ").replace("EP_"," ").replace("PC_"," ").replace("_"," ").replace("'",'') 
+            _d = None
+            if "definition" in item:
+                d = item["definition"]
+                if type(d) is str:
+                    _d = d
+                elif type(d) is list:
+                    _d =  " ".join("{}".format(i) for i in d) 
+                    
+                if _d is None or _d=="":
+                    _d = _id
+                else:
+                    _d = "{}. {}.".format(_id,_d)
+                df.append({"Class ID" : item["id"],   "Preferred Label" : item["name"], 
+                    "Parents" : "","Definitions" : "", "Synonyms" : "" , "ontology" : "BLUEPRINT","training" : _d.strip()})
+	
+        return pd.DataFrame(df)
+
 if os.path.isfile(blueprint):
     tagger = convert_blueprint(blueprint)
     print(tagger)
     outfile = os.path.join(folder_output,"terms","blueprint.json")
-    with open(outfile, "w") as write_file:
+    with open(outfile, "w",encoding="utf-8") as write_file:
         json.dump(tagger, write_file)
+
+    df = prepare4embedding(outfile)
+    df.to_csv(os.path.join(folder_output,"terms","blueprint.csv"),sep="\t",encoding="utf-8",index=False)

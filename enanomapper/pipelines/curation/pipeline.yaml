@@ -14,6 +14,7 @@ tasks:
   - source: tasks/retrieve_study_metadata.py
     product:
       nb: "products/retrieve_study_metadata.ipynb"
+      data: "{{folder_output}}/pykeen/{{prefix}}study_kgraph.txt"  
 
     params:
       folder_output: "{{folder_output}}"    
@@ -21,7 +22,12 @@ tasks:
       solr_api_key: "{{solr_api_key}}"   
       query: "{{query}}"     
       model_embedding: "{{model_embedding}}"
-      hnsw_distance: "{{hnsw_distance}}"       
+      hnsw_distance: "{{hnsw_distance}}"      
+      terms_file :  "{{folder_output}}/terms/{{prefix}}terms.txt" 
+      prefix: "{{prefix}}"        
+      ann_index : "{{folder_output}}/terms/{{prefix}}{{model_embedding}}_{{hnsw_distance}}_hnswlib.index"    
+      annotation_folder: "{{annotation_folder}}"
+      study_kgraph_file: "{{folder_output}}/pykeen/{{prefix}}study_kgraph.txt"    
 
   - source: tasks/retrieve_templates.py
     product:
@@ -31,6 +37,7 @@ tasks:
     params:
       folder_output: "{{folder_output}}"    
       templates_pchem: "{{templates_pchem}}"   
+     
 
   - source: tasks/match_params.py
     product:
@@ -47,9 +54,14 @@ tasks:
 
     params:
       folder_output: "{{folder_output}}"
+      prefix: "{{prefix}}"
       blueprint: "{{blueprint}}"    
       model_embedding: "{{model_embedding}}"
-      hnsw_distance: "{{hnsw_distance}}"            
+      hnsw_distance: "{{hnsw_distance}}"     
+      terms_file :  "{{folder_output}}/terms/{{prefix}}terms.txt"   
+      ann_index : "{{folder_output}}/terms/{{prefix}}{{model_embedding}}_{{hnsw_distance}}_hnswlib.index"
+      ann_param_hits : "{{folder_output}}/terms/{{prefix}}{{model_embedding}}_{{hnsw_distance}}_params_hits.txt"
+      
 
   - source: tasks/onto_stats.py
     product:
@@ -59,6 +71,8 @@ tasks:
       folder_output: "{{folder_output}}"
       model_embedding: "{{model_embedding}}"
       hnsw_distance: "{{hnsw_distance}}"  
+      ann_param_hits : "{{folder_output}}/terms/{{prefix}}{{model_embedding}}_{{hnsw_distance}}_params_hits.txt"
+      
 
   - source: tasks/spacy.py
     product:
@@ -69,6 +83,10 @@ tasks:
       model_embedding: "{{model_embedding}}"
       hnsw_distance: "{{hnsw_distance}}"    
       documents: "{{documents}}"  
+      terms_file :  "{{folder_output}}/terms/{{prefix}}terms.txt" 
+      prefix: "{{prefix}}"   
+      ann_index : "{{folder_output}}/terms/{{prefix}}{{model_embedding}}_{{hnsw_distance}}_hnswlib.index" 
+    
 
   - source: tasks/kgraph.py
     product:
@@ -78,6 +96,9 @@ tasks:
       folder_output: "{{folder_output}}"
       model_embedding: "{{model_embedding}}"
       hnsw_distance: "{{hnsw_distance}}"    
+      ann_pdf_hits: "{{folder_output}}/terms/{{prefix}}{{model_embedding}}_{{hnsw_distance}}_pdf_nouns.txt"
+      prefix: "{{prefix}}"
+      study_kgraph_file: "{{folder_output}}/pykeen/{{prefix}}study_kgraph.txt"    
 
 
   - source: tasks/scispacy.py
