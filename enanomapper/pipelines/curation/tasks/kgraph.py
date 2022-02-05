@@ -8,6 +8,8 @@ prefix = None
 study_kgraph_file = None
 # -
 
+#idea - terms should be properties in the graph
+
 import os
 import pandas as pd
 import json
@@ -159,7 +161,7 @@ for i1,row1 in v.iterrows():
         if i1==_pid:
             continue
         if _pid.endswith(".pdf") :
-            print("{}\t{}\t{}".format(i1,_pid,distance))
+            #print("{}\t{}\t{}".format(i1,_pid,distance))
             findings.append((i1,_pid,distance,"document"))
         else:
             findings.append((i1,_pid,distance,""))

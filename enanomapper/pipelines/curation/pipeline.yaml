@@ -131,6 +131,20 @@ tasks:
       folder_output: "{{folder_output}}" 
       blueprint: "{{blueprint}}"       
  
+  - source: tasks/templates2kgraph.py
+    product:
+      nb: "products/templates2kgraph.ipynb"
+
+    params:
+      folder_output: "{{folder_output}}"
+      model_embedding: "{{model_embedding}}"
+      hnsw_distance: "{{hnsw_distance}}"     
+      terms_file :  "{{folder_output}}/terms/{{prefix}}terms.txt" 
+      prefix: "{{prefix}}"   
+      ann_index : "{{folder_output}}/terms/{{prefix}}{{model_embedding}}_{{hnsw_distance}}_hnswlib.index" 
+      spreadsheets: "{{spreadsheets}}"
+      terms_file :  "{{folder_output}}/terms/{{prefix}}terms.txt"       
+    
 
 
 

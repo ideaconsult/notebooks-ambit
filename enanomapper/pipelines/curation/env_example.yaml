@@ -12,3 +12,5 @@ model_embedding: "all-mpnet-base-v2"
 hnsw_distance: "cosine"
 documents: "."
 scispacy_enable: False
+plot_dose_response: False
+prefix: "bp_"
