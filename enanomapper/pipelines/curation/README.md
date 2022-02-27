@@ -63,3 +63,6 @@ conda update -n base -c defaults
 
 Note: scispacy requires older spacy version 
 workaround - first  conda install nmslib  ; then pip instal scispacy
+
+----------
+This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement 814426 NanoinformaTIX
