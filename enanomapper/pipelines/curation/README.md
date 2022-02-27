@@ -1,4 +1,6 @@
-# curation
+# curation pipeline for eNanoMapper database
+
+-- under development! --
 
 ## Setup development environment
 
