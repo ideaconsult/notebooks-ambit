@@ -1,0 +1,11 @@
+tasks:
+
+  - source: tasks/facets.py
+    product:
+      nb: "products/facets.ipynb"
+      data: "{{folder_output}}/facets.json"
+
+    params:
+      solr_url: "{{solr_url}}"   
+      solr_user: "{{solr_user}}"   
+      solr_pass: "{{solr_pass}}"
