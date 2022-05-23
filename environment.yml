@@ -9,8 +9,8 @@ dependencies:
   - ipywidgets
   - pandas
   - numpy
-  - pyyaml
+  - pyyaml>=5.1
   - qgrid
   - measurement
   - pip:
-      - pynanomapper>=1.0.5
+      - pynanomapper>=1.1.1
