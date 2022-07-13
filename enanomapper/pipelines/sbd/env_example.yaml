@@ -1,0 +1,7 @@
+
+folder_output: "changeit"
+
+solr_api_url: "https://api.ideaconsult.net/sabydoma"
+solr_api_key: "replace-with-your-api-key"
+
+query: "owner_name_s:SABYDOMA"
