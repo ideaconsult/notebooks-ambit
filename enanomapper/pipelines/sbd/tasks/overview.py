@@ -48,4 +48,10 @@ facets = client_solr.Facets()
 
 df = get_docs(query)
 
-df
+df.head()
+
+tmp = df[["p.oht.section","m.public.name","x.params.E.cell_type","x.params.E.method","p.study_provider","value.endpoint","value.range.lo","value.range.up","x.params.Cell culture. Serum"]]
+tmp.head()
+
+pvt = pd.pivot_table(tmp,values="value.range.lo",index = ["m.public.name"], columns = ["p.oht.section","x.params.E.method","value.endpoint"])
+pvt
