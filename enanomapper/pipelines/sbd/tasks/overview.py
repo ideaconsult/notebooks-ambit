@@ -21,7 +21,7 @@ def get_docs(query):
     #docs_query.setStudyFilter({"topcategory_s" : "*", "endpointcategory_s" : row["endpoint"], "E.method_s" : "({})".format(row["method"])})
     #docs_query.setStudyFilter("*")
     docs_query.settings['fields'] = "*"                    
-    _query = docs_query.getQuery(textfilter=query,facets=None,fq=None, rows=10000, _params=True, _conditions=False, _composition=False );
+    _query = docs_query.getQuery(textfilter=query,facets=None,fq=None, rows=10000, _params=True, _conditions=True, _composition=False );
     print(_query)
     r = client_solr.post(solr_api_url,query=_query,auth=auth_object)
     results = None
@@ -50,8 +50,15 @@ df = get_docs(query)
 
 df.head()
 
-tmp = df[["p.oht.section","m.public.name","x.params.E.cell_type","x.params.E.method","p.study_provider","value.endpoint","value.range.lo","value.range.up","x.params.Cell culture. Serum"]]
+tmp = df[["p.oht.module","p.oht.section","m.public.name","x.params.E.cell_type","x.params.E.method","x.conditions.E.exposure_time_d","p.study_provider","value.endpoint","value.range.lo","value.range.up","x.params.Cell culture. Serum"]]
+tmp = tmp.fillna(value={'value.range.lo':0,"x.params.E.cell_type":"","x.conditions.E.exposure_time_d" : "", "x.params.E.method": "","x.params.Cell culture. Serum":""})
 tmp.head()
 
-pvt = pd.pivot_table(tmp,values="value.range.lo",index = ["m.public.name"], columns = ["p.oht.section","x.params.E.method","value.endpoint"])
+pvt = pd.pivot_table(tmp,values="value.range.lo",index = ["m.public.name"], 
+        columns = ["p.oht.module","p.oht.section","x.params.E.method","x.conditions.E.exposure_time_d","value.endpoint"],
+        aggfunc=max
+        ,dropna = True)
 pvt
+
+#capture the  progression , consider one value for all assays
+#compare with and without serum . do pairwise similarity for F5.1
