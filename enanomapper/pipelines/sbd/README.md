@@ -1,4 +1,5 @@
 
+- install ploomber https://ploomber.io/
 - copy  env_example.yaml to env.yaml
 - customize  with your API key
 - run 
