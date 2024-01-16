@@ -1,0 +1,12 @@
+tasks:
+
+  - source: tasks/extract.py
+    product:
+      nb: "products/extract.ipynb"
+
+    params:
+      folder_output: "{{folder_output}}"    
+      enm_api_url: "{{enm_api_url}}"   
+      enm_api_key: "{{enm_api_key}}"   
+      query: "{{query}}"
+      db: "{{db}}"

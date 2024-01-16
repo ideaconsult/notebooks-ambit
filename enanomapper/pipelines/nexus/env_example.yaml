@@ -1,0 +1,8 @@
+
+folder_output: "products"
+
+enm_api_url: "https://api.ideaconsult.net/harmless"
+enm_api_key: "changeit"
+
+query: "type=owner_name&search=HARMLESS"
+db: "harmless"
