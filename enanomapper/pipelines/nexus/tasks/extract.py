@@ -17,6 +17,7 @@ from pynanomapper.datamodel.nexus_writer import to_nexus
 import nexusformat.nexus.tree as nx
 import traceback
 import json
+import uuid
 
 def json2nexus(url_db,auth,pjson):
     substances = m2n.Substances(**pjson)
@@ -71,7 +72,7 @@ if OK:
 if OK:
     nxroot = nx.NXroot()
     substances.to_nexus(nxroot)
-    nxroot.save(os.path.join(folder_output,"substances.nxs"),mode="w")
+    nxroot.save(os.path.join(folder_output,"substances_{}.nxs".format(uuid.uuid5(uuid.NAMESPACE_OID,query))),mode="w")
 
 
     
