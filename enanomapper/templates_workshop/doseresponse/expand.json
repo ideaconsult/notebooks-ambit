@@ -1,0 +1,31 @@
+{
+	"EXPAND_MAP": {
+	  "SUBSTANCEOWNER_MAP": {
+	  	 "DEFAULT" : "GRACIOUS"
+	  },
+		"CONDITIONS_MAP": {
+			"Material": {
+				"PC_EGDMA": {
+					"CONDITIONS": {
+						"Material": "control_positive"
+					}
+				},
+				"PC_TBHQ": {
+					"CONDITIONS": {
+						"Material": "control_positive"
+					}
+				},
+				"sample": {
+					"CONDITIONS": {
+						"Material": "sample"
+					}
+				},
+				"control_negative": {
+					"CONDITIONS": {
+						"Material": "control_negative"
+					}
+				}																
+			}
+		}	  
+	}
+}

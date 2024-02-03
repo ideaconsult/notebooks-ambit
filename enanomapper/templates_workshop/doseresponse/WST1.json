@@ -1,0 +1,543 @@
+{
+	"TEMPLATE_INFO": {
+		"NAME": "WST1-IOM",
+		"VERSION": "version 1",
+		"TYPE": 1,
+		"ALLOW_QUALIFIER_IN_VALUE_CELL": 1
+	},
+	"DATA_ACCESS": {
+		"ITERATION": "SUBSTANCE_RECORD_MAP",
+		"SHEET_INDEX": 1,
+		"ALLOW_EMPTY": true,
+		"RECOGNITION": "BY_INDEX",
+		"VARIABLES": {
+			"MaterialItemNames": {
+				"IS_ARRAY": true,
+				"TRIM_ARRAY": true,
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 23,
+				"COLUMN_INDEX": "B",
+				"COLUMN_INDICES": "2-40"
+			},
+			"Assay_endpoint": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 16,
+				"COLUMN_INDEX": "B"
+			},
+			"Outcome_metric": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 17,
+				"COLUMN_INDEX": "B"
+			},
+			"Replicates": {
+				"IS_ARRAY": true,
+				"TRIM_ARRAY": true,
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 74,
+				"COLUMN_INDEX": "B",
+				"COLUMN_INDICES": "2-40"
+			},
+			"BioReplicates": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 75,
+				"COLUMN_INDEX": "B"
+			},
+			"C_unit": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 64,
+				"COLUMN_INDEX": "B"
+			},
+			"C": {
+				"IS_ARRAY": true,
+				"TRIM_ARRAY": true,
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 66,
+				"COLUMN_INDEX": "B",
+				"COLUMN_INDICES": "2-40"
+			},
+			"TreatmentArray": {
+				"IS_ARRAY": true,
+				"TRIM_ARRAY": true,
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 67,
+				"COLUMN_INDEX": "B",
+				"COLUMN_INDICES": "2-40"
+			},
+			"Time_unit": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 60,
+				"COLUMN_INDEX": "B"
+			},
+			"TimeDesignations": {
+				"IS_ARRAY": true,
+				"TRIM_ARRAY": true,
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 61,
+				"COLUMN_INDEX": "B",
+				"COLUMN_INDICES": "2-40"
+			},
+			"TimePoints": {
+				"IS_ARRAY": true,
+				"TRIM_ARRAY": true,
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"ROW_INDEX": 62,
+				"COLUMN_INDEX": "B",
+				"COLUMN_INDICES": "2-40"
+			}
+		},
+		"VARIABLE_MAPPINGS": [
+			{
+				"NAME": "Time",
+				"KEYS_VARIABLE": "TimeDesignations",
+				"VALUES_VARIABLE": "TimePoints"
+			},
+			{
+				"NAME": "Treatment",
+				"KEYS_VARIABLE": "C",
+				"VALUES_VARIABLE": "TreatmentArray"
+			}
+		]
+	},
+	"SUBSTANCE_RECORD_MAP": {
+		"MAP_ELEMENT": "SUBSTANCE_NAME",
+		"SUBSTANCE_NAME": "MaterialItemNames",
+		"PUBLIC_NAME": "MaterialItemNames"
+	},
+	"PROTOCOL_APPLICATIONS": [
+		{
+			"ASSAY_UUID": "GRACIOUS_WP5_BFR_WST1_2020",
+			"INVESTIGATION_UUID": "GRACIOUS_WP5_BFR_WST1_2020",
+			"PROTOCOL_TOP_CATEGORY": "TOX",
+			"PROTOCOL_CATEGORY_CODE": "ENM_0000068_SECTION",
+			"PROTOCOL_ENDPOINT": "Cell viability",
+			"PROTOCOL_GUIDELINE": {
+				"guideline1": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 14
+				}
+			},
+			"CITATION_TITLE": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"COLUMN_INDEX": "B",
+				"ROW_INDEX": 8
+			},
+			"CITATION_YEAR": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"COLUMN_INDEX": "B",
+				"ROW_INDEX": 20
+			},
+			"CITATION_OWNER": {
+				"ITERATION": "ABSOLUTE_LOCATION",
+				"SHEET_INDEX": 1,
+				"COLUMN_INDEX": "B",
+				"ROW_INDEX": 9
+			},
+			"PARAMETERS": {
+
+				"Material state": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 28
+				},
+				"Lead scientist": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 11
+				},
+				"Operator": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 12
+				},
+				"E.sop_reference": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 19
+				},
+				"Assay": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 14
+				},
+				"Dispersion protocol": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 35
+				},
+				"Deviation from Dispersion protocols": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 36
+				},
+				"Dispersion agent": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 37
+				},
+				"Additives used": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 38
+				},
+				"Dispersed in cell culture medium": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 39
+				},
+				"Aids used to disperse": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 40
+				},
+				"Sonication-Bath": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "D",
+					"ROW_INDEX": 40
+				},
+				"Sonication-tip": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "F",
+					"ROW_INDEX": 40
+				},
+				"Vortexing": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "H",
+					"ROW_INDEX": 40
+				},
+				"Stirring": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "J",
+					"ROW_INDEX": 40
+				},
+				"Dispersion time duration": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 41
+				},
+				"Energy (for sonication)": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 42
+				},
+				"E.cell_type": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 45
+				},
+				"E.cell_source": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 46
+				},
+				"E.cell_pass": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 47
+				},
+				"E.well_plate": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 48
+				},
+				"E.well_plate_source": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 49
+				},
+				"E.number_of_cells_per_well_s": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 50
+				},
+				"Total volume per well": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 51
+				},
+				"MEDIUM": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 52
+				},
+				"Cell culture. Serum": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 53
+				},
+				"Cell culture. Serum concentration in growth medium": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 54
+				},
+				"Cell culture. Serum concentration in treatment medium": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 55
+				},
+				"Serum heat inactivated": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 56
+				},
+				"Date of preparation": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 31
+				},
+				"Endotoxin confirmed as absent": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 32
+				}
+				,
+				"E.positive_control_id": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "B",
+					"ROW_INDEX": 69
+				},
+				"E.positive_control2_id": {
+					"ITERATION": "ABSOLUTE_LOCATION",
+					"SHEET_INDEX": 1,
+					"COLUMN_INDEX": "C",
+					"ROW_INDEX": 69
+				}
+			},
+			"EFFECTS_BLOCK": [
+				{
+					"LOCATION": {
+						"ITERATION": "ABSOLUTE_LOCATION",
+						"IS_ARRAY": true,
+						"TRIM_ARRAY": true,
+						"SHEET_INDEX": 2,
+						"COLUMN_INDEX": "B",
+						"ROW_INDEX": 3
+					},
+					"COLUMN_SUBBLOCKS": "= BioReplicates",
+					"ROW_SUBBLOCKS": "= MaterialItemNames.size()",
+					"SUBBLOCK_SIZE_ROWS": "= 3 + C.size() + 2",
+					"SUBBLOCK_SIZE_COLUMNS": "= 2 + Replicates.size()+2",
+					"VALUE_GROUPS": [
+						{
+							"NAME": "=Outcome_metric",
+							"ENDPOINT_TYPE": "RAW_DATA",
+							"UNIT": "",
+							"START_COLUMN": 3,
+							"END_COLUMN": "= 3 + Replicates.size()-1",
+							"START_ROW": 4,
+							"END_ROW": "=4 + C.size() - 1",
+							"SUBSTANCE_RECORD_MAP": {
+								"ASSIGN": "ASSIGN_TO_EXCEL_SHEET",
+								"COLUMN_POS": 1,
+								"ROW_POS": "= 3 + (CUR_ROW_SUBBLOCK - 1) * (3 + C.size() + 2)"
+							},
+							"PARAMETERS": [
+								{
+									"NAME": "E.exposure_time",
+									"ASSIGN": "ASSIGN_TO_EXCEL_SHEET",
+									"COLUMN_POS": 2,
+									"ROW_POS": 2,
+									"MAPPING": "Time",
+									"UNIT": "=Time_unit"
+								},
+								{
+									"NAME": "Biological replicate",
+									"ASSIGN": "ASSIGN_TO_SUBBLOCK",
+									"COLUMN_POS": 1,
+									"ROW_POS": 1
+								},
+								{
+									"NAME": "E.cell_pass",
+									"ASSIGN": "ASSIGN_TO_SUBBLOCK",
+									"COLUMN_POS": 6,
+									"ROW_POS": 2
+								},
+								{
+									"NAME": "Technical replicate",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": 0,
+									"ROW_POS": -1,
+									"FIX_ROW_POS_TO_START_VALUE": true
+								},
+								{
+									"NAME": "concentration",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": -1,
+									"ROW_POS": 0,
+									"FIX_COLUMN_POS_TO_START_VALUE": true,
+									"UNIT": "=C_unit"
+								},
+								{
+									"NAME": "Material",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": -2,
+									"ROW_POS": 0,
+									"FIX_COLUMN_POS_TO_START_VALUE": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"LOCATION": {
+						"ITERATION": "ABSOLUTE_LOCATION",
+						"IS_ARRAY": true,
+						"TRIM_ARRAY": true,
+						"SHEET_INDEX": 3,
+						"COLUMN_INDEX": "C",
+						"ROW_INDEX": 3
+					},
+					"COLUMN_SUBBLOCKS": "= BioReplicates",
+					"ROW_SUBBLOCKS": "= MaterialItemNames.size()",
+					"SUBBLOCK_SIZE_ROWS": "= 3 + C.size() + 2",
+					"SUBBLOCK_SIZE_COLUMNS": "= 2 + Replicates.size()+2",
+					"VALUE_GROUPS": [
+						{
+							"NAME": "=Assay_endpoint",
+							"UNIT": "%",
+							"ENDPOINT_TYPE": "NORMALIZED",
+							"START_COLUMN": 3,
+							"END_COLUMN": "= 3 + Replicates.size()-1",
+							"START_ROW": 4,
+							"END_ROW": "=4 + C.size() - 1",
+							"SUBSTANCE_RECORD_MAP": {
+								"ASSIGN": "ASSIGN_TO_EXCEL_SHEET",
+								"COLUMN_POS": 1,
+								"ROW_POS": "= 3 + (CUR_ROW_SUBBLOCK - 1) * (3 + C.size() + 2)"
+							},
+							"PARAMETERS": [
+								{
+									"NAME": "E.exposure_time",
+									"ASSIGN": "ASSIGN_TO_EXCEL_SHEET",
+									"COLUMN_POS": 3,
+									"ROW_POS": 2,
+									"MAPPING": "Time",
+									"UNIT": "=Time_unit"
+								},
+								{
+									"NAME": "Biological replicate",
+									"ASSIGN": "ASSIGN_TO_SUBBLOCK",
+									"COLUMN_POS": 1,
+									"ROW_POS": 2
+								},
+								{
+									"NAME": "Technical replicate",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": 0,
+									"ROW_POS": -1,
+									"FIX_ROW_POS_TO_START_VALUE": true
+								},
+								{
+									"NAME": "Concentration",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": -1,
+									"ROW_POS": 0,
+									"FIX_COLUMN_POS_TO_START_VALUE": true,
+									"UNIT": "=C_unit"
+								},
+								{
+									"NAME": "Material",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": -2,
+									"ROW_POS": 0,
+									"FIX_COLUMN_POS_TO_START_VALUE": true
+								}
+							]
+						},
+						{
+							"NAME": "=Assay_endpoint",
+							"UNIT": "%",
+							"ENDPOINT_TYPE": "AVERAGE",
+							"START_COLUMN": "= 3 + Replicates.size()",
+							"END_COLUMN": "= 3 + Replicates.size()",
+							"START_ROW": 4,
+							"END_ROW": "=4 + C.size() - 1",
+							"SUBSTANCE_RECORD_MAP": {
+								"ASSIGN": "ASSIGN_TO_EXCEL_SHEET",
+								"COLUMN_POS": 1,
+								"ROW_POS": "= 3 + (CUR_ROW_SUBBLOCK - 1) * (3 + C.size() + 2)"
+							},
+							"PARAMETERS": [
+								{
+									"NAME": "E.exposure_time",
+									"ASSIGN": "ASSIGN_TO_EXCEL_SHEET",
+									"COLUMN_POS": 3,
+									"ROW_POS": 2,
+									"MAPPING": "Time",
+									"UNIT": "=Time_unit"
+								},
+								{
+									"NAME": "Biological replicate",
+									"ASSIGN": "ASSIGN_TO_SUBBLOCK",
+									"COLUMN_POS": 1,
+									"ROW_POS": 2
+								},
+								{
+									"NAME": "concentration",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": "= -1 -Replicates.size() ",
+									"ROW_POS": 0,
+									"FIX_COLUMN_POS_TO_START_VALUE": true,
+									"UNIT": "=C_unit"
+								},
+								{
+									"NAME": "Material",
+									"ASSIGN": "ASSIGN_TO_VALUE",
+									"COLUMN_POS": "= -2 -Replicates.size()",
+									"ROW_POS": 0,
+									"FIX_COLUMN_POS_TO_START_VALUE": true
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}	
