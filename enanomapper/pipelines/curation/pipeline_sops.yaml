@@ -1,0 +1,17 @@
+tasks:
+
+  - source: tasks/index_sops.py
+    product:
+      nb: "products/sops/index_sops.ipynb"
+      data: "{{folder_output}}/sops.json"
+
+    params:
+      config_input: "input_sops.json"  
+
+  - source: tasks/ner_sops.py
+    product:
+      nb: "products/sops/ner_sops.ipynb"
+      data: "{{folder_output}}/ner_sops.json"
+
+    params:
+      dry_run: false     
