@@ -1,8 +1,10 @@
 
 folder_output: "products"
 
-enm_api_url: "https://api.ideaconsult.net/harmless"
-enm_api_key: "changeit"
+enm_api_url: "https://api.ideaconsult.net/sbd4nanp"
+enm_api_key: "get your key from https://api.ideaconsult.net"
 
-query: "type=owner_name&search=HARMLESS"
-db: "harmless"
+#query: "type=owner_name&search=HARMLESS"
+#№db: "harmless"
+
+query: 'type=citation&search=SBD4NANO_CASESTUDY_HIQNANO_FLUORESCENT_SILICA'

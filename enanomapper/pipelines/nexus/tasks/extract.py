@@ -72,7 +72,9 @@ if OK:
 if OK:
     nxroot = nx.NXroot()
     substances.to_nexus(nxroot)
-    nxroot.save(os.path.join(folder_output,"substances_{}.nxs".format(uuid.uuid5(uuid.NAMESPACE_OID,query))),mode="w")
+    _file = os.path.join(folder_output,"substances_{}.nxs".format(uuid.uuid5(uuid.NAMESPACE_OID,query)))
+    print(_file)
+    nxroot.save(_file,mode="w")
 
 
     
