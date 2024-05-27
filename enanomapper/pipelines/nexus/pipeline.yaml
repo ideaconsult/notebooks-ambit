@@ -10,3 +10,4 @@ tasks:
       enm_api_key: "{{enm_api_key}}"   
       query: "{{query}}"
       db: "{{db}}"
+      ambit_endpoint: "{{ambit_endpoint}}"

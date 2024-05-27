@@ -6,6 +6,7 @@ folder_output = None
 query = None
 product = None
 db = None
+ambit_endpoint = None
 # -
 
 from pynanomapper import aa
@@ -49,12 +50,15 @@ if auth_object!=None:
     auth_object.setKey(enm_api_key)  
 
 rows = 1000
-url_db = "{}/enm/{}/substance?{}&media=application/json&max={}".format(enm_api_url,db,query,rows)
+if ambit_endpoint:
+    url_db = "{}/substance?media=application/json&max={}&{}".format(enm_api_url,rows,query)
+else:
+    url_db = "{}/enm/{}/substance?{}&media=application/json&max={}".format(enm_api_url,db,query,rows)
 
 OK = False
 response = requests.get(url_db,auth=auth_object)
 if response.status_code ==200:
-    #print(response.text)
+    print(response.text)
     pjson = response.json()
     OK = True
 else:
@@ -64,7 +68,10 @@ else:
 if OK:
     OK = False
     try:
-        substances = json2nexus("{}/enm/{}".format(enm_api_url,db),auth_object,pjson)
+        if ambit_endpoint:
+            substances = json2nexus("{}".format(enm_api_url),auth_object,pjson)
+        else:
+            substances = json2nexus("{}/enm/{}".format(enm_api_url,db),auth_object,pjson)
         OK = True
     except Exception as err:  
         print(err)
