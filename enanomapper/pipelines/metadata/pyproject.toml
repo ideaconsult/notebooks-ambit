@@ -1,0 +1,21 @@
+[project]
+name = "enm-metadata"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "vedina",email = "jeliazkova.nina@gmail.com"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+    "pynanomapper (>=2.0.2,<3.0.0)",
+    "ploomber (>=0.23.3,<0.24.0)",
+    "plotly (>=6.1.2,<7.0.0)",
+    "altair (>=5.5.0,<6.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

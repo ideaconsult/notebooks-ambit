@@ -16,7 +16,7 @@ facets = client_solr.Facets()
 #facets.set_annotation_folder("../../annotation")
 
 df = facets.summary(solr_url,HTTPBasicAuth(solr_user, solr_pass), query="type_s:study",
-            fields=["owner_name_s","substanceType_s","publicname_s","topcategory_s","endpointcategory_s","E.method_s","E.method_synonym_ss","E.animal_model_s","E.cell_type_s","effectendpoint_s","effectendpoint_synonym_ss",
+            fields=["owner_name_s","substanceType_s","publicname_s","name_s","topcategory_s","endpointcategory_s","E.method_s","E.method_synonym_ss","E.animal_model_s","E.cell_type_s","effectendpoint_s","effectendpoint_synonym_ss",
                             "E.exposure_route_s","_CONDITION_exposure_time_d","_CONDITION_exposure_time_UNIT_s"])              
 df.rename(columns={"Number of data points": "number_of_points_d"},inplace=True)
 df["type_s"] = "metadata"
