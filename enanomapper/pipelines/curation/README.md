@@ -1,6 +1,4 @@
-# curation pipeline for eNanoMapper database
-
--- under development! --
+# curation
 
 ## Setup development environment
 
@@ -31,7 +29,7 @@ API endpoints and plans are at https://api.ideaconsult.net
 folder_output: "/results"
 solr_api_url: "https://api.ideaconsult.net/nanoreg1"
 solr_api_key: ""
-templates_pchem: "https://search.data.enanomapper.net/api/templates/pchem.json"
+templates_pchem: "https://enanomapper.adma.ai/api/templates/pchem.json"
 ```
 
 
@@ -57,7 +55,7 @@ conda env export -n ml2 > environment.yml
 #https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#building-identical-conda-environments
 conda list --explicit
 
-#conda create --name ml4 --clone ml_template
+#conda create --name ml4 --clone pipeline_template
 
 conda create -n pipeline1 pytorch torchvision cudatoolkit spacy cupy  ploomber
 
@@ -66,5 +64,4 @@ conda update -n base -c defaults
 Note: scispacy requires older spacy version 
 workaround - first  conda install nmslib  ; then pip instal scispacy
 
-----------
-This project has received funding from the European Union's Horizon 2020 research and innovation programme under grant agreement 814426 NanoinformaTIX
+pykeen installation requires ipywidgets 
