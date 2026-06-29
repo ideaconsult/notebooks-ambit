@@ -11,6 +11,7 @@ from pynanomapper import annotation
 from requests.auth import HTTPBasicAuth
 import json
 import zlib
+import uuid
 
 facets = client_solr.Facets()
 #facets.set_annotation_folder("../../annotation")
@@ -20,6 +21,7 @@ df = facets.summary(solr_url,HTTPBasicAuth(solr_user, solr_pass), query="type_s:
                             "E.exposure_route_s","_CONDITION_exposure_time_d","_CONDITION_exposure_time_UNIT_s"])              
 df.rename(columns={"Number of data points": "number_of_points_d"},inplace=True)
 df["type_s"] = "metadata"
+df["id"] = [f"md_{uuid.uuid4().hex}" for _ in range(len(df))]
 
 from measurement.utils import guess
 def time_format(x):
