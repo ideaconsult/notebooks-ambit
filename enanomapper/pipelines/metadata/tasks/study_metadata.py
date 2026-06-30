@@ -19,6 +19,7 @@ product = None
 # `_CONDITION_material_s`), so field names are derived from the config keys.
 
 import json
+import re
 import uuid
 
 import pandas as pd
@@ -114,7 +115,7 @@ print("categories:", len(categories), "studies total")
 _PARAMS_SKIP = {"type_s", "document_uuid_s", "id", "topcategory_s",
                 "endpointcategory_s", "_version_", "s_uuid_s", "assay_uuid_s",
                 "investigation_uuid_s", "owner_name_s", "publicname_s", "name_s",
-                "guidance_s"}
+                "guidance_s", "E.method_s", "E.cell_type_s"}
 
 def _all_params(solr_url, auth):
     """Cursor-paginate through all type_s:params docs; return {document_uuid_s: {p.key: val}}."""
@@ -133,11 +134,66 @@ def _all_params(solr_url, auth):
             doc_uuid = pdoc.get("document_uuid_s")
             if not doc_uuid:
                 continue
+            # --- 1. LOVALUE/UPVALUE ranges → single human-readable _s field -------------
+            range_parts = {}
+            for k, v in pdoc.items():
+                if v is None:
+                    continue
+                for suffix, slot in (("LOVALUE_d", "lo"), ("UPVALUE_d", "up")):
+                    if k.endswith(suffix):
+                        prefix = k[: -len(suffix)]
+                        range_parts.setdefault(prefix, {})[slot] = v
+            for prefix in range_parts:
+                for suffix, slot in (("LOQUALIFIER_s", "loq"), ("UPQUALIFIER_s", "upq"),
+                                     ("ERRQUALIFIER_s", "errq"), ("UNIT_s", "unit")):
+                    val = pdoc.get(prefix + suffix)
+                    if val is not None:
+                        range_parts[prefix][slot] = val
+            _skip_range = {p + s for p in range_parts for s in
+                           ("LOVALUE_d", "UPVALUE_d", "LOQUALIFIER_s", "UPQUALIFIER_s",
+                            "ERRQUALIFIER_s", "UNIT_s")}
+
+            # --- 2. plain scalar _d with sibling _UNIT_s → "value unit" attr_ field ------
+            # k[:-1] strips only "d", keeping the "_" separator: E.EXPOSURE_TIME_d → E.EXPOSURE_TIME_
+            scalar_units = {}
+            for k, v in pdoc.items():
+                if v is None or not k.endswith("_d"):
+                    continue
+                stem = k[:-1]                          # e.g. "E.EXPOSURE_TIME_"
+                unit_key = stem + "UNIT_s"
+                if unit_key in pdoc and pdoc[unit_key] is not None and stem + "LOVALUE_d" not in pdoc:
+                    scalar_units[k] = (v, pdoc[unit_key], unit_key)
+            _skip_scalar = {k for k in scalar_units} | {u for _, _, u in scalar_units.values()}
+
             params = {}
             for k, v in pdoc.items():
-                if k in _PARAMS_SKIP:
+                if k in _PARAMS_SKIP or k in _skip_range or k in _skip_scalar or v is None:
                     continue
-                params["param_" + k] = v
+                # strip Solr type suffix → attr_ field (analyzed text, no suffix)
+                bare = re.sub(r"_(s|d|ss|ds|i|b)$", "", k)
+                params["attr_" + bare] = v
+
+            # range strings → attr_ field (analyzed text, no _s suffix)
+            for prefix, p in range_parts.items():
+                lo, up = p.get("lo"), p.get("up")
+                loq, upq = p.get("loq", ""), p.get("upq", "")
+                unit = p.get("unit", "")
+                if lo is not None and up is not None and lo != up:
+                    val_str = "{} - {}".format(lo, up)
+                elif lo is not None:
+                    val_str = "{} {}".format(loq, lo).strip()
+                else:
+                    val_str = "{} {}".format(upq, up).strip()
+                if unit:
+                    val_str = "{} {}".format(val_str, unit)
+                # prefix already ends with "_", e.g. "E.MEDIUM.ph_" → attr_E.MEDIUM.ph
+                params["attr_" + prefix.rstrip("_")] = val_str.strip()
+
+            # scalar+unit strings → attr_ field
+            for k, (val, unit, _) in scalar_units.items():
+                stem = k[:-1]                          # e.g. "E.EXPOSURE_TIME_"
+                params["attr_" + stem.rstrip("_")] = "{} {}".format(val, unit).strip()
+
             out[doc_uuid] = params
         next_cursor = resp.get("nextCursorMark", cursor)
         if next_cursor == cursor or not docs:
@@ -164,8 +220,8 @@ for category in categories:
         "topcategory":    {"type": "terms", "field": "topcategory_s",        "limit": 1},
         "method":         {"type": "terms", "field": "E.method_s",           "limit": 5},
         "method_syn":     {"type": "terms", "field": "E.method_synonym_ss",  "limit": 20},
-        "endpoint":       {"type": "terms", "field": "effectendpoint_s",     "limit": 8},
-        "unit":           {"type": "terms", "field": "unit_s",               "limit": 8},
+        "endpoint":       {"type": "terms", "field": "effectendpoint_s",     "limit": 8,
+                           "facet": {"unit": {"type": "terms", "field": "unit_s", "limit": 3}}},
         "guidance":       {"type": "terms", "field": "guidance_s",           "limit": 3},
         "result_type":    {"type": "terms", "field": "studyResultType_s",    "limit": 1},
         "reference":      {"type": "terms", "field": "reference_s",          "limit": 1},
@@ -250,8 +306,14 @@ for category in categories:
             "E.method_synonym_ss":          [b["val"] for b in bk.get("method_syn", {}).get("buckets", [])] or None,
             "E.cell_type_ss":               cell_types or None,
             "E.animal_model_ss":            animal_models or None,
-            "effectendpoint_s":             join_vals(bk, "endpoint"),
-            "unit_s":                       join_vals(bk, "unit"),
+            "effectendpoint_ss":            [
+                                                "{} ({})".format(eb["val"], units)
+                                                if (units := ", ".join(
+                                                    u["val"] for u in eb.get("unit", {}).get("buckets", [])
+                                                    if u["val"]
+                                                )) else eb["val"]
+                                                for eb in bk.get("endpoint", {}).get("buckets", [])
+                                            ] or None,
             "guidance_s":                   join_vals(bk, "guidance"),
             "studyResultType_s":            first_val(bk, "result_type"),
             "reference_s":                  first_val(bk, "reference"),
@@ -278,7 +340,7 @@ for category in categories:
         study_params = params_by_study.get(bk["val"])
         if study_params:
             rows[-1].update(study_params)
-            rows[-1]["param_names_ss"] = [k[len("param_"):] for k in study_params]
+            rows[-1]["param_names_ss"] = [k[len("attr_"):] for k in study_params]
 
 df = pd.DataFrame(rows)
 print("studies extracted:", len(df))
