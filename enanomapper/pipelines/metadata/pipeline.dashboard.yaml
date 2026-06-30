@@ -1,0 +1,8 @@
+tasks:
+  - source: tasks/viz_metadata.py
+    product:
+      nb: "products/viz_metadata.ipynb"
+    params:
+      solr_url: "{{solr_url}}"
+      solr_user_env: "{{solr_user_env}}"
+      solr_pass_env: "{{solr_pass_env}}"
