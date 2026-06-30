@@ -169,9 +169,9 @@ def _all_params(solr_url, auth):
             for k, v in pdoc.items():
                 if k in _PARAMS_SKIP or k in _skip_range or k in _skip_scalar or v is None:
                     continue
-                # strip Solr type suffix → attr_ field (analyzed text, no suffix)
+                # strip Solr type suffix, add _t (analyzed text) with param_ prefix
                 bare = re.sub(r"_(s|d|ss|ds|i|b)$", "", k)
-                params["attr_" + bare] = v
+                params["param_" + bare + "_t"] = v
 
             # range strings → attr_ field (analyzed text, no _s suffix)
             for prefix, p in range_parts.items():
@@ -187,12 +187,12 @@ def _all_params(solr_url, auth):
                 if unit:
                     val_str = "{} {}".format(val_str, unit)
                 # prefix already ends with "_", e.g. "E.MEDIUM.ph_" → attr_E.MEDIUM.ph
-                params["attr_" + prefix.rstrip("_")] = val_str.strip()
+                params["param_" + prefix.rstrip("_") + "_t"] = val_str.strip()
 
             # scalar+unit strings → attr_ field
             for k, (val, unit, _) in scalar_units.items():
                 stem = k[:-1]                          # e.g. "E.EXPOSURE_TIME_"
-                params["attr_" + stem.rstrip("_")] = "{} {}".format(val, unit).strip()
+                params["param_" + stem.rstrip("_") + "_t"] = "{} {}".format(val, unit).strip()
 
             out[doc_uuid] = params
         next_cursor = resp.get("nextCursorMark", cursor)
@@ -227,7 +227,8 @@ for category in categories:
         "reference":      {"type": "terms", "field": "reference_s",          "limit": 1},
         "reference_year": {"type": "terms", "field": "reference_year_s",     "limit": 1},
         "reference_owner":{"type": "terms", "field": "reference_owner_s",    "limit": 1},
-        "assay":          {"type": "terms", "field": "assay_uuid_s",         "limit": 1},
+        "assay":          {"type": "terms", "field": "assay_uuid_s",          "limit": 1},
+        "investigation":  {"type": "terms", "field": "investigation_uuid_s",  "limit": 1},
         # cell type and animal model are direct study-doc fields
         "cell_type":      {"type": "terms", "field": "E.cell_type_s",        "limit": 20},
         "animal_model":   {"type": "terms", "field": "E.animal_model_s",     "limit": 10},
@@ -320,6 +321,7 @@ for category in categories:
             "reference_year_s":             first_val(bk, "reference_year"),
             "reference_owner_s":            first_val(bk, "reference_owner"),
             "assay_uuid_s":                 first_val(bk, "assay"),
+            "investigation_uuid_s":         first_val(bk, "investigation"),
             "number_of_points_d":           bk["count"],
             # concentration arrays (the actual dose series, not just the count)
             "concentration_values_ds":      conc_vals or None,
@@ -340,7 +342,9 @@ for category in categories:
         study_params = params_by_study.get(bk["val"])
         if study_params:
             rows[-1].update(study_params)
-            rows[-1]["param_names_ss"] = [k[len("attr_"):] for k in study_params]
+            rows[-1]["param_names_ss"] = [
+                re.sub(r"_t$", "", k[len("param_"):]) for k in study_params
+            ]
 
 df = pd.DataFrame(rows)
 print("studies extracted:", len(df))
