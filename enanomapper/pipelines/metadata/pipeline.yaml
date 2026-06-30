@@ -9,3 +9,19 @@ tasks:
       solr_url: "{{solr_url}}"   
       solr_user: "{{solr_user}}"   
       solr_pass: "{{solr_pass}}"
+
+  - source: tasks/summary.py
+    product:
+      nb: "products/summary.ipynb"
+      data: "products/summary.xlsx"
+
+  - source: tasks/study_metadata.py
+    product:
+      nb: "products/study_metadata.ipynb"
+      data: "{{folder_output}}/study_metadata.json"
+    params:
+      solr_url: "{{solr_url}}"
+      solr_user: "{{solr_user}}"
+      solr_pass: "{{solr_pass}}"
+
+           
