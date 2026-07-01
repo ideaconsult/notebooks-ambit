@@ -2,7 +2,38 @@ tasks:
   - source: tasks/viz_metadata.py
     product:
       nb: "products/viz_metadata.ipynb"
+      data: "products/viz_metadata_readiness.csv"
     params:
       solr_url: "{{solr_url}}"
       solr_user_env: "{{solr_user_env}}"
       solr_pass_env: "{{solr_pass_env}}"
+
+  - source: tasks/curate_failing.py
+    product:
+      nb: "products/curate_failing.ipynb"
+      data: "products/curate_failing.html"
+      data_csv: "products/curate_failing_data.csv"
+    params:
+      # OR-combined filters; leave "" to not filter on that dimension.
+      # All empty = curate every failing study (capped by max_studies).
+      filter_tag: ""                 # s_uuid_s server tag; NNRG = NanoREG (public AMBIT server)
+      filter_project: "nanoreg2"      # matches owner_name_s (e.g. NANoREG)
+      filter_s_uuid: ""              # matches s_uuid_s
+      filter_document_uuid: ""       # matches document_uuid_s
+      filter_investigation_uuid: ""  # matches investigation_uuid_s
+      max_studies: 50
+
+  - source: tasks/curate_passing.py
+    product:
+      nb: "products/curate_passing.ipynb"
+      data: "products/curate_passing.html"
+      data_csv: "products/curate_passing_data.csv"
+    params:
+      # OR-combined filters; leave "" to not filter on that dimension.
+      # All empty = curate every interpretable study (capped by max_studies).
+      filter_tag: ""                 # s_uuid_s server tag; NNRG = NanoREG (public AMBIT server)
+      filter_project: "nanoreg"              # matches owner_name_s (e.g. NANoREG)
+      filter_s_uuid: ""              # matches s_uuid_s
+      filter_document_uuid: ""       # matches document_uuid_s
+      filter_investigation_uuid: ""  # matches investigation_uuid_s
+      max_studies: 50

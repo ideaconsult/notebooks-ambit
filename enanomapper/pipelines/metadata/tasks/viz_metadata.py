@@ -31,6 +31,12 @@ product = None
 #     cytotoxicity study still counts as paired if it is the same lab + same nanomaterial +
 #     same cell type. Fallback linkage key = (owner_name_s, s_uuid_s, cell_type).
 #   - owner_name_s carries the source project (NanoGenotox, NANoREG, NanoReg2, PATROLS, ... — keep all)
+#   - has_positive_control_b / has_negative_control_b only look at the _CONDITION_material_s
+#     axis (classify_control() in study_metadata.py) -> a study can score False there yet
+#     still identify its control via a PARAMETER: param_E.POSITIVE_CONTROLID_t,
+#     param_E.POSITIVE_CONTROL_t, param_E.NEGATIVE_CONTROLID_t, param_E.NEGATIVE_CONTROL_t
+#     (confirmed present in metaenm param_names_ss). Treat either signal as satisfying the
+#     criterion — the condition-based flag is a false negative when only the param is set.
 
 import os
 
@@ -110,9 +116,23 @@ def context_keys(df):
 
 
 # --- load the in-vitro genotox studies --------------------------------------------------
-FL = ("document_uuid_s,s_uuid_s,publicname_s,owner_name_s,endpointcategory_s,"
+# param_* fields carry the parameter-based control evidence (positive/negative control
+# identity or concentration), independent of the condition-based has_*_control_b flags.
+PARAM_POS_FIELDS = ["param_E.POSITIVE_CONTROLID_t", "param_E.POSITIVE_CONTROL_t",
+                    "param_E.POSITIVE_CONTROL_CONCENTRATION_t"]
+PARAM_NEG_FIELDS = ["param_E.NEGATIVE_CONTROLID_t", "param_E.NEGATIVE_CONTROL_t",
+                    "param_E.NEGATIVE_CONTROL_CONCENTRATION_t"]
+
+# owner_name_s = the dataset/project (e.g. NANoREG); reference_owner_s = the actual study
+# owner/lab from the citation record — distinct fields, both needed for curation.
+# param___input_file_t = the original source file the study was imported from (param_ prefix
+# + original "__input_file" name + _t suffix) — lets a curator find WHICH file/project needs
+# attention, not just which study.
+FL = ("document_uuid_s,s_uuid_s,publicname_s,owner_name_s,reference_owner_s,endpointcategory_s,"
       "E.method_s,E.method_synonym_ss,effectendpoint_ss, E.cell_type_ss,concentration_count_i,"
-      "has_positive_control_b,has_negative_control_b,studyResultType_s,investigation_uuid_s")
+      "has_positive_control_b,has_negative_control_b,studyResultType_s,investigation_uuid_s,"
+      "param___input_file_t,"
+      + ",".join(PARAM_POS_FIELDS + PARAM_NEG_FIELDS))
 
 gen = fetch_docs("type_s:metadata_study AND endpointcategory_s:{}".format(GENOTOX_INVITRO), FL)
 print("in-vitro genotox studies:", len(gen))
@@ -145,8 +165,20 @@ gen["concentration_count_i"] = gen.get("concentration_count_i", 0)
 gen["concentration_count_i"] = pd.to_numeric(gen["concentration_count_i"], errors="coerce").fillna(0).astype(int)
 
 gen["c_conc3"] = gen["concentration_count_i"] >= 3
-gen["c_neg"] = gen["has_negative_control_b"]
-gen["c_pos"] = gen["has_positive_control_b"]
+
+# a param field is "evidence" if the column exists and the row has a non-null value
+def has_any_param(df, fields):
+    present = [f for f in fields if f in df.columns]
+    if not present:
+        return pd.Series(False, index=df.index)
+    return df[present].notna().any(axis=1)
+
+gen["c_pos_via_param"] = has_any_param(gen, PARAM_POS_FIELDS)
+gen["c_neg_via_param"] = has_any_param(gen, PARAM_NEG_FIELDS)
+
+# condition-based flag OR parameter-based evidence — either satisfies the criterion
+gen["c_neg"] = gen["has_negative_control_b"] | gen["c_neg_via_param"]
+gen["c_pos"] = gen["has_positive_control_b"] | gen["c_pos_via_param"]
 
 # paired viability: primary match is a shared investigation_uuid_s (same protocol
 # application group). Falls back to experimental-context matching — (owner, NM, cell type) —
@@ -274,6 +306,10 @@ print("  paired-viability matches via investigation_uuid_s:",
       int(gen["c_viab_via_investigation"].sum()))
 print("  paired-viability matches via context fallback only:",
       int((gen["c_viab"] & ~gen["c_viab_via_investigation"]).sum()))
+print("  positive control rescued by param evidence only (condition flag was False):",
+      int((gen["c_pos_via_param"] & ~gen["has_positive_control_b"]).sum()))
+print("  negative control rescued by param evidence only (condition flag was False):",
+      int((gen["c_neg_via_param"] & ~gen["has_negative_control_b"]).sum()))
 
 # ========================================================================================
 # 6. TASK OUTPUT — full per-study table with all readiness flags, for downstream use
