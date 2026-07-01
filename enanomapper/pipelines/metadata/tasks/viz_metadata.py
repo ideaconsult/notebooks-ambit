@@ -131,6 +131,7 @@ PARAM_NEG_FIELDS = ["param_E.NEGATIVE_CONTROLID_t", "param_E.NEGATIVE_CONTROL_t"
 FL = ("document_uuid_s,s_uuid_s,publicname_s,owner_name_s,reference_owner_s,endpointcategory_s,"
       "E.method_s,E.method_synonym_ss,effectendpoint_ss, E.cell_type_ss,concentration_count_i,"
       "has_positive_control_b,has_negative_control_b,studyResultType_s,investigation_uuid_s,"
+      "reference_s,reference_year_s,"
       "param___input_file_t,"
       + ",".join(PARAM_POS_FIELDS + PARAM_NEG_FIELDS))
 

@@ -19,6 +19,7 @@ from pyambit.datamodel import Study
 from pyambit import study_config as sc
 
 GENOTOX_INVITRO = "TO_GENETIC_IN_VITRO_SECTION"
+VIABILITY = "ENM_0000068_SECTION"  # Cell Viability
 
 # --- AMBIT server resolution (ported from spectrasearch-viewers/src/utils/tagdbs.js) ---------
 # 4-letter tag = prefix before the first "-" in s_uuid_s -> AMBIT server base URL.
@@ -64,8 +65,8 @@ def substance2server(s_uuid):
     return TAG_DBS.get(tag)
 
 
-def fetch_genotox_studies(server, s_uuid):
-    """Fetch a substance's in-vitro genotox studies from AMBIT.
+def fetch_studies(server, s_uuid, category=GENOTOX_INVITRO):
+    """Fetch a substance's studies from AMBIT, restricted to one endpoint category.
 
     Returns (list_of_ProtocolApplication, reason) — reason is None on success, else a short
     string ('unknown server tag', 'HTTP 403', 'not JSON', 'error: ...') for the skip list.
@@ -74,8 +75,7 @@ def fetch_genotox_studies(server, s_uuid):
     try:
         r = requests.get(
             url,
-            params={"media": "application/json", "top": "TOX",
-                    "category": GENOTOX_INVITRO},
+            params={"media": "application/json", "top": "TOX", "category": category},
             timeout=120,
         )
     except Exception as err:
@@ -89,6 +89,11 @@ def fetch_genotox_studies(server, s_uuid):
     except Exception as err:
         return [], "parse error: {}".format(err)
     return list(papps.study or []), None
+
+
+# kept for backwards compatibility with existing callers (curate_failing.py)
+def fetch_genotox_studies(server, s_uuid):
+    return fetch_studies(server, s_uuid, category=GENOTOX_INVITRO)
 
 
 # --- dose-axis selection (config-driven, NOT hardcoded) -------------------------------------
@@ -217,17 +222,22 @@ def esc(s):
     return "" if s is None else str(s).replace("&", "&amp;").replace("<", "&lt;")
 
 
-def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn):
+def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn,
+                       category=GENOTOX_INVITRO, add_param_controls=True):
     """Fetch AMBIT data for every (substance, wanted document_uuids) pair and flatten to a
     long dose-response DataFrame.
 
     sel: the filtered readiness rows (DataFrame), one row per document_uuid_s.
     failing_by_substance: {s_uuid_s: set(document_uuid_s)} — despite the name (kept for
         continuity with curate_failing.py), this is just "selected studies grouped by
-        substance" — used for both the failing and passing tasks.
+        substance" — used for failing, passing, AND viability lookups.
     label_by_doc: {document_uuid_s: label string} for the plot/table.
     extra_meta_fn(row) -> dict: per-study extra metadata merged into `meta` (e.g. "fails" for
         curate_failing, "assay"/"studyResultType_s" for curate_passing).
+    category: AMBIT endpointcategory_s to restrict the study fetch to (genotox by default;
+        pass VIABILITY to fetch cell-viability studies for the same substances instead).
+    add_param_controls: whether to also emit parameter-sourced control points (only
+        meaningful for genotox — viability studies don't carry POSITIVE/NEGATIVE_CONTROLID).
 
     Returns (data: DataFrame, not_retrieved: list[dict]).
     """
@@ -243,7 +253,7 @@ def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn):
                                       "owner_name_s": owner, "reason": "unknown server tag"})
             continue
 
-        studies, reason = fetch_genotox_studies(server, s_uuid)
+        studies, reason = fetch_studies(server, s_uuid, category=category)
         if reason is not None:
             for doc in wanted:
                 not_retrieved.append({"document_uuid_s": doc, "s_uuid_s": s_uuid,
@@ -264,15 +274,17 @@ def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn):
                 "label": label_by_doc.get(papp.uuid, papp.uuid),
                 "substance_url": "{}/substance/{}".format(server.rstrip("/"), s_uuid),
                 "study_url": "{}/substance/{}/study?media=application/json&category={}"
-                             .format(server.rstrip("/"), s_uuid, GENOTOX_INVITRO),
+                             .format(server.rstrip("/"), s_uuid, category),
                 **extra_meta_fn(row),
             }
             study_rows = study_to_long_rows(papp, meta)
             if study_rows:
-                study_doses = [r["dose"] for r in study_rows if r["dose"] is not None]
-                study_min_dose = min(study_doses) if study_doses else 1.0
                 long_rows.extend(study_rows)
-                long_rows.extend({**meta, **r} for r in param_control_rows(papp, study_min_dose))
+                if add_param_controls:
+                    study_doses = [r["dose"] for r in study_rows if r["dose"] is not None]
+                    study_min_dose = min(study_doses) if study_doses else 1.0
+                    long_rows.extend({**meta, **r}
+                                     for r in param_control_rows(papp, study_min_dose))
             else:
                 not_retrieved.append({"document_uuid_s": papp.uuid, "s_uuid_s": s_uuid,
                                       "owner_name_s": owner,
@@ -282,6 +294,73 @@ def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn):
                                   "owner_name_s": owner, "reason": "study not returned by server"})
 
     return pd.DataFrame(long_rows), not_retrieved
+
+
+def fetch_paired_viability(sel, by_substance):
+    """Fetch each substance's cell-viability studies (unfiltered — we don't know a viability
+    document_uuid up front) and pick the best-paired one per genotox document_uuid_s.
+
+    sel: the filtered readiness rows (DataFrame), one row per genotox document_uuid_s. Needs
+        s_uuid_s and, if present, investigation_uuid_s.
+    by_substance: {s_uuid_s: set(document_uuid_s)} — the genotox studies grouped by substance
+        (same shape as fetch_and_flatten's second argument); only its keys (which substances
+        to fetch viability for) are used here.
+
+    Pairing preference: a viability study sharing the genotox study's investigation_uuid_s;
+    falls back to any viability study found for the same substance (viz_metadata's own
+    fallback match is context-based — owner/NM/cell-type — and there's no single AMBIT study
+    uuid for that path, so "first available on the substance" is the practical equivalent
+    here).
+
+    Returns (viability_data: DataFrame, viability_doc_by_genotox_doc: dict, not_retrieved: list).
+    """
+    via_rows = []
+    not_retrieved = []
+
+    for s_uuid in by_substance:
+        server = substance2server(s_uuid)
+        if server is None:
+            not_retrieved.append({"s_uuid_s": s_uuid, "reason": "unknown server tag"})
+            continue
+        via_studies, reason = fetch_studies(server, s_uuid, category=VIABILITY)
+        if reason is not None:
+            not_retrieved.append({"s_uuid_s": s_uuid, "reason": reason})
+            continue
+        for papp in via_studies:
+            meta = {
+                "document_uuid_s": papp.uuid, "s_uuid_s": s_uuid,
+                "label": "viability: {}".format(papp.uuid),
+                "substance_url": "{}/substance/{}".format(server.rstrip("/"), s_uuid),
+                "study_url": "{}/substance/{}/study?media=application/json&category={}"
+                             .format(server.rstrip("/"), s_uuid, VIABILITY),
+                "investigation_uuid": papp.investigation_uuid,
+            }
+            rows = study_to_long_rows(papp, meta)
+            if rows:
+                via_rows.extend(rows)
+
+    viability_data = pd.DataFrame(via_rows)
+    viability_doc_by_genotox_doc = {}
+    if not viability_data.empty:
+        via_by_inv = (
+            viability_data.drop_duplicates("document_uuid_s")
+            .set_index("investigation_uuid")["document_uuid_s"].to_dict()
+        )
+        via_by_sub = (
+            viability_data.drop_duplicates("document_uuid_s")
+            .groupby("s_uuid_s")["document_uuid_s"].first().to_dict()
+        )
+        for _, row in sel.iterrows():
+            doc = row["document_uuid_s"]
+            if row["s_uuid_s"] not in by_substance:
+                continue
+            inv = row.get("investigation_uuid_s")
+            via_doc = via_by_inv.get(inv) if pd.notna(inv) else None
+            if via_doc is None:
+                via_doc = via_by_sub.get(row["s_uuid_s"])
+            viability_doc_by_genotox_doc[doc] = via_doc
+
+    return viability_data, viability_doc_by_genotox_doc, not_retrieved
 
 
 def build_dropdown_figure(data, dropdown_label_fn, dropdown_sort_key_fn=None):
@@ -362,6 +441,115 @@ def build_dropdown_figure(data, dropdown_label_fn, dropdown_sort_key_fn=None):
             showactive=True,
         )],
         annotations=[select_caption],
+        height=650,
+    )
+    return fig
+
+
+def _add_study_traces(fig, sdf, visible0, row=1, col=1):
+    """Add one study's dose-response + control traces to `fig` (used by both the single- and
+    dual-panel builders). Returns the number of traces added (for trace_study bookkeeping).
+    """
+    import plotly.graph_objects as go
+
+    n = 0
+    dose_pts = sdf[sdf["dose"].notna() & sdf["response"].notna()
+                  & sdf["control_label"].isna()].sort_values("dose")
+    ctrl_pts = sdf[sdf["control_label"].notna()]
+    min_dose = sdf["dose"].dropna().min() if sdf["dose"].notna().any() else 1.0
+
+    for endpoint, g in dose_pts.groupby("endpoint"):
+        fig.add_trace(go.Scatter(
+            x=g["dose"], y=g["response"], mode="markers+lines", name=str(endpoint),
+            visible=visible0,
+            hovertemplate=(
+                "endpoint=%{fullData.name}<br>dose=%{x} " + str(g["dose_unit"].iloc[0] or "")
+                + "<br>response=%{y} " + str(g["response_unit"].iloc[0] or "") + "<extra></extra>"
+            ),
+        ), row=row, col=col)
+        n += 1
+
+    for _, r in ctrl_pts.iterrows():
+        has_response = pd.notna(r["response"])
+        x_val = r["dose"] if pd.notna(r["dose"]) else min_dose
+        y_val = r["response"] if has_response else 0
+        fig.add_trace(go.Scatter(
+            x=[x_val], y=[y_val], mode="markers+text",
+            text=[r["control_label"]], textposition="top center",
+            marker=dict(symbol="star", size=13, color="black" if has_response else "crimson"),
+            name=r["control_label"], visible=visible0, showlegend=False,
+        ), row=row, col=col)
+        n += 1
+
+    return n
+
+
+def build_dual_dropdown_figure(genotox_data, viability_data, viability_doc_by_genotox_doc,
+                               dropdown_label_fn, dropdown_sort_key_fn=None):
+    """Dropdown-driven figure with TWO panels side by side: genotox dose-response (left) and
+    its paired cell-viability dose-response (right), toggled together by one dropdown.
+
+    genotox_data: long-format DataFrame, one or more rows per genotox document_uuid_s.
+    viability_data: long-format DataFrame for the fetched viability studies (same shape).
+    viability_doc_by_genotox_doc: {genotox_document_uuid_s: viability_document_uuid_s or None}
+        — which viability study (if any) is paired with each genotox study.
+    dropdown_label_fn(sdf_first_row) -> str: label built from the GENOTOX study's first row.
+    dropdown_sort_key_fn(doc_id) -> sortable key for dropdown ordering.
+
+    Returns the assembled `go.Figure`.
+    """
+    from plotly.subplots import make_subplots
+
+    studies_order = list(dict.fromkeys(genotox_data["document_uuid_s"]))
+    fig = make_subplots(rows=1, cols=2, subplot_titles=("Genotox", "Cell viability"))
+    trace_study = []
+
+    for s_idx, doc in enumerate(studies_order):
+        sdf = genotox_data[genotox_data["document_uuid_s"] == doc]
+        n = _add_study_traces(fig, sdf, s_idx == 0, row=1, col=1)
+        trace_study.extend([s_idx] * n)
+
+        via_doc = viability_doc_by_genotox_doc.get(doc)
+        if via_doc is not None:
+            vdf = viability_data[viability_data["document_uuid_s"] == via_doc]
+            if not vdf.empty:
+                n2 = _add_study_traces(fig, vdf, s_idx == 0, row=1, col=2)
+                trace_study.extend([s_idx] * n2)
+        # if there's no paired viability data, the right panel is simply empty for this study
+        # (no placeholder trace needed — an empty subplot is a valid/expected signal).
+
+    fig.update_xaxes(title_text="dose / concentration", type="log", row=1, col=1)
+    fig.update_xaxes(title_text="dose / concentration", type="log", row=1, col=2)
+    fig.update_yaxes(title_text="effect value", row=1, col=1)
+    fig.update_yaxes(title_text="viability", row=1, col=2)
+
+    select_caption = dict(
+        text="<b>Select study</b> (right panel: paired cell-viability, when available — "
+             "see the table below the plot for UUID / links / details)",
+        x=0, xref="paper", y=1.15, yref="paper", showarrow=False, align="left",
+    )
+
+    order = sorted(studies_order, key=dropdown_sort_key_fn) if dropdown_sort_key_fn else studies_order
+    dropdown_buttons = []
+    for doc in order:
+        s_idx = studies_order.index(doc)
+        sdf = genotox_data[genotox_data["document_uuid_s"] == doc]
+        visible = [ts == s_idx for ts in trace_study]
+        dropdown_buttons.append(dict(
+            label=dropdown_label_fn(sdf.iloc[0]),
+            method="update",
+            args=[{"visible": visible}],
+        ))
+
+    fig.update_layout(
+        title_text=None,
+        margin=dict(t=150),
+        updatemenus=[dict(
+            buttons=dropdown_buttons, direction="down",
+            x=0, xanchor="left", y=1.08, yanchor="top",
+            showactive=True,
+        )],
+        annotations=list(fig.layout.annotations) + [select_caption],
         height=650,
     )
     return fig

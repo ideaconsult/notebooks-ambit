@@ -117,11 +117,24 @@ print("dose-response points:", len(data), "across",
       0 if data.empty else data["document_uuid_s"].nunique(), "studies")
 print("not retrieved:", len(not_retrieved))
 
+# --- fetch paired cell-viability studies too (where available) — a study can fail the
+# c_viab criterion under viz_metadata's strict matching yet still have SOME viability data
+# for the substance worth showing the curator, e.g. to judge whether the strict match was
+# too strict or whether viability data is genuinely absent.
+viability_data, viability_doc_by_genotox_doc, via_not_retrieved = pd.DataFrame(), {}, []
+if not data.empty:
+    viability_data, viability_doc_by_genotox_doc, via_not_retrieved = lib.fetch_paired_viability(
+        sel, failing_by_substance
+    )
+    print("viability dose-response points:", len(viability_data), "across",
+          0 if viability_data.empty else viability_data["document_uuid_s"].nunique(), "studies")
+
 # --- dump the data behind the plot to CSV ---------------------------------------------------
 data.to_csv(product["data_csv"], index=False)
 print("wrote", len(data), "rows to", product["data_csv"])
 
-# --- interactive dashboard: ONE plot area, pick the study via a dropdown --------------------
+# --- interactive dashboard: genotox (left) + viability if available (right), per-study
+# dropdown --------------------------------------------------------------------------------
 # Not small-multiples (unreadable past a handful of studies) — every study's traces are drawn
 # once, and a dropdown toggles which set of traces is visible. x = dose (log), y = response,
 # one line per endpoint. Non-numeric dose values (e.g. "C-"/"C+") are CONTROL rows — shown as
@@ -133,8 +146,8 @@ if not data.empty:
     fails_by_doc = {doc: data.loc[data["document_uuid_s"] == doc, "fails"].iloc[0]
                     for doc in data["document_uuid_s"].unique()}
 
-    fig = lib.build_dropdown_figure(
-        data,
+    fig = lib.build_dual_dropdown_figure(
+        data, viability_data, viability_doc_by_genotox_doc,
         dropdown_label_fn=lambda r: "[{}] {}".format(r["fails"], r["label"]),
         dropdown_sort_key_fn=lambda doc: (fails_by_doc[doc], doc),
     )
@@ -145,26 +158,31 @@ if not data.empty:
     table_rows = []
     for doc in studies_by_fail_group:
         r = data[data["document_uuid_s"] == doc].iloc[0]
+        via_doc = viability_doc_by_genotox_doc.get(doc)
         table_rows.append(
             "<tr>"
             "<td style='font-family:monospace;user-select:all'>{doc}</td>"
             "<td>{owner}</td><td>{pub}</td><td>{fails}</td>"
             "<td style='font-family:monospace;user-select:all'>{infile}</td>"
+            "<td style='font-family:monospace;user-select:all'>{via}</td>"
             "<td><a href='{sub}' target='_blank'>substance</a></td>"
             "<td><a href='{stu}' target='_blank'>raw JSON</a></td>"
             "</tr>".format(
                 doc=lib.esc(r["document_uuid_s"]), owner=lib.esc(r["owner_name_s"]),
                 pub=lib.esc(r["publicname_s"]), fails=lib.esc(r["fails"]),
                 infile=lib.esc(r.get("input_file")),
+                via=lib.esc(via_doc) if via_doc else "(none found)",
                 sub=lib.esc(r["substance_url"]), stu=lib.esc(r["study_url"]),
             )
         )
     table_html = (
         "<div style='font-family:sans-serif;margin:1em'>"
-        "<h3>Failing studies (document_uuid_s / input file are selectable — click and copy)</h3>"
+        "<h3>Failing studies (document_uuid_s / input file / paired viability uuid are "
+        "selectable — click and copy)</h3>"
         "<table border='1' cellpadding='4' style='border-collapse:collapse'>"
         "<tr><th>document_uuid_s</th><th>owner_name_s</th><th>publicname_s</th>"
-        "<th>fails</th><th>__input_file</th><th></th><th></th></tr>"
+        "<th>fails</th><th>__input_file</th><th>paired viability document_uuid_s</th>"
+        "<th></th><th></th></tr>"
         + "".join(table_rows) + "</table></div>"
     )
 

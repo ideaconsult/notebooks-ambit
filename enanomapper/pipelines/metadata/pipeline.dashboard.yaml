@@ -17,7 +17,7 @@ tasks:
       # OR-combined filters; leave "" to not filter on that dimension.
       # All empty = curate every failing study (capped by max_studies).
       filter_tag: ""                 # s_uuid_s server tag; NNRG = NanoREG (public AMBIT server)
-      filter_project: "nanoreg2"      # matches owner_name_s (e.g. NANoREG)
+      filter_project: "nanoreg"      # matches owner_name_s (e.g. NANoREG)
       filter_s_uuid: ""              # matches s_uuid_s
       filter_document_uuid: ""       # matches document_uuid_s
       filter_investigation_uuid: ""  # matches investigation_uuid_s
@@ -36,4 +36,4 @@ tasks:
       filter_s_uuid: ""              # matches s_uuid_s
       filter_document_uuid: ""       # matches document_uuid_s
       filter_investigation_uuid: ""  # matches investigation_uuid_s
-      max_studies: 50
+      max_studies: 1000
