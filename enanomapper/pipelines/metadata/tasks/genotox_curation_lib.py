@@ -11,6 +11,8 @@ import sys
 # conflict in datamodel.py).
 sys.path.insert(0, "d:/nina/src/charisma/pyambit-main/src")
 
+import ast
+
 import numpy as np
 import pandas as pd
 import requests
@@ -18,12 +20,34 @@ import requests
 from pyambit.datamodel import Study
 from pyambit import study_config as sc
 
+
+def parse_csv_list(val):
+    """Parse a list-valued cell that round-tripped through CSV.
+
+    pandas writes list columns as their Python repr (e.g. "['K562']"), and reading the CSV
+    back gives that repr AS A STRING, not a list — so plain `isinstance(val, list)` checks
+    silently fail after a CSV round trip (the whole "['K562']" string gets treated as one
+    value instead of being unpacked). Always route E.cell_type_ss (and similar list columns)
+    read from a CSV through this helper before checking isinstance(..., list).
+    """
+    if isinstance(val, list):
+        return val
+    if pd.isna(val):
+        return []
+    if isinstance(val, str) and val.startswith("[") and val.endswith("]"):
+        try:
+            parsed = ast.literal_eval(val)
+            return parsed if isinstance(parsed, list) else [parsed]
+        except (ValueError, SyntaxError):
+            return [val]
+    return [val]
+
 GENOTOX_INVITRO = "TO_GENETIC_IN_VITRO_SECTION"
 VIABILITY = "ENM_0000068_SECTION"  # Cell Viability
 
 # --- AMBIT server resolution (ported from spectrasearch-viewers/src/utils/tagdbs.js) ---------
 # 4-letter tag = prefix before the first "-" in s_uuid_s -> AMBIT server base URL.
-TAG_DBS = {
+TAG_DBS_AMBIT = {
     "ENM":  "https://data.enanomapper.net/",
     "NNRG": "https://apps.ideaconsult.net/nanoreg1/",
     "NRGF": "https://apps.ideaconsult.net/nanoreg1/",
@@ -56,13 +80,60 @@ TAG_DBS = {
     "ZROF": "https://apps.ideaconsult.net/zerof/",
 }
 
+TAG_DBS = {
+    "ENM":  "https://data.enanomapper.net/",
+    "NNRG": "https://apps.ideaconsult.net/nanoreg1/",
+    "NRGF": "https://apps.ideaconsult.net/nanoreg1/",
+    "NRTR": "https://apps.ideaconsult.net/nanoreg1/",
+    "MRNA": "https://apps.ideaconsult.net/marina/",
+    "NTST": "https://apps.ideaconsult.net/nanotest/",
+    "NGTX": "https://apps.ideaconsult.net/nanogenotox/",
+    "ENPR": "https://apps.ideaconsult.net/enpra/",
+    "GRCS": "https://apps.ideaconsult.net/gracious/",
+    "PGMS": "https://apps.ideaconsult.net/gracious_pigments/",
+    "CLBR": "https://apps.ideaconsult.net/calibrate/",
+    "NRG2": "https://api.ideaconsult.net/nanoreg2/enm/nanoreg2/",
+    "NOMX": "https://apps.ideaconsult.net/nanoomics/",
+    "SNWK": "https://apps.ideaconsult.net/sanowork/",
+    "RGNE": "https://api.ideaconsult.net/riskgone/enm/riskgone/",
+    "CNLB": "https://apps.ideaconsult.net/marina/",
+    "NGRV": "https://apps.ideaconsult.net/gracious/",
+    "NOSH": "https://apps.ideaconsult.net/nanoinformatix/",
+    "NTIX": "https://apps.ideaconsult.net/nanoinformatix/",
+    "AMBT": "https://ambitlri.ideaconsult.net/tool2/",
+    "SBDN": "https://apps.ideaconsult.net/sbd4nano/",
+    "SBMA": "https://apps.ideaconsult.net/sabydoma/",
+    "HRMZ": "https://api.ideaconsult.net/harmless/enm/harmless/",
+    "PATS": "https://apps.ideaconsult.net/patrols/",
+    "CRMA": "https://apps.ideaconsult.net/charisma/",
+    "POLY": "https://apps.ideaconsult.net/polyrisk/",
+    "PLFT": "https://apps.ideaconsult.net/plasticfate/",
+    "HEAL": "https://apps.ideaconsult.net/plasticheal/",
+    "IUC6": "https://apps.ideaconsult.net/tool3/",
+    "ZROF": "https://apps.ideaconsult.net/zerof/",
+}
 
 def substance2server(s_uuid):
-    """4-letter tag (prefix before first '-') -> AMBIT server base URL, or None if unknown."""
+    """4-letter tag (prefix before first '-') -> AMBIT/Gravitee fetch server, or None if
+    unknown. Used for actual data retrieval — may be a Gravitee API gateway URL
+    (api.ideaconsult.net/{project}/enm/{project}/) which is NOT a browsable UI page."""
     if not s_uuid:
         return None
     tag = s_uuid.split("-")[0] if "-" in s_uuid else s_uuid
     return TAG_DBS.get(tag)
+
+
+def substance2ui_url(s_uuid):
+    """Browsable AMBIT substance page URL (apps.ideaconsult.net), for human-facing links.
+
+    Distinct from substance2server(): TAG_DBS may point some tags at the Gravitee API
+    gateway for fetching (api.ideaconsult.net/.../enm/...), which returns JSON, not a
+    renderable page. Links a curator clicks should always go to the real UI server.
+    """
+    if not s_uuid:
+        return None
+    tag = s_uuid.split("-")[0] if "-" in s_uuid else s_uuid
+    return TAG_DBS_AMBIT.get(tag)
 
 
 def fetch_studies(server, s_uuid, category=GENOTOX_INVITRO):
@@ -272,7 +343,10 @@ def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn,
                 "publicname_s": row.get("publicname_s"),
                 "input_file": row.get("param___input_file_t"),
                 "label": label_by_doc.get(papp.uuid, papp.uuid),
-                "substance_url": "{}/substance/{}".format(server.rstrip("/"), s_uuid),
+                # human-facing link: always the browsable apps.ideaconsult.net UI, never the
+                # Gravitee fetch server (which returns JSON, not a renderable page).
+                "substance_url": "{}/substance/{}".format(
+                    (substance2ui_url(s_uuid) or server).rstrip("/"), s_uuid),
                 "study_url": "{}/substance/{}/study?media=application/json&category={}"
                              .format(server.rstrip("/"), s_uuid, category),
                 **extra_meta_fn(row),
@@ -296,41 +370,52 @@ def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn,
     return pd.DataFrame(long_rows), not_retrieved
 
 
+def _papp_cell_type(papp):
+    """E.cell_type from an AMBIT ProtocolApplication's parameters (Solr indexes this same
+    value as E.cell_type_s). Confirmed present on live viability study JSON."""
+    params = papp.parameters or {}
+    return _param_str(params.get("E.cell_type") or params.get("E.CELL_TYPE"))
+
+
 def fetch_paired_viability(sel, by_substance):
-    """Fetch each substance's cell-viability studies (unfiltered — we don't know a viability
-    document_uuid up front) and pick the best-paired one per genotox document_uuid_s.
+    """Fetch each substance's cell-viability studies and pick the best-paired one per genotox
+    document_uuid_s — using EXACTLY viz_metadata.py's pairing logic (has_paired_viability),
+    so the plotted panel never disagrees with the c_viab flag / "fails" text:
+      1. primary: a viability study sharing the genotox study's investigation_uuid_s
+      2. fallback: a viability study matching (owner_name_s, s_uuid_s, cell_type) — NOT just
+         "any viability study on the substance" (that ignored cell type and could pair a
+         genotox study with an unrelated cell line's viability data).
 
     sel: the filtered readiness rows (DataFrame), one row per genotox document_uuid_s. Needs
-        s_uuid_s and, if present, investigation_uuid_s.
+        s_uuid_s, owner_name_s, E.cell_type_ss, and (if present) investigation_uuid_s.
     by_substance: {s_uuid_s: set(document_uuid_s)} — the genotox studies grouped by substance
         (same shape as fetch_and_flatten's second argument); only its keys (which substances
         to fetch viability for) are used here.
-
-    Pairing preference: a viability study sharing the genotox study's investigation_uuid_s;
-    falls back to any viability study found for the same substance (viz_metadata's own
-    fallback match is context-based — owner/NM/cell-type — and there's no single AMBIT study
-    uuid for that path, so "first available on the substance" is the practical equivalent
-    here).
 
     Returns (viability_data: DataFrame, viability_doc_by_genotox_doc: dict, not_retrieved: list).
     """
     via_rows = []
     not_retrieved = []
+    cell_type_by_via_doc = {}
 
     for s_uuid in by_substance:
         server = substance2server(s_uuid)
         if server is None:
             not_retrieved.append({"s_uuid_s": s_uuid, "reason": "unknown server tag"})
             continue
+        owner_rows = sel.loc[sel["s_uuid_s"] == s_uuid, "owner_name_s"]
+        owner = owner_rows.iloc[0] if not owner_rows.empty else None
         via_studies, reason = fetch_studies(server, s_uuid, category=VIABILITY)
         if reason is not None:
             not_retrieved.append({"s_uuid_s": s_uuid, "reason": reason})
             continue
         for papp in via_studies:
+            cell_type_by_via_doc[papp.uuid] = _papp_cell_type(papp)
             meta = {
-                "document_uuid_s": papp.uuid, "s_uuid_s": s_uuid,
+                "document_uuid_s": papp.uuid, "s_uuid_s": s_uuid, "owner_name_s": owner,
                 "label": "viability: {}".format(papp.uuid),
-                "substance_url": "{}/substance/{}".format(server.rstrip("/"), s_uuid),
+                "substance_url": "{}/substance/{}".format(
+                    (substance2ui_url(s_uuid) or server).rstrip("/"), s_uuid),
                 "study_url": "{}/substance/{}/study?media=application/json&category={}"
                              .format(server.rstrip("/"), s_uuid, VIABILITY),
                 "investigation_uuid": papp.investigation_uuid,
@@ -346,10 +431,15 @@ def fetch_paired_viability(sel, by_substance):
             viability_data.drop_duplicates("document_uuid_s")
             .set_index("investigation_uuid")["document_uuid_s"].to_dict()
         )
-        via_by_sub = (
-            viability_data.drop_duplicates("document_uuid_s")
-            .groupby("s_uuid_s")["document_uuid_s"].first().to_dict()
-        )
+        # (owner_name_s, s_uuid_s, cell_type) -> viability document_uuid_s, mirroring
+        # viz_metadata.py's viability_contexts / has_paired_viability exactly.
+        via_docs = viability_data.drop_duplicates("document_uuid_s")
+        via_by_context = {}
+        for _, vr in via_docs.iterrows():
+            ct = cell_type_by_via_doc.get(vr["document_uuid_s"])
+            key = (str(vr["owner_name_s"]), str(vr["s_uuid_s"]), str(ct) if ct else "?")
+            via_by_context.setdefault(key, vr["document_uuid_s"])
+
         for _, row in sel.iterrows():
             doc = row["document_uuid_s"]
             if row["s_uuid_s"] not in by_substance:
@@ -357,7 +447,13 @@ def fetch_paired_viability(sel, by_substance):
             inv = row.get("investigation_uuid_s")
             via_doc = via_by_inv.get(inv) if pd.notna(inv) else None
             if via_doc is None:
-                via_doc = via_by_sub.get(row["s_uuid_s"])
+                owner = str(row["owner_name_s"]) if pd.notna(row.get("owner_name_s")) else "?"
+                nm = str(row["s_uuid_s"]) if pd.notna(row.get("s_uuid_s")) else "?"
+                cells = parse_csv_list(row.get("E.cell_type_ss")) or ["?"]
+                for c in cells:
+                    via_doc = via_by_context.get((owner, nm, str(c)))
+                    if via_doc:
+                        break
             viability_doc_by_genotox_doc[doc] = via_doc
 
     return viability_data, viability_doc_by_genotox_doc, not_retrieved
