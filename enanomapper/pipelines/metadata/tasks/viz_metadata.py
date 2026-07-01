@@ -44,15 +44,44 @@ GENOTOX_INVITRO = "TO_GENETIC_IN_VITRO_SECTION"
 VIABILITY = "ENM_0000068_SECTION"  # Cell Viability
 
 # How a study's E.method_s value maps to an assay family for the matrix.
-def assay_family(method):
-    m = str(method).upper()
-    if "COMET" in m and "FPG" in m:
-        return "COMET+FPG"
+def assay_family(method_synonyms, method_name, effect_endpoints):
+    # Convert endpoints to a single uppercase string
+    if isinstance(effect_endpoints, (list, tuple, set)):
+        ep = " ".join(map(str, effect_endpoints)).upper()
+    else:
+        ep = str(effect_endpoints).upper()
+
+    # Use ontology IDs first
+    if isinstance(method_synonyms, (list, tuple, set)) and method_synonyms:
+        ids = set(map(str, method_synonyms))
+
+        if "ENM_8000273" in ids:
+            return "Micronucleus"
+
+        if "OBI_0302736" in ids:
+            # FPG-modified comet?
+            if "FPG" in ep:
+                return "COMET+FPG"
+            return "COMET"
+
+    # Fallback to method name
+    m = str(method_name).upper()
+
     if "COMET" in m:
+        if "FPG" in m or "FPG" in ep:
+            return "COMET+FPG"
         return "COMET"
-    if "MICRONUCLEUS" in m or "CBMN" in m or m == "MN":
+
+    if (
+        "MICRONUCLEUS" in m
+        or "CBMN" in m
+        or m == "MN"
+        or "CYTOKINESIS" in m
+        or "OECD TG487" in m
+    ):
         return "Micronucleus"
-    return None  # other genotox method, not COMET/MN
+
+    return None
 
 
 def fetch_docs(q, fl, rows=100000):
@@ -80,7 +109,7 @@ def context_keys(df):
 
 # --- load the in-vitro genotox studies --------------------------------------------------
 FL = ("document_uuid_s,s_uuid_s,publicname_s,owner_name_s,endpointcategory_s,"
-      "E.method_s,E.cell_type_ss,concentration_count_i,"
+      "E.method_s,E.method_synonym_ss,effectendpoint_ss, E.cell_type_ss,concentration_count_i,"
       "has_positive_control_b,has_negative_control_b,studyResultType_s")
 
 gen = fetch_docs("type_s:metadata_study AND endpointcategory_s:{}".format(GENOTOX_INVITRO), FL)
@@ -92,7 +121,15 @@ viability_contexts = context_keys(viab)
 print("viability (owner,NM,cell) contexts:", len(viability_contexts))
 
 # --- derive per-study readiness flags ---------------------------------------------------
-gen["assay"] = gen["E.method_s"].map(assay_family)
+
+gen["assay"] = gen.apply(
+    lambda row: assay_family(
+        row["E.method_synonym_ss"],
+        row["E.method_s"],
+        row["effectendpoint_ss"],
+    ),
+    axis=1,
+)
 gen = gen[gen["assay"].notna()].copy()        # COMET / COMET+FPG / Micronucleus only
 print("COMET/MN studies:", len(gen))
 
