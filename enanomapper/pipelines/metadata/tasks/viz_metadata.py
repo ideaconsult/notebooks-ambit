@@ -24,10 +24,12 @@ product = None
 #   - in-vivo  genotox  = endpointcategory_s:TO_GENETIC_IN_VIVO_SECTION  (599)
 #   - cell viability    = endpointcategory_s:ENM_0000068_SECTION         (3349)  [ENM_0000068 = Cell Viability]
 #   - COMET / COMET FPG / MICRONUCLEUS ASSAY are values of E.method_s (FPG is method-level, not a param)
-#   - investigation_uuid_s is EMPTY -> viability cannot be linked by investigation
-#   - viability is paired by EXPERIMENTAL CONTEXT, not NM alone: a cytotoxicity study only
-#     validates a genotox result if it is the same lab + same nanomaterial + same cell type.
-#     Linkage key = (owner_name_s, s_uuid_s, cell_type).
+#   - investigation_uuid_s is now populated in metaenm -> primary viability match is by
+#     shared investigation_uuid_s (same protocol application group).
+#   - not every genotox investigation has a matching viability investigation (only ~59/593
+#     do), so studies with no investigation match fall back to EXPERIMENTAL CONTEXT: a
+#     cytotoxicity study still counts as paired if it is the same lab + same nanomaterial +
+#     same cell type. Fallback linkage key = (owner_name_s, s_uuid_s, cell_type).
 #   - owner_name_s carries the source project (NanoGenotox, NANoREG, NanoReg2, PATROLS, ... — keep all)
 
 import os
@@ -110,15 +112,17 @@ def context_keys(df):
 # --- load the in-vitro genotox studies --------------------------------------------------
 FL = ("document_uuid_s,s_uuid_s,publicname_s,owner_name_s,endpointcategory_s,"
       "E.method_s,E.method_synonym_ss,effectendpoint_ss, E.cell_type_ss,concentration_count_i,"
-      "has_positive_control_b,has_negative_control_b,studyResultType_s")
+      "has_positive_control_b,has_negative_control_b,studyResultType_s,investigation_uuid_s")
 
 gen = fetch_docs("type_s:metadata_study AND endpointcategory_s:{}".format(GENOTOX_INVITRO), FL)
 print("in-vitro genotox studies:", len(gen))
 
-# cell-viability studies, reduced to their (lab, NM, cell type) contexts — the linkage key
+# cell-viability studies: primary match key (investigation_uuid_s) + fallback context key
 viab = fetch_docs("type_s:metadata_study AND endpointcategory_s:{}".format(VIABILITY), FL)
+viability_investigations = set(viab["investigation_uuid_s"].dropna().astype(str))
 viability_contexts = context_keys(viab)
-print("viability (owner,NM,cell) contexts:", len(viability_contexts))
+print("viability investigations:", len(viability_investigations),
+      " | viability (owner,NM,cell) contexts:", len(viability_contexts))
 
 # --- derive per-study readiness flags ---------------------------------------------------
 
@@ -144,10 +148,14 @@ gen["c_conc3"] = gen["concentration_count_i"] >= 3
 gen["c_neg"] = gen["has_negative_control_b"]
 gen["c_pos"] = gen["has_positive_control_b"]
 
-# paired viability: does this study's (lab, NM, cell-type) context also have a viability study?
-# A genotox study lists possibly several cell types; it counts as paired if ANY of its
-# (owner, NM, cell) contexts is covered by a viability study.
+# paired viability: primary match is a shared investigation_uuid_s (same protocol
+# application group). Falls back to experimental-context matching — (owner, NM, cell type) —
+# when the study has no investigation_uuid_s, or its investigation has no viability match.
 def has_paired_viability(row):
+    inv = row.get("investigation_uuid_s")
+    if pd.notna(inv) and str(inv) in viability_investigations:
+        return True
+
     cells = row["E.cell_type_ss"]
     cells = cells if isinstance(cells, list) else ([cells] if pd.notna(cells) else ["?"])
     owner = str(row["owner_name_s"]) if pd.notna(row["owner_name_s"]) else "?"
@@ -155,6 +163,10 @@ def has_paired_viability(row):
     return any((owner, nm, str(c)) in viability_contexts for c in cells)
 
 gen["c_viab"] = gen.apply(has_paired_viability, axis=1)
+gen["c_viab_via_investigation"] = (
+    gen["investigation_uuid_s"].astype(str).isin(viability_investigations)
+    & gen["investigation_uuid_s"].notna()
+)
 gen["interpretable"] = gen["c_conc3"] & gen["c_neg"] & gen["c_pos"] & gen["c_viab"]
 gen["owner_name_s"] = gen.get("owner_name_s", "unknown").fillna("unknown")
 
@@ -258,3 +270,14 @@ print("  fully interpretable (all 4 NR2 criteria):", int(gen["interpretable"].su
 print("  distinct nanomaterials covered:", gen["nm"].nunique())
 print("  NMs with at least one interpretable study:",
       gen[gen["interpretable"]]["nm"].nunique())
+print("  paired-viability matches via investigation_uuid_s:",
+      int(gen["c_viab_via_investigation"].sum()))
+print("  paired-viability matches via context fallback only:",
+      int((gen["c_viab"] & ~gen["c_viab_via_investigation"]).sum()))
+
+# ========================================================================================
+# 6. TASK OUTPUT — full per-study table with all readiness flags, for downstream use
+#    (the paper authors, or a future Solr re-import of the readiness annotation)
+# ========================================================================================
+gen.to_csv(product["data"], index=False)
+print("\nwrote", len(gen), "rows to", product["data"])
