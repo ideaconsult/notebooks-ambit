@@ -37,7 +37,7 @@ product = None
 # sibling module is importable directly — no sys.path/__file__ manipulation needed (and
 # __file__ isn't reliably set under Ploomber's execution anyway).
 import tasks.genotox_curation_lib as lib
-
+from pynanomapper import aa
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -58,6 +58,8 @@ def failure_reasons(row):
                if flag in row and not bool(row[flag])]
     return "; ".join(reasons) if reasons else "(passes all — included by filter)"
 
+# -- do we need auth
+config, config_servers, config_security, auth_object, msg = aa.parseOpenAPI3()
 
 # --- select failing studies -----------------------------------------------------------------
 csv_path = upstream["viz_metadata"]["data"]

@@ -12,6 +12,7 @@ import sys
 sys.path.insert(0, "d:/nina/src/charisma/pyambit-main/src")
 
 import ast
+import os
 
 import numpy as np
 import pandas as pd
@@ -120,6 +121,7 @@ def substance2server(s_uuid):
     if not s_uuid:
         return None
     tag = s_uuid.split("-")[0] if "-" in s_uuid else s_uuid
+    
     return TAG_DBS.get(tag)
 
 
@@ -136,17 +138,47 @@ def substance2ui_url(s_uuid):
     return TAG_DBS_AMBIT.get(tag)
 
 
+# --- Gravitee auth (per-project API keys) -------------------------------------------------
+# The Gravitee gateway (api.ideaconsult.net) requires an X-Gravitee-Api-Key header, but each
+# project has its OWN subscription key — there is no single shared key. Map tag -> the env
+# var name holding that project's key, so each is set only if/when the user has it.
+GRAVITEE_KEY_ENV = {
+    "NRG2": "GRAVITEE_API_KEY_NRG2",
+    "RGNE": "GRAVITEE_API_KEY_RGNE",
+    "HRMZ": "GRAVITEE_API_KEY_HRMZ",
+}
+
+
+def _gravitee_auth_for_tag(tag):
+    """GraviteeAuth for `tag`'s project key (from its env var), or None if not set / not a
+    Gravitee-fronted tag — fetch_studies then makes an unauthenticated request as before."""
+    env_name = GRAVITEE_KEY_ENV.get(tag)
+    if not env_name:
+        return None
+    key = os.environ.get(env_name)
+    if not key:
+        return None
+    from pynanomapper import aa
+    return aa.GraviteeAuth(apikey=key)
+
+
 def fetch_studies(server, s_uuid, category=GENOTOX_INVITRO):
     """Fetch a substance's studies from AMBIT, restricted to one endpoint category.
+
+    Attaches the project-specific X-Gravitee-Api-Key header (from that project's
+    GRAVITEE_API_KEY_<TAG> env var, see GRAVITEE_KEY_ENV) when `server` is Gravitee-fronted
+    and a key is available; otherwise the request is unauthenticated, same as before.
 
     Returns (list_of_ProtocolApplication, reason) — reason is None on success, else a short
     string ('unknown server tag', 'HTTP 403', 'not JSON', 'error: ...') for the skip list.
     """
+    tag = s_uuid.split("-")[0] if s_uuid and "-" in s_uuid else s_uuid
     url = "{}/substance/{}/study".format(server.rstrip("/"), s_uuid)
     try:
         r = requests.get(
             url,
             params={"media": "application/json", "top": "TOX", "category": category},
+            auth=_gravitee_auth_for_tag(tag),
             timeout=120,
         )
     except Exception as err:

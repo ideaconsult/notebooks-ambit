@@ -23,7 +23,7 @@ tasks:
       filter_investigation_uuid: ""  # matches investigation_uuid_s
       max_studies: 1000
     grid:
-      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork"]
+      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork","riskgone"]
 
   - source: tasks/curate_passing.py
     name: "curate_passing_[[filter_project]]"
@@ -40,4 +40,4 @@ tasks:
       filter_investigation_uuid: ""  # matches investigation_uuid_s
       max_studies: 1000
     grid:
-      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork"]
+      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork", "riskgone"]
