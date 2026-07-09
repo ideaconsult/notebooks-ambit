@@ -1,0 +1,24 @@
+# Copy to env.yaml (gitignored — see repo .gitignore) and fill in your local paths.
+# No credentials belong in this file; the tools in this folder only read local files
+# and talk to an already-running local AMBIT instance / the public metaenm Solr
+# collection (metaenm credentials come from the ENM_USER / ENM_PWD env vars instead,
+# same convention as pipelines/metadata/env.dashboard.yaml).
+
+nanodata_root: "/path/to/src/nanodata"
+folder_output: "products"
+
+# Local AMBIT instance used by run_local_import's pre-flight reachability check.
+# Started manually (Eclipse or Tomcat, see nanodata/guide/README.md) -- this MCP
+# server never starts/stops it.
+ambit_base_url: "http://localhost:9090/ambit2"
+
+# The metaenm Solr metadata collection used by search_metaenm.
+# Ask your team for the real URL -- not published here.
+metaenm_solr_url: "https://YOUR-SOLR-HOST/solr/metaenm"
+
+# Explicit, user-editable list of nanodata-<project> data repos to search in
+# retrieve_similar_configs -- NOT auto-derived.
+# Add one entry per project you work on; key is the name you'll pass as `project`.
+config_corpus_dirs:
+  gracious: "/path/to/src/nanodata-gracious"
+  harmless: "/path/to/src/nanodata-harmless"
