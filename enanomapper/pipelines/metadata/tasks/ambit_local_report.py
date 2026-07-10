@@ -68,6 +68,11 @@ def cond_num(conditions, key):
         return None
 
 
+def cond_unit(conditions, key):
+    v = conditions.get(key)
+    return str(v.get("unit")) if isinstance(v, dict) and v.get("unit") else None
+
+
 # --- gather everything from live AMBIT in one pass ------------------------------------------
 base = ambit_base_url.rstrip("/")
 print("querying live AMBIT:", base, "| owner:", owner_name)
@@ -83,7 +88,8 @@ cell_studies = Counter()    # E.cell_type = the cell line
 # owner, material and control role, so the figure can facet by cell, colour by owner, and mark
 # controls distinctly — and it works for ANY assay in ANY AMBIT instance.
 dr = defaultdict(list)      # endpoint -> [ {cell, owner, material, dose, value, role}, ... ]
-dr_units = defaultdict(Counter)
+dr_units = defaultdict(Counter)      # endpoint -> value-unit Counter (read from data)
+dr_dose_units = defaultdict(Counter)  # endpoint -> concentration-unit Counter (read from data)
 ctrl = defaultdict(lambda: {"papps": set(), "with_pos": set(), "with_neg": set()})
 
 
@@ -141,6 +147,9 @@ for s in subs:
                                    "dose": dose, "value": float(val), "role": role})
                     if result.get("unit"):
                         dr_units[ep][str(result["unit"])] += 1
+                    du = cond_unit(conds, "CONCENTRATION")
+                    if du:
+                        dr_dose_units[ep][du] += 1
                 except (TypeError, ValueError):
                     pass
 
@@ -192,6 +201,13 @@ def endpoint_label(ep):
     return "{} ({})".format(pretty, unit) if unit else pretty
 
 
+def dose_label(ep):
+    """x-axis label with the concentration unit READ FROM THE DATA (not hardcoded)."""
+    units = dr_dose_units.get(ep)
+    unit = units.most_common(1)[0][0] if units else None
+    return "concentration ({})".format(unit) if unit else "concentration"
+
+
 def pick_dose_response_endpoints(max_endpoints=4, min_points=12, min_doses=3):
     """Endpoints that look like dose-responses: enough sample points across >= min_doses
     distinct concentrations. Ranked by (n sample points) then (distinct doses)."""
@@ -228,12 +244,13 @@ def dose_response(endpoint, max_materials_per_panel=6):
     ylabel = endpoint_label(endpoint)
     # facet by cell line: cells with the most sample points (up to a 3x3 grid)
     cells = [c for c, _ in Counter(r["cell"] for r in samples).most_common(9)]
-    ymax = max((r["value"] for r in recs if r["cell"] in cells), default=1.0) * 1.05 or 1.0
 
     ncol = min(3, len(cells))
     nrow = (len(cells) + ncol - 1) // ncol
+    # y-axis is INDEPENDENT per panel — response ranges differ a lot between cell lines, so a
+    # shared scale flattens the low-response cells. x (concentration) stays shared for comparison.
     fig, axes = plt.subplots(nrow, ncol, figsize=(3.6 * ncol, 3.0 * nrow),
-                             sharex=True, sharey=True, squeeze=False)
+                             sharex=True, sharey=False, squeeze=False)
     axes = axes.ravel()
     for i, cell in enumerate(cells):
         ax = axes[i]
@@ -264,7 +281,7 @@ def dose_response(endpoint, max_materials_per_panel=6):
                        facecolors="none", edgecolors=CTRL_NEG, linewidths=1.2, zorder=4,
                        label="negative (0-dose)")
         ax.set_xscale("symlog", linthresh=0.5)
-        ax.set_ylim(0, ymax)
+        ax.set_ylim(bottom=0)  # dose-response floors at 0; top autoscales per panel
         n_extra = len(by_mat) - len(top_mats)
         ttl = cell if n_extra <= 0 else "{}  (+{} more materials)".format(cell, n_extra)
         ax.set_title(ttl, loc="left", fontsize=10, color=INK)
@@ -274,10 +291,10 @@ def dose_response(endpoint, max_materials_per_panel=6):
     for j in range(len(cells), len(axes)):
         axes[j].set_visible(False)
     for k in range(len(cells)):
-        if k % ncol == 0:
-            axes[k].set_ylabel(ylabel)
+        # y is independent per panel now, so label it on every panel (not just the left column)
+        axes[k].set_ylabel(ylabel)
         if k >= len(cells) - ncol:
-            axes[k].set_xlabel("conc. (µg/cm²)")
+            axes[k].set_xlabel(dose_label(endpoint))
     fig.suptitle("Dose–response by cell line — {}  ·  one line per material (owner in label)".format(ylabel),
                  x=0.02, ha="left", fontweight="bold", fontsize=12, y=1.004)
     fig.text(0.02, -0.01, "each line = one material's per-dose median · red X = positive control · grey o = negative/0-dose",
