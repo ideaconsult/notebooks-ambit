@@ -303,10 +303,77 @@ def dose_response(endpoint, max_materials_per_panel=6):
     plt.show()
 
 
+def dose_response_by_material(endpoint, max_materials=9, max_lines_per_panel=8):
+    """Complementary view: one panel per MATERIAL (nanomaterial). Within a panel, one line per
+    (cell line + owner) — colour = CELL LINE (the primary biological variable compared within a
+    material), owner in the label — so a material's dose-response is seen across the cell lines
+    and labs that tested it (round-robin spread), without ever merging distinct experiments.
+    Controls of that material marked distinctly."""
+    recs = dr[endpoint]
+    samples = [r for r in recs if r["role"] == "sample"]
+    if not samples:
+        return
+    ylabel = endpoint_label(endpoint)
+    materials = [m for m, _ in Counter(r["material"] for r in samples).most_common(max_materials)]
+    # fixed cell line -> colour (categorical order, never cycled), shared across panels
+    cells = [c for c, _ in Counter(r["cell"] for r in samples).most_common()]
+    cell_color = {c: CAT[i % len(CAT)] for i, c in enumerate(cells)}
+
+    ncol = min(3, len(materials))
+    nrow = (len(materials) + ncol - 1) // ncol
+    fig, axes = plt.subplots(nrow, ncol, figsize=(3.6 * ncol, 3.0 * nrow),
+                             sharex=True, sharey=False, squeeze=False)
+    axes = axes.ravel()
+    for i, mat in enumerate(materials):
+        ax = axes[i]
+        mat_recs = [r for r in recs if r["material"] == mat]
+        # one line per (cell line, owner) — never merge distinct experiments
+        groups = defaultdict(list)
+        for r in mat_recs:
+            if r["role"] == "sample":
+                groups[(r["cell"], r["owner"])].append(r)
+        top = sorted(groups, key=lambda k: len(groups[k]), reverse=True)[:max_lines_per_panel]
+        for (cell, owner) in top:
+            xs, ys = _material_median(groups[(cell, owner)])
+            ax.plot(xs, ys, marker="o", ms=3.5, lw=1.6, color=cell_color[cell], zorder=3,
+                    markeredgecolor=SURFACE, markeredgewidth=0.8,
+                    label="{} · {}".format(cell, owner))
+        pos = [r for r in mat_recs if r["role"] == "positive"]
+        neg = [r for r in mat_recs if r["role"] == "negative"]
+        if pos:
+            ax.scatter([r["dose"] for r in pos], [r["value"] for r in pos], marker="X", s=42,
+                       color=CTRL_POS, zorder=5, edgecolors=SURFACE, linewidths=0.8,
+                       label="positive control")
+        if neg:
+            ax.scatter([r["dose"] for r in neg], [r["value"] for r in neg], marker="o", s=24,
+                       facecolors="none", edgecolors=CTRL_NEG, linewidths=1.2, zorder=4,
+                       label="negative (0-dose)")
+        ax.set_xscale("symlog", linthresh=0.5)
+        ax.set_ylim(bottom=0)
+        n_extra = len(groups) - len(top)
+        ttl = mat if n_extra <= 0 else "{}  (+{} more)".format(mat, n_extra)
+        ax.set_title(ttl, loc="left", fontsize=10, color=INK)
+        ax.legend(frameon=False, fontsize=7, labelcolor=INK2, loc="upper left",
+                  handlelength=1.2, borderaxespad=0.2)
+    for j in range(len(materials), len(axes)):
+        axes[j].set_visible(False)
+    for k in range(len(materials)):
+        axes[k].set_ylabel(ylabel)
+        if k >= len(materials) - ncol:
+            axes[k].set_xlabel(dose_label(endpoint))
+    fig.suptitle("Dose–response by material — {}  ·  one line per cell line + owner".format(ylabel),
+                 x=0.02, ha="left", fontweight="bold", fontsize=12, y=1.004)
+    fig.text(0.02, -0.01, "each line = one (cell line, owner) per-dose median · colour = cell line · red X = positive · grey o = negative/0-dose",
+             ha="left", color=MUTED, fontsize=9)
+    fig.tight_layout(rect=(0, 0.01, 1, 1))
+    plt.show()
+
+
 dr_endpoints = pick_dose_response_endpoints()
 print("dose-response endpoints (auto-selected):", dr_endpoints)
 for ep in dr_endpoints:
-    dose_response(ep)
+    dose_response(ep)                 # faceted by cell line  (line per material)
+    dose_response_by_material(ep)     # faceted by material   (line per cell line + owner)
 
 # ============================================================================================
 # Figure 3 — control coverage per method
