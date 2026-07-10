@@ -287,6 +287,18 @@ for category in categories:
                 all_conc_units.update(b["val"] for b in bk.get("conc_units_{}".format(safe), {}).get("buckets", []))
         conc_vals = sorted(set(all_conc_vals))
 
+        # A 0-concentration (unexposed) dose point IS the concurrent negative control, even when
+        # the row was never explicitly annotated `control_negative` on the material axis (many
+        # early studies carry the 0-dose row but don't tag it — the annotation should come from
+        # a config MAPPING or the expand config). Detect it here so the produced Solr flag is
+        # correct at the source for every consumer, not only the readiness dashboard.
+        def _is_zero(v):
+            try:
+                return float(v) == 0.0
+            except (TypeError, ValueError):
+                return False
+        has_zero_dose = any(_is_zero(v) for v in conc_vals)
+
         # exposure time values + units
         exp_vals = sorted(b["val"] for b in bk.get("exp_values", {}).get("buckets", []))
         exp_units = [b["val"] for b in bk.get("exp_units", {}).get("buckets", [])]
@@ -330,12 +342,20 @@ for category in categories:
             # exposure time arrays
             "exposure_time_values_ds":      exp_vals or None,
             "exposure_time_units_ss":       exp_units or None,
-            # control flags
+            # control flags. has_negative_control_b is true if a control point was annotated
+            # `control_negative` OR the study has a 0-concentration (unexposed) point — which is
+            # itself the negative control. has_zero_dose_b keeps the two apart so a curator can
+            # still find studies that rely on the 0-dose inference and lack the explicit
+            # annotation (candidates for a config MAPPING / expand-config annotation fix).
             "has_positive_control_b":       "positive" in ctrl_roles,
-            "has_negative_control_b":       "negative" in ctrl_roles,
+            "has_negative_control_b":       ("negative" in ctrl_roles) or has_zero_dose,
+            "has_negative_control_annotated_b": "negative" in ctrl_roles,
+            "has_zero_dose_b":              has_zero_dose,
             "has_interference_control_b":   "interference" in ctrl_roles,
             "has_solvent_control_b":        "solvent" in ctrl_roles,
-            "control_roles_ss":             sorted(ctrl_roles),
+            "control_roles_ss":             sorted(
+                                                ctrl_roles | ({"negative"} if has_zero_dose else set())
+                                            ),
         })
         # flatten param_* fields directly into the row; also store original key names
         # in param_names_ss so users can facet on "which params does this study have"

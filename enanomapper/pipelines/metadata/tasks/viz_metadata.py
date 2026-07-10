@@ -188,6 +188,7 @@ PARAM_NEG_FIELDS = ["param_E.NEGATIVE_CONTROLID_t", "param_E.NEGATIVE_CONTROL_t"
 # attention, not just which study.
 FL = ("document_uuid_s,s_uuid_s,publicname_s,owner_name_s,reference_owner_s,endpointcategory_s,"
       "E.method_s,E.method_synonym_ss,effectendpoint_ss, E.cell_type_ss,concentration_count_i,"
+      "concentration_values_ds,"
       "has_positive_control_b,has_negative_control_b,studyResultType_s,investigation_uuid_s,"
       "reference_s,reference_year_s,"
       "param___input_file_t,"
@@ -235,8 +236,37 @@ def has_any_param(df, fields):
 gen["c_pos_via_param"] = has_any_param(gen, PARAM_POS_FIELDS)
 gen["c_neg_via_param"] = has_any_param(gen, PARAM_NEG_FIELDS)
 
-# condition-based flag OR parameter-based evidence — either satisfies the criterion
-gen["c_neg"] = gen["has_negative_control_b"] | gen["c_neg_via_param"]
+
+# A 0-concentration (unexposed) dose point IS the concurrent negative control, whether or not
+# it was explicitly annotated `control_negative` on the _CONDITION_material_s axis. Many early
+# studies carry the 0-dose row but never tag it (the annotation should come from a config
+# MAPPING or the expand config), so has_negative_control_b is a false negative for them. Treat
+# the presence of a 0 in the dose series as satisfying c_neg. Verified: 511 in-vitro genotox
+# studies across 6 projects (NanoGenotox, NANoREG, NanoReg2, ENPRA, RISKGONE, PLASTICHEAL)
+# fail has_negative_control_b yet have a 0-concentration point.
+# TODO (source annotation, TODO_genotox_curation.md item 6): add the explicit control_negative
+# condition annotation to the 0-dose row per project (JSON MAPPING / expand config) + re-import.
+def _has_zero_dose(conc_values):
+    if isinstance(conc_values, (list, tuple)):
+        vals = conc_values
+    elif pd.isna(conc_values):
+        return False
+    else:
+        vals = [conc_values]
+    for v in vals:
+        try:
+            if float(v) == 0.0:
+                return True
+        except (TypeError, ValueError):
+            continue
+    return False
+
+gen["c_neg_via_zero_dose"] = gen.get("concentration_values_ds").apply(_has_zero_dose) \
+    if "concentration_values_ds" in gen.columns else pd.Series(False, index=gen.index)
+
+# condition-based flag OR parameter-based evidence OR a 0-dose (unexposed) point — any
+# satisfies the negative-control criterion; positive control has no zero-dose analogue.
+gen["c_neg"] = gen["has_negative_control_b"] | gen["c_neg_via_param"] | gen["c_neg_via_zero_dose"]
 gen["c_pos"] = gen["has_positive_control_b"] | gen["c_pos_via_param"]
 
 # Investigations that contain at least one study carrying an in-study cytotoxicity/
@@ -402,6 +432,11 @@ print("  positive control rescued by param evidence only (condition flag was Fal
       int((gen["c_pos_via_param"] & ~gen["has_positive_control_b"]).sum()))
 print("  negative control rescued by param evidence only (condition flag was False):",
       int((gen["c_neg_via_param"] & ~gen["has_negative_control_b"]).sum()))
+print("  negative control satisfied by a 0-concentration (unexposed) point:",
+      int(gen["c_neg_via_zero_dose"].sum()))
+print("  negative control satisfied ONLY by the 0-dose point (no annotation/param):",
+      int((gen["c_neg_via_zero_dose"] & ~gen["has_negative_control_b"]
+           & ~gen["c_neg_via_param"]).sum()))
 
 # ========================================================================================
 # 6. TASK OUTPUT — full per-study table with all readiness flags, for downstream use
