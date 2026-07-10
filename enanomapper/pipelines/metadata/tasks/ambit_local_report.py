@@ -54,6 +54,13 @@ def fetch(url):
 
 
 def method_of(pa):
+    """The assay METHOD (E.method param: WST-1, LDH, COMET, ...). Prefer it over
+    protocol.guideline, which often carries a messy free-text description that bakes in the
+    cell line (e.g. "Cytotoxicity using HK-2 cells") — the cell line is its own parameter."""
+    params = pa.get("parameters", {}) or {}
+    m = params.get("E.method") or params.get("E.METHOD") or params.get("E.Method")
+    if m:
+        return str(m)
     g = pa.get("protocol", {}).get("guideline", [])
     return (g[0] if g else "?") or "?"
 
