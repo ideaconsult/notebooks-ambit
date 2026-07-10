@@ -47,11 +47,12 @@ GENOTOX_INVITRO = "TO_GENETIC_IN_VITRO_SECTION"
 VIABILITY = "ENM_0000068_SECTION"  # Cell Viability
 
 # In-study cytotoxicity / proliferation endpoints — the concurrent cytotoxicity control that a
-# genotox study carries ON ITSELF (CBPI for CBMN; RI/RPD/RICC/viability). Kept in sync with
-# viz_metadata.py's INSTUDY_CYTOTOX_ENDPOINT_MARKERS so the c_viab flag and this dashboard's
+# genotox study carries ON ITSELF (CBPI for CBMN; RI/RPD/RICC/plating/viability). Kept in sync
+# with viz_metadata.py's INSTUDY_CYTOTOX_* markers so the c_viab flag and this dashboard's
 # right-hand "Cell viability" panel agree: viz_metadata decides the flag, here we PLOT the same
-# in-study endpoint. Matched case-insensitively as substrings of the effect endpoint name.
-INSTUDY_CYTOTOX_ENDPOINT_MARKERS = (
+# in-study endpoint. Long phrases matched as substrings; short acronyms (RI/RICC/RPD) matched
+# on \b word boundaries so they don't match inside other words and GENOTOXICITY never matches.
+INSTUDY_CYTOTOX_SUBSTRING_MARKERS = (
     "CBPI",
     "PROLIFERATION_INDEX",
     "CELL_COUNT_FOR_CBPI",
@@ -59,7 +60,16 @@ INSTUDY_CYTOTOX_ENDPOINT_MARKERS = (
     "RELATIVE_POPULATION_DOUBLING",
     "RELATIVE_INCREASE_IN_CELL_COUNT",
     "CELL_VIABILITY",
+    "CELL_VIABILTIY",              # observed misspelling in the live index
+    "PERCENTAGE_VIABILITY",
+    "VIABILITY_COMPARED_TO_CONTROL",
+    "PLATING_EFFICIENCY",
     "CYTOTOXICITY",
+)
+INSTUDY_CYTOTOX_WORD_MARKERS = ("RI", "RICC", "RPD")
+import re as _re
+_INSTUDY_WORD_RE = _re.compile(
+    r"\b(" + "|".join(_re.escape(m) for m in INSTUDY_CYTOTOX_WORD_MARKERS) + r")\b"
 )
 
 
@@ -70,7 +80,9 @@ def is_cytotox_endpoint(endpoint):
     if endpoint is None or (isinstance(endpoint, float) and pd.isna(endpoint)):
         return False
     ep = str(endpoint).upper()
-    return any(marker in ep for marker in INSTUDY_CYTOTOX_ENDPOINT_MARKERS)
+    if any(marker in ep for marker in INSTUDY_CYTOTOX_SUBSTRING_MARKERS):
+        return True
+    return bool(_INSTUDY_WORD_RE.search(ep))
 
 # --- AMBIT server resolution (ported from spectrasearch-viewers/src/utils/tagdbs.js) ---------
 # 4-letter tag = prefix before the first "-" in s_uuid_s -> AMBIT server base URL.

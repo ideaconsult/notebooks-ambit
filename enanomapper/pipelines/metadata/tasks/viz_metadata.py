@@ -53,34 +53,61 @@ VIABILITY = "ENM_0000068_SECTION"  # Cell Viability
 
 # In-study cytotoxicity / proliferation endpoints. For the micronucleus and comet assays the
 # concurrent cytotoxicity control (OECD TG 487 / TG 489) is reported as an effect endpoint OF
-# THE GENOTOX STUDY ITSELF — CBPI (Cytokinesis-Block Proliferation Index) for CBMN, and the
-# Replication/Relative-Proliferation indices (RI / RPD / RICC) for comet/MN — not as a
-# separate study in the Cell Viability category. has_paired_viability() below therefore also
-# accepts such an in-study endpoint as satisfying c_viab: the cytotoxicity data IS present,
-# just carried on the genotox record rather than a paired ENM_0000068 study. Matched (case-
-# insensitively) as substrings of the composite "ENDPOINT (unit)" effectendpoint_ss strings.
-INSTUDY_CYTOTOX_ENDPOINT_MARKERS = (
-    "CBPI",                       # Cytokinesis-Block Proliferation Index (CBMN cytotoxicity)
-    "PROLIFERATION_INDEX",        # generic proliferation index
-    "CELL_COUNT_FOR_CBPI",        # CBPI input counts
-    "REPLICATION_INDEX",          # RI — comet/MN proliferation-based cytotoxicity
-    "RELATIVE_POPULATION_DOUBLING",  # RPD
-    "RELATIVE_INCREASE_IN_CELL_COUNT",  # RICC
-    "CELL_VIABILITY",             # explicit viability endpoint on the study
+# THE GENOTOX STUDY ITSELF — CBPI (Cytokinesis-Block Proliferation Index) for CBMN, the
+# Replication / Relative-Proliferation indices (RI / RPD / RICC), plating efficiency, or an
+# explicit viability endpoint for comet/MN — not as a separate study in the Cell Viability
+# category. has_paired_viability() below therefore also accepts such an in-study endpoint as
+# satisfying c_viab: the cytotoxicity data IS present, just carried on the genotox record.
+# Confirmed against the live index across ALL projects (NanoGenotox 327, NAKNOWBASE, HARMLESS,
+# NANOINFORMATIX, NanoTest, NANoREG, PLASTICHEAL, RISKGONE) — NOT nanotest-specific.
+#
+# Two match modes, because effectendpoint_ss is a composite "ENDPOINT (unit)" string:
+#  * SUBSTRING markers — long, unambiguous phrases (safe as substrings).
+#  * WHOLE-WORD markers — short acronyms (RI/RICC/RPD) matched on \b word boundaries so `RI`
+#    does NOT match inside unrelated words, and so `GENOTOXICITY` (the genotox readout, which
+#    must NEVER count as cytotoxicity) is never matched.
+# TODO (source cleanup, see TODO_genotox_curation.md item 1e): rename these short-acronym
+# endpoints to their long forms in the import configs so the WORD-marker workaround can be
+# dropped — RI->REPLICATION_INDEX (NANOINFORMATIX/RISKGONE cbmn forms), RICC->
+# RELATIVE_INCREASE_IN_CELL_COUNT (RISKGONE micronucleus), and fix the %_CELL_VIABILTIY typo
+# (PLASTICHEAL micronucleus).
+INSTUDY_CYTOTOX_SUBSTRING_MARKERS = (
+    "CBPI",                          # Cytokinesis-Block(ed) Proliferation Index (CBMN cytotox)
+    "PROLIFERATION_INDEX",           # covers CYTOKINESIS-BLOCK(ED)_PROLIFERATION_INDEX variants
+    "CELL_COUNT_FOR_CBPI",           # CBPI input counts
+    "REPLICATION_INDEX",             # comet/MN proliferation-based cytotoxicity (full form)
+    "RELATIVE_POPULATION_DOUBLING",  # RPD (full form)
+    "RELATIVE_INCREASE_IN_CELL_COUNT",  # RICC (full form)
+    "CELL_VIABILITY",                # explicit viability endpoint on the study
+    "CELL_VIABILTIY",                # observed misspelling in the live index (%_CELL_VIABILTIY)
+    "PERCENTAGE_VIABILITY",          # PERCENTAGE_VIABILITY_COMPARED_TO_CONTROL (NANoREG)
+    "VIABILITY_COMPARED_TO_CONTROL",
+    "PLATING_EFFICIENCY",            # comet cytotoxicity (NANOINFORMATIX hprt)
     "CYTOTOXICITY",
+)
+INSTUDY_CYTOTOX_WORD_MARKERS = (
+    "RI",     # Replication Index (short form, e.g. "RI (%)")
+    "RICC",   # Relative Increase in Cell Count (acronym form)
+    "RPD",    # Relative Population Doubling (acronym form)
+)
+import re as _re  # noqa: E402  (local helper; module already imports os/pandas above)
+_INSTUDY_WORD_RE = _re.compile(
+    r"\b(" + "|".join(_re.escape(m) for m in INSTUDY_CYTOTOX_WORD_MARKERS) + r")\b"
 )
 
 
 def has_instudy_cytotoxicity(effect_endpoints):
     """True if the genotox study carries its own cytotoxicity / proliferation endpoint
-    (CBPI, RI, RPD, RICC, viability, ...) — the concurrent cytotoxicity control required by
-    OECD TG 487/489, reported on the genotox record itself rather than as a separate Cell
-    Viability study."""
+    (CBPI, RI, RPD, RICC, plating efficiency, viability, ...) — the concurrent cytotoxicity
+    control required by OECD TG 487/489, reported on the genotox record itself rather than as a
+    separate Cell Viability study. `GENOTOXICITY` is deliberately NOT matched."""
     if isinstance(effect_endpoints, (list, tuple, set)):
         ep = " ".join(map(str, effect_endpoints)).upper()
     else:
         ep = str(effect_endpoints).upper()
-    return any(marker in ep for marker in INSTUDY_CYTOTOX_ENDPOINT_MARKERS)
+    if any(marker in ep for marker in INSTUDY_CYTOTOX_SUBSTRING_MARKERS):
+        return True
+    return bool(_INSTUDY_WORD_RE.search(ep))
 
 # How a study's E.method_s value maps to an assay family for the matrix.
 def assay_family(method_synonyms, method_name, effect_endpoints):
