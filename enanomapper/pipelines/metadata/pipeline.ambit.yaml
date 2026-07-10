@@ -1,0 +1,11 @@
+# Paper-style report straight from a LIVE local AMBIT instance (not the Solr/metaenm index).
+# Pairs with env.ambit.yaml (gitignored — holds the local AMBIT URL / owner / output folder).
+# Run: ploomber build --entry-point pipeline.ambit.yaml
+tasks:
+  - source: tasks/ambit_local_report.py
+    product:
+      nb: "{{folder_output}}/ambit_local_report.html"
+      data: "{{folder_output}}/ambit_local_report_summary.csv"
+    params:
+      ambit_base_url: "{{ambit_base_url}}"
+      owner_name: "{{owner_name}}"

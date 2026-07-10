@@ -28,5 +28,3 @@ tasks:
     product:
       nb: "products/curation_flags.ipynb"
       data: "{{folder_output}}/curation_flags.csv"
-
-           
