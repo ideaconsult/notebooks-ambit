@@ -190,6 +190,7 @@ FL = ("document_uuid_s,s_uuid_s,publicname_s,owner_name_s,reference_owner_s,endp
       "E.method_s,E.method_synonym_ss,effectendpoint_ss, E.cell_type_ss,concentration_count_i,"
       "concentration_values_ds,"
       "has_positive_control_b,has_negative_control_b,studyResultType_s,investigation_uuid_s,"
+      "assay_uuid_s,"
       "reference_s,reference_year_s,"
       "param___input_file_t,"
       + ",".join(PARAM_POS_FIELDS + PARAM_NEG_FIELDS))
@@ -264,10 +265,39 @@ def _has_zero_dose(conc_values):
 gen["c_neg_via_zero_dose"] = gen.get("concentration_values_ds").apply(_has_zero_dose) \
     if "concentration_values_ds" in gen.columns else pd.Series(False, index=gen.index)
 
-# condition-based flag OR parameter-based evidence OR a 0-dose (unexposed) point — any
-# satisfies the negative-control criterion; positive control has no zero-dose analogue.
-gen["c_neg"] = gen["has_negative_control_b"] | gen["c_neg_via_param"] | gen["c_neg_via_zero_dose"]
-gen["c_pos"] = gen["has_positive_control_b"] | gen["c_pos_via_param"]
+# base positive/negative evidence on the study itself (condition flag or param); negative also
+# via a 0-dose (unexposed) point. c_pos/c_neg get an assay_uuid sibling path added just below.
+gen["c_pos_self"] = gen["has_positive_control_b"] | gen["c_pos_via_param"]
+gen["c_neg_self"] = gen["has_negative_control_b"] | gen["c_neg_via_param"] | gen["c_neg_via_zero_dose"]
+
+# Shared-control sibling path, keyed on ASSAY_UUID. In shared databases (e.g. NanoGenotox WP5)
+# the positive control (EMS / MMS) — and the negative/vehicle control — is recorded as its OWN
+# protocol application (own document_uuid) that serves MANY sample materials of the same assay
+# run: the control and its samples share one ASSAY_UUID (one method + cell line + material
+# batch; verified with the domain expert — assay_uuid groups the controls + many materials,
+# investigation_uuid is the broader cross-method link). So each sample study's own document has
+# no control point and fails c_pos/c_neg, even though the control exists in the SAME assay.
+# A study therefore also satisfies c_pos (resp. c_neg) if a SIBLING study sharing its
+# assay_uuid_s carries a positive (resp. negative) control. Verified: 1031/1050 NanoGenotox
+# c_pos failures are rescuable this way; all docs have an assay_uuid.
+_has_assay = gen["assay_uuid_s"].notna() if "assay_uuid_s" in gen.columns else pd.Series(False, index=gen.index)
+assays_with_pos = set(gen.loc[_has_assay & gen["c_pos_self"], "assay_uuid_s"].astype(str))
+assays_with_neg = set(gen.loc[_has_assay & gen["c_neg_self"], "assay_uuid_s"].astype(str))
+
+def _sibling_control(has_self, assay, assays_with):
+    return (not has_self) and pd.notna(assay) and str(assay) in assays_with
+
+gen["c_pos_via_sibling"] = [
+    _sibling_control(sp, a, assays_with_pos)
+    for sp, a in zip(gen["c_pos_self"], gen.get("assay_uuid_s", pd.Series([None] * len(gen))))
+]
+gen["c_neg_via_sibling"] = [
+    _sibling_control(sn, a, assays_with_neg)
+    for sn, a in zip(gen["c_neg_self"], gen.get("assay_uuid_s", pd.Series([None] * len(gen))))
+]
+
+gen["c_neg"] = gen["c_neg_self"] | gen["c_neg_via_sibling"]
+gen["c_pos"] = gen["c_pos_self"] | gen["c_pos_via_sibling"]
 
 # Investigations that contain at least one study carrying an in-study cytotoxicity/
 # proliferation endpoint (CBPI, RICC, ...). For CBMN the micronucleus-COUNT study (BMN
@@ -437,6 +467,10 @@ print("  negative control satisfied by a 0-concentration (unexposed) point:",
 print("  negative control satisfied ONLY by the 0-dose point (no annotation/param):",
       int((gen["c_neg_via_zero_dose"] & ~gen["has_negative_control_b"]
            & ~gen["c_neg_via_param"]).sum()))
+print("  positive control satisfied by a sibling in the same assay_uuid (shared control):",
+      int(gen["c_pos_via_sibling"].sum()))
+print("  negative control satisfied by a sibling in the same assay_uuid (shared control):",
+      int(gen["c_neg_via_sibling"].sum()))
 
 # ========================================================================================
 # 6. TASK OUTPUT — full per-study table with all readiness flags, for downstream use
