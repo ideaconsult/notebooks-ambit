@@ -24,4 +24,9 @@ tasks:
       solr_user: "{{solr_user}}"
       solr_pass: "{{solr_pass}}"
 
+  - source: tasks/curation_flags.py
+    product:
+      nb: "products/curation_flags.ipynb"
+      data: "{{folder_output}}/curation_flags.csv"
+
            
