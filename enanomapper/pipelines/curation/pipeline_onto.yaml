@@ -1,0 +1,11 @@
+tasks:
+
+  - source: tasks/onto2kg.py
+    product:
+      nb: "products/onto2kg.ipynb"
+      data: "{{folder_output}}/terms"      
+
+    params:
+      folder_output: "{{folder_output}}"
+      prefix: "{{prefix}}"
+      bioportal_apikey: "{{bioportal_apikey}}"

@@ -51,6 +51,37 @@ auth = HTTPBasicAuth(os.environ[solr_user_env], os.environ[solr_pass_env])
 GENOTOX_INVITRO = "TO_GENETIC_IN_VITRO_SECTION"
 VIABILITY = "ENM_0000068_SECTION"  # Cell Viability
 
+# In-study cytotoxicity / proliferation endpoints. For the micronucleus and comet assays the
+# concurrent cytotoxicity control (OECD TG 487 / TG 489) is reported as an effect endpoint OF
+# THE GENOTOX STUDY ITSELF — CBPI (Cytokinesis-Block Proliferation Index) for CBMN, and the
+# Replication/Relative-Proliferation indices (RI / RPD / RICC) for comet/MN — not as a
+# separate study in the Cell Viability category. has_paired_viability() below therefore also
+# accepts such an in-study endpoint as satisfying c_viab: the cytotoxicity data IS present,
+# just carried on the genotox record rather than a paired ENM_0000068 study. Matched (case-
+# insensitively) as substrings of the composite "ENDPOINT (unit)" effectendpoint_ss strings.
+INSTUDY_CYTOTOX_ENDPOINT_MARKERS = (
+    "CBPI",                       # Cytokinesis-Block Proliferation Index (CBMN cytotoxicity)
+    "PROLIFERATION_INDEX",        # generic proliferation index
+    "CELL_COUNT_FOR_CBPI",        # CBPI input counts
+    "REPLICATION_INDEX",          # RI — comet/MN proliferation-based cytotoxicity
+    "RELATIVE_POPULATION_DOUBLING",  # RPD
+    "RELATIVE_INCREASE_IN_CELL_COUNT",  # RICC
+    "CELL_VIABILITY",             # explicit viability endpoint on the study
+    "CYTOTOXICITY",
+)
+
+
+def has_instudy_cytotoxicity(effect_endpoints):
+    """True if the genotox study carries its own cytotoxicity / proliferation endpoint
+    (CBPI, RI, RPD, RICC, viability, ...) — the concurrent cytotoxicity control required by
+    OECD TG 487/489, reported on the genotox record itself rather than as a separate Cell
+    Viability study."""
+    if isinstance(effect_endpoints, (list, tuple, set)):
+        ep = " ".join(map(str, effect_endpoints)).upper()
+    else:
+        ep = str(effect_endpoints).upper()
+    return any(marker in ep for marker in INSTUDY_CYTOTOX_ENDPOINT_MARKERS)
+
 # How a study's E.method_s value maps to an assay family for the matrix.
 def assay_family(method_synonyms, method_name, effect_endpoints):
     # Convert endpoints to a single uppercase string
@@ -181,12 +212,33 @@ gen["c_neg_via_param"] = has_any_param(gen, PARAM_NEG_FIELDS)
 gen["c_neg"] = gen["has_negative_control_b"] | gen["c_neg_via_param"]
 gen["c_pos"] = gen["has_positive_control_b"] | gen["c_pos_via_param"]
 
+# Investigations that contain at least one study carrying an in-study cytotoxicity/
+# proliferation endpoint (CBPI, RICC, ...). For CBMN the micronucleus-COUNT study (BMN
+# template) and the CBPI proliferation-index study are SEPARATE protocol applications of the
+# SAME experiment, sharing one INVESTIGATION_UUID; a protocol application cannot hold two
+# endpoint categories, so the CBPI cytotoxicity cannot live on the MN study directly. Instead,
+# a genotox study counts as having paired cytotoxicity if ANY study in its investigation (its
+# CBPI sibling, or itself) carries a cytotox endpoint. This is the shared-experiment linkage
+# the domain expert described (same partner+method+cell, across materials/readouts).
+_gen_has_instudy_cytotox = gen["effectendpoint_ss"].apply(has_instudy_cytotoxicity)
+investigations_with_cytotox = set(
+    gen.loc[_gen_has_instudy_cytotox, "investigation_uuid_s"].dropna().astype(str)
+)
+
 # paired viability: primary match is a shared investigation_uuid_s (same protocol
 # application group). Falls back to experimental-context matching — (owner, NM, cell type) —
 # when the study has no investigation_uuid_s, or its investigation has no viability match.
+# Third path: the study carries its OWN cytotoxicity/proliferation endpoint (CBPI, RI, ...).
+# Fourth path: a SIBLING study in the same investigation carries one (MN <- its CBPI sibling).
 def has_paired_viability(row):
     inv = row.get("investigation_uuid_s")
     if pd.notna(inv) and str(inv) in viability_investigations:
+        return True
+
+    if has_instudy_cytotoxicity(row.get("effectendpoint_ss")):
+        return True
+
+    if pd.notna(inv) and str(inv) in investigations_with_cytotox:
         return True
 
     cells = row["E.cell_type_ss"]
@@ -199,6 +251,12 @@ gen["c_viab"] = gen.apply(has_paired_viability, axis=1)
 gen["c_viab_via_investigation"] = (
     gen["investigation_uuid_s"].astype(str).isin(viability_investigations)
     & gen["investigation_uuid_s"].notna()
+)
+gen["c_viab_via_instudy"] = _gen_has_instudy_cytotox
+gen["c_viab_via_sibling_cytotox"] = (
+    gen["investigation_uuid_s"].astype(str).isin(investigations_with_cytotox)
+    & gen["investigation_uuid_s"].notna()
+    & ~_gen_has_instudy_cytotox   # sibling carries it, not this study itself
 )
 gen["interpretable"] = gen["c_conc3"] & gen["c_neg"] & gen["c_pos"] & gen["c_viab"]
 gen["owner_name_s"] = gen.get("owner_name_s", "unknown").fillna("unknown")
@@ -305,8 +363,14 @@ print("  NMs with at least one interpretable study:",
       gen[gen["interpretable"]]["nm"].nunique())
 print("  paired-viability matches via investigation_uuid_s:",
       int(gen["c_viab_via_investigation"].sum()))
-print("  paired-viability matches via context fallback only:",
-      int((gen["c_viab"] & ~gen["c_viab_via_investigation"]).sum()))
+print("  paired-viability satisfied by in-study cytotoxicity endpoint (CBPI/RI/...):",
+      int(gen["c_viab_via_instudy"].sum()))
+print("  paired-viability satisfied by a sibling study's cytotoxicity (shared investigation):",
+      int(gen["c_viab_via_sibling_cytotox"].sum()))
+print("  paired-viability satisfied ONLY by in-study cytotoxicity endpoint:",
+      int((gen["c_viab_via_instudy"] & ~gen["c_viab_via_investigation"]).sum()))
+print("  paired-viability matches via context fallback (excl. investigation & in-study):",
+      int((gen["c_viab"] & ~gen["c_viab_via_investigation"] & ~gen["c_viab_via_instudy"]).sum()))
 print("  positive control rescued by param evidence only (condition flag was False):",
       int((gen["c_pos_via_param"] & ~gen["has_positive_control_b"]).sum()))
 print("  negative control rescued by param evidence only (condition flag was False):",

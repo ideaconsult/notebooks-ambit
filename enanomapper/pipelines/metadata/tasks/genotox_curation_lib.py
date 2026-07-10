@@ -46,6 +46,32 @@ def parse_csv_list(val):
 GENOTOX_INVITRO = "TO_GENETIC_IN_VITRO_SECTION"
 VIABILITY = "ENM_0000068_SECTION"  # Cell Viability
 
+# In-study cytotoxicity / proliferation endpoints — the concurrent cytotoxicity control that a
+# genotox study carries ON ITSELF (CBPI for CBMN; RI/RPD/RICC/viability). Kept in sync with
+# viz_metadata.py's INSTUDY_CYTOTOX_ENDPOINT_MARKERS so the c_viab flag and this dashboard's
+# right-hand "Cell viability" panel agree: viz_metadata decides the flag, here we PLOT the same
+# in-study endpoint. Matched case-insensitively as substrings of the effect endpoint name.
+INSTUDY_CYTOTOX_ENDPOINT_MARKERS = (
+    "CBPI",
+    "PROLIFERATION_INDEX",
+    "CELL_COUNT_FOR_CBPI",
+    "REPLICATION_INDEX",
+    "RELATIVE_POPULATION_DOUBLING",
+    "RELATIVE_INCREASE_IN_CELL_COUNT",
+    "CELL_VIABILITY",
+    "CYTOTOXICITY",
+)
+
+
+def is_cytotox_endpoint(endpoint):
+    """True if an effect endpoint name is an in-study cytotoxicity/proliferation readout
+    (CBPI, RI, viability, ...) — used to split a genotox study's own dose-response rows into a
+    genotox part (left panel) and an in-study viability part (right panel)."""
+    if endpoint is None or (isinstance(endpoint, float) and pd.isna(endpoint)):
+        return False
+    ep = str(endpoint).upper()
+    return any(marker in ep for marker in INSTUDY_CYTOTOX_ENDPOINT_MARKERS)
+
 # --- AMBIT server resolution (ported from spectrasearch-viewers/src/utils/tagdbs.js) ---------
 # 4-letter tag = prefix before the first "-" in s_uuid_s -> AMBIT server base URL.
 TAG_DBS_AMBIT = {
@@ -634,17 +660,32 @@ def build_dual_dropdown_figure(genotox_data, viability_data, viability_doc_by_ge
 
     for s_idx, doc in enumerate(studies_order):
         sdf = genotox_data[genotox_data["document_uuid_s"] == doc]
-        n = _add_study_traces(fig, sdf, s_idx == 0, row=1, col=1)
+
+        # Split the study's OWN rows: genotox endpoints (left) vs. in-study cytotoxicity /
+        # proliferation endpoints like CBPI (right). Many NanoTest CBMN studies carry their
+        # cytotoxicity control (CBPI) inside the same study rather than as a separate viability
+        # study — this surfaces it in the "Cell viability" panel. Control-label rows (no
+        # endpoint) stay with the genotox side so the +/- controls still show on the left.
+        is_cyto = sdf["endpoint"].apply(is_cytotox_endpoint)
+        gsdf = sdf[~is_cyto]
+        instudy_via = sdf[is_cyto]
+
+        n = _add_study_traces(fig, gsdf if not gsdf.empty else sdf, s_idx == 0, row=1, col=1)
         trace_study.extend([s_idx] * n)
 
-        via_doc = viability_doc_by_genotox_doc.get(doc)
-        if via_doc is not None:
-            vdf = viability_data[viability_data["document_uuid_s"] == via_doc]
-            if not vdf.empty:
-                n2 = _add_study_traces(fig, vdf, s_idx == 0, row=1, col=2)
-                trace_study.extend([s_idx] * n2)
-        # if there's no paired viability data, the right panel is simply empty for this study
-        # (no placeholder trace needed — an empty subplot is a valid/expected signal).
+        # Right panel: in-study cytotoxicity first (same experiment), else a separately-fetched
+        # paired viability study. Prefer the in-study data — it is provably the same experiment.
+        if not instudy_via.empty:
+            n2 = _add_study_traces(fig, instudy_via, s_idx == 0, row=1, col=2)
+            trace_study.extend([s_idx] * n2)
+        else:
+            via_doc = viability_doc_by_genotox_doc.get(doc)
+            if via_doc is not None:
+                vdf = viability_data[viability_data["document_uuid_s"] == via_doc]
+                if not vdf.empty:
+                    n2 = _add_study_traces(fig, vdf, s_idx == 0, row=1, col=2)
+                    trace_study.extend([s_idx] * n2)
+            # no paired viability at all -> right panel empty for this study (valid signal).
 
     fig.update_xaxes(title_text="dose / concentration", type="log", row=1, col=1)
     fig.update_xaxes(title_text="dose / concentration", type="log", row=1, col=2)
@@ -652,8 +693,9 @@ def build_dual_dropdown_figure(genotox_data, viability_data, viability_doc_by_ge
     fig.update_yaxes(title_text="viability", row=1, col=2)
 
     select_caption = dict(
-        text="<b>Select study</b> (right panel: paired cell-viability, when available — "
-             "see the table below the plot for UUID / links / details)",
+        text="<b>Select study</b> (right panel: paired cell-viability — the study's own "
+             "in-study cytotoxicity endpoint e.g. CBPI when present, else a separate viability "
+             "study; see the table below the plot for UUID / links / details)",
         x=0, xref="paper", y=1.15, yref="paper", showarrow=False, align="left",
     )
 
