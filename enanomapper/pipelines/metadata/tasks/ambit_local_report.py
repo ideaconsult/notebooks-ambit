@@ -281,7 +281,9 @@ def dose_response(endpoint, max_materials_per_panel=6):
                        facecolors="none", edgecolors=CTRL_NEG, linewidths=1.2, zorder=4,
                        label="negative (0-dose)")
         ax.set_xscale("symlog", linthresh=0.5)
-        ax.set_ylim(bottom=0)  # dose-response floors at 0; top autoscales per panel
+        # y autoscales to THIS panel's data (no 0 floor) — response ranges differ per cell line,
+        # and a 0 floor flattens curves that vary within a narrow high band. Controls are still
+        # plotted, so they anchor the scale.
         n_extra = len(by_mat) - len(top_mats)
         ttl = cell if n_extra <= 0 else "{}  (+{} more materials)".format(cell, n_extra)
         ax.set_title(ttl, loc="left", fontsize=10, color=INK)
@@ -349,7 +351,7 @@ def dose_response_by_material(endpoint, max_materials=9, max_lines_per_panel=8):
                        facecolors="none", edgecolors=CTRL_NEG, linewidths=1.2, zorder=4,
                        label="negative (0-dose)")
         ax.set_xscale("symlog", linthresh=0.5)
-        ax.set_ylim(bottom=0)
+        # y autoscales to this material panel's data (no 0 floor); see note in dose_response().
         n_extra = len(groups) - len(top)
         ttl = mat if n_extra <= 0 else "{}  (+{} more)".format(mat, n_extra)
         ax.set_title(ttl, loc="left", fontsize=10, color=INK)
