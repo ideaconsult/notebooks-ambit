@@ -91,12 +91,14 @@ print("substances:", len(subs))
 method_studies = Counter()
 owner_studies = Counter()   # citation.owner = the lab / institute that produced the study
 cell_studies = Counter()    # E.cell_type = the cell line
-# dose-response is discovered, NOT hardcoded per assay. Each point keeps its cell line, data
-# owner, material and control role, so the figure can facet by cell, colour by owner, and mark
-# controls distinctly — and it works for ANY assay in ANY AMBIT instance.
-dr = defaultdict(list)      # endpoint -> [ {cell, owner, material, dose, value, role}, ... ]
-dr_units = defaultdict(Counter)      # endpoint -> value-unit Counter (read from data)
-dr_dose_units = defaultdict(Counter)  # endpoint -> concentration-unit Counter (read from data)
+# dose-response is discovered, NOT hardcoded per assay. Keyed by (METHOD, endpoint, unit): a
+# generic endpoint like PERCENTAGE_OF_CONTROL is shared across different methods (WST-1, LDH,
+# Alamar Blue), and mixing methods — or mixing two units of one endpoint — in a panel is
+# meaningless. The method defines what is measured; the unit fixes the y-scale. Each point keeps
+# its cell line, owner, material and control role, so a figure can facet by cell, colour by
+# owner, and mark controls. Works for ANY assay in ANY AMBIT instance.
+dr = defaultdict(list)          # (method, endpoint, unit) -> [ {cell, owner, material, dose, value, role}, ... ]
+dr_dose_units = defaultdict(Counter)  # (method, endpoint, unit) -> concentration-unit Counter
 ctrl = defaultdict(lambda: {"papps": set(), "with_pos": set(), "with_neg": set()})
 
 
@@ -150,13 +152,13 @@ for s in subs:
             # kept (role != sample) so they can be drawn on the same axes as the samples.
             if ep and dose is not None and val is not None:
                 try:
-                    dr[ep].append({"cell": cell, "owner": owner, "material": pn,
-                                   "dose": dose, "value": float(val), "role": role})
-                    if result.get("unit"):
-                        dr_units[ep][str(result["unit"])] += 1
+                    unit = str(result["unit"]) if result.get("unit") else ""
+                    key = (m, ep, unit)   # method + endpoint + value-unit
+                    dr[key].append({"cell": cell, "owner": owner, "material": pn,
+                                    "dose": dose, "value": float(val), "role": role})
                     du = cond_unit(conds, "CONCENTRATION")
                     if du:
-                        dr_dose_units[ep][du] += 1
+                        dr_dose_units[key][du] += 1
                 except (TypeError, ValueError):
                     pass
 
@@ -201,31 +203,40 @@ inventory_bar(cell_studies, "Studies by cell line", single_hue=CAT[2], top=15)
 # (positive = red X, negative = grey o) on the same axes — so owner, cell line and controls are
 # all visible on the data chart, and materials are never merged.
 # ============================================================================================
-def endpoint_label(ep):
-    units = dr_units.get(ep)
-    unit = units.most_common(1)[0][0] if units else None
+# a dose-response "series" is keyed by (method, endpoint, unit).
+def endpoint_label(key):
+    method, ep, unit = key
     pretty = ep.replace("_", " ").title()
     return "{} ({})".format(pretty, unit) if unit else pretty
 
 
-def dose_label(ep):
+def dose_label(key):
     """x-axis label with the concentration unit READ FROM THE DATA (not hardcoded)."""
-    units = dr_dose_units.get(ep)
+    units = dr_dose_units.get(key)
     unit = units.most_common(1)[0][0] if units else None
     return "concentration ({})".format(unit) if unit else "concentration"
 
 
-def pick_dose_response_endpoints(max_endpoints=4, min_points=12, min_doses=3):
-    """Endpoints that look like dose-responses: enough sample points across >= min_doses
-    distinct concentrations. Ranked by (n sample points) then (distinct doses)."""
+def series_title(key):
+    """'<METHOD> · <Endpoint (unit)>' — the method leads because it defines what is measured
+    (a viability/cytotoxicity curve is meaningless without it); the unit fixes the scale."""
+    method, ep, unit = key
+    method = method if (method and method != "?") else "method ?"
+    return "{} · {}".format(method, endpoint_label(key))
+
+
+def pick_dose_response_series(max_series=6, min_points=12, min_doses=3):
+    """(method, endpoint, unit) series that look like dose-responses: enough sample points
+    across >= min_doses distinct concentrations. Ranked by (n sample points) then (distinct
+    doses). Each returned key becomes its own figure — methods are never mixed in a panel."""
     scored = []
-    for ep, recs in dr.items():
+    for key, recs in dr.items():
         samples = [r for r in recs if r["role"] == "sample"]
         doses = {round(r["dose"], 6) for r in samples}
         if len(samples) >= min_points and len(doses) >= min_doses:
-            scored.append((len(samples), len(doses), ep))
-    scored.sort(reverse=True)
-    return [ep for _, _, ep in scored[:max_endpoints]]
+            scored.append((len(samples), len(doses), key))
+    scored.sort(reverse=True, key=lambda t: (t[0], t[1]))
+    return [key for _, _, key in scored[:max_series]]
 
 
 CTRL_POS = "#d03b3b"   # status critical red — positive control
@@ -242,13 +253,13 @@ def _material_median(recs):
     return xs, [float(np.median(agg[x])) for x in xs]
 
 
-def dose_response(endpoint, max_materials_per_panel=6):
-    recs = dr[endpoint]
+def dose_response(key, max_materials_per_panel=6):
+    recs = dr[key]
     samples = [r for r in recs if r["role"] == "sample"]
     if not samples:
-        print("no sample dose-response data for", endpoint)
+        print("no sample dose-response data for", key)
         return
-    ylabel = endpoint_label(endpoint)
+    ylabel = endpoint_label(key)
     # facet by cell line: cells with the most sample points (up to a 3x3 grid)
     cells = [c for c, _ in Counter(r["cell"] for r in samples).most_common(9)]
 
@@ -303,8 +314,8 @@ def dose_response(endpoint, max_materials_per_panel=6):
         # y is independent per panel now, so label it on every panel (not just the left column)
         axes[k].set_ylabel(ylabel)
         if k >= len(cells) - ncol:
-            axes[k].set_xlabel(dose_label(endpoint))
-    fig.suptitle("Dose–response by cell line — {}  ·  one line per material (owner in label)".format(ylabel),
+            axes[k].set_xlabel(dose_label(key))
+    fig.suptitle("Dose–response — {}  ·  by cell line, one line per material (owner in label)".format(series_title(key)),
                  x=0.02, ha="left", fontweight="bold", fontsize=12, y=1.004)
     fig.text(0.02, -0.01, "each line = one material's per-dose median · red X = positive control · grey o = negative/0-dose",
              ha="left", color=MUTED, fontsize=9)
@@ -312,17 +323,17 @@ def dose_response(endpoint, max_materials_per_panel=6):
     plt.show()
 
 
-def dose_response_by_material(endpoint, max_materials=9, max_lines_per_panel=8):
+def dose_response_by_material(key, max_materials=9, max_lines_per_panel=8):
     """Complementary view: one panel per MATERIAL (nanomaterial). Within a panel, one line per
     (cell line + owner) — colour = CELL LINE (the primary biological variable compared within a
     material), owner in the label — so a material's dose-response is seen across the cell lines
     and labs that tested it (round-robin spread), without ever merging distinct experiments.
     Controls of that material marked distinctly."""
-    recs = dr[endpoint]
+    recs = dr[key]
     samples = [r for r in recs if r["role"] == "sample"]
     if not samples:
         return
-    ylabel = endpoint_label(endpoint)
+    ylabel = endpoint_label(key)
     materials = [m for m, _ in Counter(r["material"] for r in samples).most_common(max_materials)]
     # fixed cell line -> colour (categorical order, never cycled), shared across panels
     cells = [c for c, _ in Counter(r["cell"] for r in samples).most_common()]
@@ -341,7 +352,7 @@ def dose_response_by_material(endpoint, max_materials=9, max_lines_per_panel=8):
         for r in mat_recs:
             if r["role"] == "sample":
                 groups[(r["cell"], r["owner"])].append(r)
-        top = sorted(groups, key=lambda k: len(groups[k]), reverse=True)[:max_lines_per_panel]
+        top = sorted(groups, key=lambda g: len(groups[g]), reverse=True)[:max_lines_per_panel]
         for (cell, owner) in top:
             xs, ys = _material_median(groups[(cell, owner)])
             ax.plot(xs, ys, marker="o", ms=3.5, lw=1.6, color=cell_color[cell], zorder=3,
@@ -366,11 +377,11 @@ def dose_response_by_material(endpoint, max_materials=9, max_lines_per_panel=8):
                   handlelength=1.2, borderaxespad=0.2)
     for j in range(len(materials), len(axes)):
         axes[j].set_visible(False)
-    for k in range(len(materials)):
-        axes[k].set_ylabel(ylabel)
-        if k >= len(materials) - ncol:
-            axes[k].set_xlabel(dose_label(endpoint))
-    fig.suptitle("Dose–response by material — {}  ·  one line per cell line + owner".format(ylabel),
+    for a in range(len(materials)):
+        axes[a].set_ylabel(ylabel)
+        if a >= len(materials) - ncol:
+            axes[a].set_xlabel(dose_label(key))
+    fig.suptitle("Dose–response — {}  ·  by material, one line per cell line + owner".format(series_title(key)),
                  x=0.02, ha="left", fontweight="bold", fontsize=12, y=1.004)
     fig.text(0.02, -0.01, "each line = one (cell line, owner) per-dose median · colour = cell line · red X = positive · grey o = negative/0-dose",
              ha="left", color=MUTED, fontsize=9)
@@ -378,11 +389,11 @@ def dose_response_by_material(endpoint, max_materials=9, max_lines_per_panel=8):
     plt.show()
 
 
-dr_endpoints = pick_dose_response_endpoints()
-print("dose-response endpoints (auto-selected):", dr_endpoints)
-for ep in dr_endpoints:
-    dose_response(ep)                 # faceted by cell line  (line per material)
-    dose_response_by_material(ep)     # faceted by material   (line per cell line + owner)
+dr_series = pick_dose_response_series()
+print("dose-response series (method, endpoint, unit) auto-selected:", dr_series)
+for key in dr_series:
+    dose_response(key)                 # faceted by cell line  (line per material)
+    dose_response_by_material(key)     # faceted by material   (line per cell line + owner)
 
 # ============================================================================================
 # Figure 3 — control coverage per method
