@@ -58,6 +58,18 @@ def failure_reasons(row):
                if flag in row and not bool(row[flag])]
     return "; ".join(reasons) if reasons else "(passes all — included by filter)"
 
+
+# Carried into every row's metadata alongside "fails" — without these, a material whose studies
+# are ALL failing (no passing rows at all) has no E.method_s/assay anywhere in curate_slides.py's
+# pooled passing+failing data, so its "assays" column in the materials overview comes up empty
+# even though the underlying readiness row (and AMBIT study) has a real method. Mirrors
+# curate_passing.py's EXTRA_COLS/_extra_meta.
+EXTRA_COLS = ("assay", "E.method_s", "E.cell_type_ss")
+
+
+def _extra_meta(row):
+    return {"fails": failure_reasons(row), **{c: row.get(c) for c in EXTRA_COLS}}
+
 # -- do we need auth
 config, config_servers, config_security, auth_object, msg = aa.parseOpenAPI3()
 
@@ -113,7 +125,7 @@ print("substances to fetch:", len(failing_by_substance))
 # --- fetch + flatten ------------------------------------------------------------------------
 data, not_retrieved = lib.fetch_and_flatten(
     sel, failing_by_substance, label_by_doc,
-    extra_meta_fn=lambda row: {"fails": failure_reasons(row)},
+    extra_meta_fn=_extra_meta,
 )
 print("dose-response points:", len(data), "across",
       0 if data.empty else data["document_uuid_s"].nunique(), "studies")
