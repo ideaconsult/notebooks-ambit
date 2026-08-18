@@ -4,6 +4,7 @@ enm_api_url = None
 enm_api_key = None
 folder_output = None
 query = None
+query_study = None
 product = None
 db = None
 ambit_endpoint = None
@@ -12,20 +13,27 @@ ambit_endpoint = None
 from pynanomapper import aa
 import os, os.path
 import pandas as pd
-import requests 
-import  pynanomapper.datamodel.ambit as m2n
-from pynanomapper.datamodel.nexus_writer import to_nexus
+import requests
+import pyambit.datamodel as m2n
+# to_nexus is added onto the pyambit model classes as a side effect of this import
+# (pyambit.nexus_writer registers it via @add_ambitmodel_method) -- pynanomapper no longer
+# bundles its own copy (pynanomapper.datamodel.nexus_writer / .ambit were removed once
+# pynanomapper started depending on pyambit directly instead).
+from pyambit import nexus_writer  # noqa: F401
 import nexusformat.nexus.tree as nx
 import traceback
 import json
 import uuid
 
-def json2nexus(url_db,auth,pjson):
+def json2nexus(url_db,auth,pjson,query_study):
     substances = m2n.Substances(**pjson)
     for substance in substances.substance:
         try:
             sjson = None
             url = "{}/substance/{}/study&media=application/json&max={}".format(url_db,substance.i5uuid,10000)
+            if query_study != None:
+                url = "{}&{}".format(url,query_study)
+
             #url = "{}/study?media=application/json&max=10000".format(substance.URI)
             response = requests.get(url,auth=auth)
             if response.status_code ==200:
@@ -69,9 +77,9 @@ if OK:
     OK = False
     try:
         if ambit_endpoint:
-            substances = json2nexus("{}".format(enm_api_url),auth_object,pjson)
+            substances = json2nexus("{}".format(enm_api_url),auth_object,pjson,query_study)
         else:
-            substances = json2nexus("{}/enm/{}".format(enm_api_url,db),auth_object,pjson)
+            substances = json2nexus("{}/enm/{}".format(enm_api_url,db),auth_object,pjson,query_study)
         OK = True
     except Exception as err:  
         print(err)

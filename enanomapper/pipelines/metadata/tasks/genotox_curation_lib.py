@@ -332,6 +332,21 @@ def _param_str(val):
     return str(val)
 
 
+EXPOSURE_TIME_KEYS = ("E.EXPOSURE_TIME", "E.exposure_time")
+
+
+def exposure_time_str(papp):
+    """Exposure time (value + unit, e.g. "24 h") from a study's own PARAMETERS, or None if not
+    recorded. Not carried anywhere upstream (viz_metadata.py's Solr field list doesn't fetch
+    it either) — pulled here, at AMBIT-fetch time, so every consumer of fetch_and_flatten's
+    output (curate_passing/curate_failing/curate_slides) gets it on every row via `meta`."""
+    params = papp.parameters or {}
+    for key in EXPOSURE_TIME_KEYS:
+        if params.get(key) is not None:
+            return _param_str(params[key])
+    return None
+
+
 def param_control_rows(papp, min_dose):
     """Positive/negative control points sourced from parameters (not the dose axis)."""
     params = papp.parameters or {}
@@ -419,6 +434,7 @@ def fetch_and_flatten(sel, failing_by_substance, label_by_doc, extra_meta_fn,
                     (substance2ui_url(s_uuid) or server).rstrip("/"), s_uuid),
                 "study_url": "{}/substance/{}/study?media=application/json&category={}"
                              .format(server.rstrip("/"), s_uuid, category),
+                "exposure_time": exposure_time_str(papp),
                 **extra_meta_fn(row),
             }
             study_rows = study_to_long_rows(papp, meta)
@@ -615,6 +631,11 @@ def build_dropdown_figure(data, dropdown_label_fn, dropdown_sort_key_fn=None):
 def _add_study_traces(fig, sdf, visible0, row=1, col=1):
     """Add one study's dose-response + control traces to `fig` (used by both the single- and
     dual-panel builders). Returns the number of traces added (for trace_study bookkeeping).
+
+    Replicate points sharing the same dose are aggregated to one mean +/- SD marker per dose
+    (SD omitted where n==1, since it's undefined) before drawing the connecting line — plotting
+    every replicate individually and connecting them in sort-stable (i.e. essentially arbitrary)
+    order produces a misleading zig-zag at each dose level instead of a real dose-response curve.
     """
     import plotly.graph_objects as go
 
@@ -624,13 +645,36 @@ def _add_study_traces(fig, sdf, visible0, row=1, col=1):
     ctrl_pts = sdf[sdf["control_label"].notna()]
     min_dose = sdf["dose"].dropna().min() if sdf["dose"].notna().any() else 1.0
 
-    for endpoint, g in dose_pts.groupby("endpoint"):
+    # Group by (endpoint, dose_unit, response_unit) — NOT just endpoint. Different endpoints
+    # (or the same endpoint recorded with different units) are NOT comparable on one axis; a
+    # dose axis is meaningless without a confirmed-consistent concentration unit, and silently
+    # overlaying e.g. "% of control" against a different-unit index has produced misleading
+    # figures before. Each combination gets its own unit-qualified trace name so a real unit
+    # mismatch across a study's endpoints is visible in the legend rather than hidden.
+    for (endpoint, dose_unit, response_unit), g in dose_pts.groupby(
+        ["endpoint", "dose_unit", "response_unit"], dropna=False
+    ):
+        agg = (
+            g.groupby("dose")["response"]
+            .agg(mean="mean", sd="std", n="count")
+            .reset_index()
+            .sort_values("dose")
+        )
+        agg["sd"] = agg["sd"].fillna(0.0)  # n==1 groups: std() is NaN, not "no spread"
+        du = str(dose_unit) if pd.notna(dose_unit) and dose_unit else "?"
+        ru = str(response_unit) if pd.notna(response_unit) and response_unit else "?"
+        trace_name = "{} [{} vs {}]".format(endpoint, ru, du)
         fig.add_trace(go.Scatter(
-            x=g["dose"], y=g["response"], mode="markers+lines", name=str(endpoint),
+            # force a numeric x dtype — a CSV round-trip or a mixed-type dose column can make
+            # Plotly infer a CATEGORICAL axis (ticks in row order, not ascending log order)
+            # even when every value is really numeric.
+            x=agg["dose"].astype(float), y=agg["mean"], mode="markers+lines", name=trace_name,
             visible=visible0,
+            error_y=dict(type="data", array=agg["sd"], visible=True),
+            customdata=agg["n"],
             hovertemplate=(
-                "endpoint=%{fullData.name}<br>dose=%{x} " + str(g["dose_unit"].iloc[0] or "")
-                + "<br>response=%{y} " + str(g["response_unit"].iloc[0] or "") + "<extra></extra>"
+                "endpoint=" + str(endpoint) + "<br>dose=%{x} " + du
+                + "<br>mean response=%{y} " + ru + " (n=%{customdata})<extra></extra>"
             ),
         ), row=row, col=col)
         n += 1

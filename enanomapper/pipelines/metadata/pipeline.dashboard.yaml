@@ -23,7 +23,7 @@ tasks:
       filter_investigation_uuid: ""  # matches investigation_uuid_s
       max_studies: 1000
     grid:
-      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork","riskgone"]
+      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork","riskgone","harmless"]
 
   - source: tasks/curate_passing.py
     name: "curate_passing_[[filter_project]]"
@@ -40,4 +40,14 @@ tasks:
       filter_investigation_uuid: ""  # matches investigation_uuid_s
       max_studies: 1000
     grid:
-      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork", "riskgone"]
+      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork", "riskgone","harmless"]
+
+  - source: tasks/curate_slides.py
+    name: "curate_slides_[[filter_project]]"
+    product:
+      nb: "products/curate_slides_[[filter_project]].ipynb"
+      data: "products/slides/slides_[[filter_project]].html"
+      data_xlsx: "products/slides/slides_[[filter_project]]_data.xlsx"
+      data_nexus: "products/slides/slides_[[filter_project]]_data.nxs"
+    grid:
+      filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork", "riskgone","harmless"]

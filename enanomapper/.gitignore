@@ -1,0 +1,12 @@
+# Pipeline environment files contain real Solr/AMBIT API keys and passwords.
+# Only the *_example.yaml templates are meant to be committed.
+pipelines/**/env.yaml
+pipelines/**/env.*.yaml
+!pipelines/**/env*example*.yaml
+
+# Generated pipeline output (reports, notebooks, exports) — regenerate locally, don't commit.
+pipelines/**/products/
+
+# Python
+__pycache__/
+*.pyc
