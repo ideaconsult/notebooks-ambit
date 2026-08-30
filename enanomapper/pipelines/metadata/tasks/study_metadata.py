@@ -45,21 +45,11 @@ INDEXED_FIELDS = set(_luke.get("fields", {}).keys())
 # `_CONDITION_material_s` is overloaded: it holds both control designations
 # (control_positive / control_negative / control_interference / solvent_control / "Blank")
 # and ordinary treatment material names (TiO2, PLGA-PEO, ...). Only the former are controls.
-def classify_control(value):
-    s = str(value).strip().lower()
-    if "positive" in s and ("control" in s or s.startswith("control_")):
-        return "positive"
-    if "negative" in s and ("control" in s or s.startswith("control_")):
-        return "negative"
-    if "interference" in s:
-        return "interference"
-    if "solvent" in s or s == "vehicle":
-        return "solvent"
-    if s == "blank":
-        return "blank"
-    if s in ("control",):
-        return "control"
-    return None  # a treatment/material name, not a control
+#
+# The classification now lives in pyambit, where bmd.py also needs it to tell a control
+# row from a treatment row when building a dose series. Imported rather than duplicated so
+# the two cannot drift.
+from pyambit.bmd import classify_control  # noqa: E402
 
 
 def cond_field(name, suffix):

@@ -8,6 +8,11 @@ tasks:
       solr_user_env: "{{solr_user_env}}"
       solr_pass_env: "{{solr_pass_env}}"
 
+  - source: tasks/grouping_review.py
+    product:
+      nb: "products/grouping_review.html"
+      data: "products/grouping_review.xlsx"
+
   - source: tasks/curate_failing.py
     name: "curate_failing_[[filter_project]]"
     product:
@@ -41,6 +46,43 @@ tasks:
       max_studies: 1000
     grid:
       filter_project: ["nanoreg","nanoreg2","enpra","nanotest","nanogenotox","calibrate","sanowork", "riskgone","harmless"]
+
+  # BMD embeddings. A root task, deliberately independent of the curate_* split: an index
+  # has no reason to be restricted to curated records, and the dose-response CSVs those
+  # tasks write drop the errorValue / replicate columns the BMD interval is computed from.
+  - source: tasks/bmd_embedding.py
+    product:
+      nb: "products/bmd_embedding.ipynb"
+      data: "products/bmd/bmd_solr.json"
+      data_csv: "products/bmd/bmd_vectors.csv"
+    params:
+      solr_url: "{{solr_url}}"
+      solr_user_env: "{{solr_user_env}}"
+      solr_pass_env: "{{solr_pass_env}}"
+      categories: ["ENM_0000068_SECTION", "TO_GENETIC_IN_VITRO_SECTION"]
+      benchmark_responses: [10.0, 20.0, 50.0]
+      log_window: [-1.0, 3.0]
+      # 0 = every substance. Set small to smoke-test: step 2 is one HTTP call per
+      # substance per category.
+      max_substances: 0
+
+  - source: tasks/bmd_clustering.py
+    product:
+      nb: "products/bmd_clustering.ipynb"
+      data: "products/bmd/bmd_clusters.csv"
+    params:
+      n_clusters: "auto"    # pass an int instead to fix k
+      k_min: 2
+      k_max: 20
+
+  # Separate from bmd_clustering so a new diagnostic never re-runs k-means or re-fetches
+  # from AMBIT: this reads bmd_embedding's vectors and bmd_clustering's small cluster
+  # assignment and stops there.
+  - source: tasks/bmd_cluster_analysis.py
+    product:
+      nb: "products/bmd_cluster_analysis.html"
+      data: "products/bmd/bmd_cluster_summary.csv"
+      data_top: "products/bmd/bmd_cluster_top_terms.csv"
 
   - source: tasks/curate_slides.py
     name: "curate_slides_[[filter_project]]"

@@ -10,12 +10,30 @@ readme = "README.md"
 requires-python = ">=3.12,<3.14"
 dependencies = [
     "pynanomapper (>=2.0.2,<3.0.0)",
+    # Declared explicitly rather than relied on transitively through pynanomapper:
+    # tasks/bmd_embedding.py and tasks/study_metadata.py import pyambit directly.
+    "pyambit (>=0.0.2)",
     "ploomber (>=0.23.3,<0.24.0)",
     "plotly (>=6.1.2,<7.0.0)",
-    "altair (>=5.5.0,<6.0.0)"
+    "altair (>=5.5.0,<6.0.0)",
+    # tasks/bmd_clustering.py
+    "scikit-learn (>=1.5,<2.0)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+# This directory is a Ploomber pipeline runner, not a distributable package: there is no
+# `enm_metadata` module, only `tasks/`, which Ploomber puts on PYTHONPATH itself. Without
+# this, `uv run`/`uv sync` try to build a wheel for it and fail with
+# "No file/folder found for package enm-metadata".
+[tool.uv]
+package = false
+
+# pyambit.bmd and pyambit.units (used by tasks/bmd_embedding.py, tasks/bmd_clustering.py,
+# tasks/study_metadata.py) exist only in the local checkout, not in any published
+# pyambit>=0.0.2 release yet. Point at that checkout instead of PyPI.
+[tool.uv.sources]
+pyambit = { path = "../../../../pyambit", editable = true }

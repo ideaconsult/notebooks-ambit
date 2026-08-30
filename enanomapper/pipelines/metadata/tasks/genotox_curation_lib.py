@@ -5,12 +5,6 @@
 # use the exact same server resolution, fetch, dose-axis selection, and dose-response
 # flattening logic — only the study selection filter and summary tables differ per task.
 
-import sys
-
-# Use the clean pyambit-main checkout (the editable `pyambit` install has an unresolved merge
-# conflict in datamodel.py).
-sys.path.insert(0, "d:/nina/src/charisma/pyambit-main/src")
-
 import ast
 import os
 
@@ -151,6 +145,22 @@ TAG_DBS = {
     "IUC6": "https://apps.ideaconsult.net/tool3/",
     "ZROF": "https://apps.ideaconsult.net/zerof/",
 }
+
+def fetch_docs(solr_url, auth, q, fl, rows=100000):
+    """Fetch Solr documents as a DataFrame.
+
+    Lives here rather than inside a task script so more than one task can use it:
+    viz_metadata.py had its own copy closing over module-level `solr_url`/`auth`, which
+    made it unimportable (importing that module runs its Solr queries as a side effect).
+    """
+    r = requests.get(
+        solr_url.rstrip("/") + "/select",
+        params={"q": q, "rows": rows, "wt": "json", "fl": fl},
+        auth=auth,
+        timeout=300,
+    ).json()
+    return pd.DataFrame(r.get("response", {}).get("docs", []))
+
 
 def substance2server(s_uuid):
     """4-letter tag (prefix before first '-') -> AMBIT/Gravitee fetch server, or None if
